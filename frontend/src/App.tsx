@@ -25,11 +25,23 @@ import {
   useLocation,
 } from "react-router-dom";
 
+import { SettingsPage } from "@pages/Settings";
+import { AppContextProvider } from "@context/AppContext";
 
 const LazyRoutes: React.FC = () => {
   const location = useLocation();
   return (
     <Routes location={location} key={location.pathname}>
+      <Route path="/">
+        <Route
+          path="settings"
+          element={
+            <AppContextProvider>
+              <SettingsPage />
+            </AppContextProvider>
+          }
+        />
+      </Route>
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
