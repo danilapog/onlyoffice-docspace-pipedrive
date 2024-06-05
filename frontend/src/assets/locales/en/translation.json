@@ -1,3 +1,22 @@
 {
-    
+  "background.error.title": "Error",
+  "background.error.subtitle": "Could not fetch plugin settings. Something went wrong. Please reload the pipedrive window",
+  "background.error.subtitle.token": "Could not fetch plugin settings. Something went wrong with your access token. Please reinstall the app",
+  "background.reinstall.button": "Reinstall",
+  "button.login": "Login",
+  "button.save": "Save",
+  "settings.authorization.menu-item": "Authorization",
+  "settings.authorization.title": "Login to ONLYOFFICE DocSpace account",
+  "settings.authorization.inputs.email": "Email",
+  "settings.authorization.inputs.password": "Password",
+  "settings.connection.menu-item": "Connection",
+  "settings.connection.link.docspace.developer-tools": "Developer Tools section",
+  "settings.connection.title": "Configure ONLYOFFICE DocSpace app settings",
+  "settings.connection.description": "This plugin allows multiple users to collaborate in real time, save back those changes to Pipedrive and enables the users to edit office documents from Pipedrive using ONLYOFFICE DocSpace Server.",
+  "settings.connection.inputs.address": "DocSpace Service Address",
+  "settings.connection.inputs.login": "DocSpace Login",
+  "settings.connection.inputs.password": "DocSpace Password",
+  "settings.connection.saving.ok": "ONLYOFFICE settings have been saved",
+  "settings.connection.saving.error": "Could not save ONLYOFFICE settings",
+  "settings.connection.saving.error.docspace.csp": "The current domain is not set in the Content Security Policy (CSP) settings. Please add it via the Developer Tools section."
 }
