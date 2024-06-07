@@ -1,2 +1,8 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
 # dependencies
 frontend/node_modules
