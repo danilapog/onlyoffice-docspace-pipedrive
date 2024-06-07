@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/onlyoffice_pipedrive
+    username: onlyoffice
+    password: onlyoffice
+    hikari:
+      schema: public
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS public
+      connection-timeout: 10000
