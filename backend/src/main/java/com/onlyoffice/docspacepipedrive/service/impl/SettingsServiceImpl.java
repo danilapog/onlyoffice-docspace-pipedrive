@@ -38,30 +38,36 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public Settings update(Long clientId, Settings settings) {
         Settings existedSetting = findByClientId(clientId);
-
-        if (StringUtils.hasText(settings.getToken())) {
-            existedSetting.setToken(settings.getToken());
-        }
+        Boolean deleteToken = false;
 
         if (StringUtils.hasText(settings.getUrl())) {
-            if (!existedSetting.getUrl().equals(settings.getUrl())) {
-                existedSetting.setToken(null);
-            }
             existedSetting.setUrl(settings.getUrl());
+            deleteToken = true;
         }
 
         if (StringUtils.hasText(settings.getUserName())) {
-            if (!existedSetting.getUserName().equals(settings.getUserName())) {
-                existedSetting.setToken(null);
-            }
             existedSetting.setUserName(settings.getUserName());
+            deleteToken = true;
         }
 
         if (StringUtils.hasText(settings.getPasswordHash())) {
-            if (!existedSetting.getPasswordHash().equals(settings.getPasswordHash())) {
-                existedSetting.setToken(null);
-            }
             existedSetting.setPasswordHash(settings.getPasswordHash());
+            deleteToken = true;
+        }
+
+        if (deleteToken) {
+            existedSetting.setToken(null);
+        }
+
+        return settingsRepository.save(existedSetting);
+    }
+
+    @Override
+    public Settings updateToken(Long clientId, String token) {
+        Settings existedSetting = findByClientId(clientId);
+
+        if (StringUtils.hasText(token)) {
+            existedSetting.setToken(token);
         }
 
         return settingsRepository.save(existedSetting);

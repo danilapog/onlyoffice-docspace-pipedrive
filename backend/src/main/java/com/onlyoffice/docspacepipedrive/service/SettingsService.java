@@ -8,4 +8,5 @@ public interface SettingsService {
     boolean existByClientId(Long clientId);
     Settings create(Long clientId, Settings settings);
     Settings update(Long clientId, Settings settings);
+    Settings updateToken(Long clientId, String token);
 }
