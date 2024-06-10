@@ -43,7 +43,7 @@ public class User {
             @AttributeOverride( name = "issuedAt", column = @Column(name = "refresh_token_issued_at")),
     })
     private RefreshToken refreshToken;
-    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
     @ToString.Exclude
     private DocspaceAccount docspaceAccount;
     @ManyToOne
