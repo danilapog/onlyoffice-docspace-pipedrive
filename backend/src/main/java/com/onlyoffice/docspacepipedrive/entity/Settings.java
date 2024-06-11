@@ -27,7 +27,6 @@ public class Settings {
     private String url;
     private String userName;
     private String passwordHash;
-    private String token;
     @OneToOne
     @JoinColumn(name = "client_id")
     @ToString.Exclude
