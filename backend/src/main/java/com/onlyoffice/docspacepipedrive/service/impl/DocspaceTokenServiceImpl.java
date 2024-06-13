@@ -39,6 +39,6 @@ public class DocspaceTokenServiceImpl implements DocspaceTokenService {
     }
 
     public void deleteByClientId(Long clientId) {
-        docspaceTokenRepository.deleteByClientId(clientId);
+        docspaceTokenRepository.delete(findByClientId(clientId));
     }
 }
