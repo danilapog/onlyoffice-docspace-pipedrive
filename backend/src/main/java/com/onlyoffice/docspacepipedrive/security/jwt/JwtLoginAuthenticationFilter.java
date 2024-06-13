@@ -95,6 +95,7 @@ public class JwtLoginAuthenticationFilter extends AbstractAuthenticationProcessi
         }
 
         Long userId = Long.valueOf((Integer) body.get(userNameAttribute));
+        Long companyId = Long.valueOf((Integer) body.get("companyId"));
 
         if (userId == null) {
             throw new JwtAuthenticationException("Authorization request is not valid.");
@@ -110,6 +111,7 @@ public class JwtLoginAuthenticationFilter extends AbstractAuthenticationProcessi
 
         Map<String, Object> attributes = new HashMap<>();
         attributes.put(oauthUserNameAttribute, user.getId());
+        attributes.put("company_id", companyId);
 
         var oAuth2User = new DefaultOAuth2User(null, attributes, oauthUserNameAttribute);
 
