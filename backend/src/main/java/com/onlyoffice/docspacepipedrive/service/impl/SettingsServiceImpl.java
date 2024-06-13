@@ -20,52 +20,47 @@ public class SettingsServiceImpl implements SettingsService {
     private final DocspaceTokenService docspaceTokenService;
     private final SettingsRepository settingsRepository;
 
+    @Override
     public Settings findByClientId(Long clientId) {
         return settingsRepository.findByClientId(clientId)
                 .orElseThrow(() -> new SettingsNotFoundException(clientId));
     }
 
-    public boolean existByClientId(Long clientId) {
-        return settingsRepository.existsByClientId(clientId);
-    }
-
-    @Override
-    public Settings create(Long clientId, Settings settings) {
-        Client client = clientService.findById(clientId);
-
-        settings.setClient(client);
-
-        return settingsRepository.save(settings);
-    }
-
     @Override
     @Transactional
-    public Settings update(Long clientId, Settings settings) {
-        Settings existedSetting = findByClientId(clientId);
-        Boolean deleteToken = false;
+    public Settings put(Long clientId, Settings settings) {
+        Client client = clientService.findById(clientId);
 
-        if (StringUtils.hasText(settings.getUrl())
-                && !existedSetting.getUrl().equals(settings.getUrl())) {
-            existedSetting.setUrl(settings.getUrl());
-            deleteToken = true;
+        try {
+            Settings existedSetting = findByClientId(clientId);
+            Boolean deleteToken = false;
+
+            if (StringUtils.hasText(settings.getUrl())
+                    && !existedSetting.getUrl().equals(settings.getUrl())) {
+                existedSetting.setUrl(settings.getUrl());
+                deleteToken = true;
+            }
+
+            if (StringUtils.hasText(settings.getUserName())
+                    && !existedSetting.getUserName().equals(settings.getUserName())) {
+                existedSetting.setUserName(settings.getUserName());
+                deleteToken = true;
+            }
+
+            if (StringUtils.hasText(settings.getPasswordHash())
+                    && !existedSetting.getPasswordHash().equals(settings.getPasswordHash())) {
+                existedSetting.setPasswordHash(settings.getPasswordHash());
+                deleteToken = true;
+            }
+
+            if (deleteToken) {
+                docspaceTokenService.deleteByClientId(clientId);
+            }
+
+            return settingsRepository.save(existedSetting);
+        } catch (SettingsNotFoundException e) {
+            settings.setClient(client);
+            return settingsRepository.save(settings);
         }
-
-        if (StringUtils.hasText(settings.getUserName())
-                && !existedSetting.getUserName().equals(settings.getUserName())) {
-            existedSetting.setUserName(settings.getUserName());
-            deleteToken = true;
-        }
-
-        if (StringUtils.hasText(settings.getPasswordHash())
-                && !existedSetting.getPasswordHash().equals(settings.getPasswordHash())) {
-            existedSetting.setPasswordHash(settings.getPasswordHash());
-            deleteToken = true;
-        }
-
-        if (deleteToken) {
-            docspaceTokenService.deleteByClientId(clientId);
-        }
-
-        return settingsRepository.save(existedSetting);
     }
 }

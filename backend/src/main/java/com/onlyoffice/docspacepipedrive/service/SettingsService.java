@@ -5,7 +5,5 @@ import com.onlyoffice.docspacepipedrive.entity.Settings;
 
 public interface SettingsService {
     Settings findByClientId(Long clientId);
-    boolean existByClientId(Long clientId);
-    Settings create(Long clientId, Settings settings);
-    Settings update(Long clientId, Settings settings);
+    Settings put(Long clientId, Settings settings);
 }
