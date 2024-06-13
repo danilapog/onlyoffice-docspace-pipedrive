@@ -16,6 +16,12 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     private final DocspaceAccountRepository docspaceAccountRepository;
 
     @Override
+    public DocspaceAccount findByUserId(Long userId) {
+        return docspaceAccountRepository.findByUserId(userId)
+                .orElse(null);
+    }
+
+    @Override
     public DocspaceAccount save(Long userId, DocspaceAccount docspaceAccount) {
         User user = userService.findById(userId);
 
@@ -26,6 +32,8 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
 
     @Override
     public void deleteByUserId(Long userId) {
-        docspaceAccountRepository.deleteByUserId(userId);
+        DocspaceAccount docspaceAccount = findByUserId(userId);
+
+        docspaceAccountRepository.delete(docspaceAccount);
     }
 }
