@@ -1,6 +1,7 @@
 package com.onlyoffice.docspacepipedrive.configuration;
 
 import com.onlyoffice.docspacepipedrive.security.AuthenticationEntryPointImpl;
+import com.onlyoffice.docspacepipedrive.security.AuthenticationSuccessHandlerImpl;
 import com.onlyoffice.docspacepipedrive.security.jwt.JwtLoginAuthenticationFilter;
 import com.onlyoffice.docspacepipedrive.security.jwt.JwtLogoutAuthenticationFilter;
 import com.onlyoffice.docspacepipedrive.security.jwt.manager.JwtManager;
@@ -47,6 +48,8 @@ public class SecurityConfiguration {
     private final UserService userService;
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
+    private final AuthenticationSuccessHandlerImpl authenticationSuccessHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         AuthenticationManager authenticationManager = (AuthenticationManager)http.getSharedObject(AuthenticationManager.class);
@@ -77,9 +80,7 @@ public class SecurityConfiguration {
                 .oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
                     httpSecurityOAuth2LoginConfigurer
                         .failureHandler(authenticationFailureHandler)
-                        .successHandler((request, response, authentication) ->{
-                            response.sendRedirect("https://aleksandr-sandbox5.pipedrive.com/settings/marketplace/app/00d721245188575d/app-settings"); //ToDo: Current reg id and url
-                        });
+                        .successHandler(authenticationSuccessHandler);
                 })
 
                 .formLogin(AbstractHttpConfigurer::disable)
