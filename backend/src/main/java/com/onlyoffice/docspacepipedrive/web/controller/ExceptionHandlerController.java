@@ -14,6 +14,12 @@ public class ExceptionHandlerController {
     public ResponseEntity<ErrorResponse> entityNotFound(RoomNotFoundException e) {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getLocalizedMessage()));
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.NOT_FOUND.value(),
+                                e.getLocalizedMessage(),
+                                ErrorResponse.Provider.INTEGRATION_APP
+                        )
+                );
     }
 }
