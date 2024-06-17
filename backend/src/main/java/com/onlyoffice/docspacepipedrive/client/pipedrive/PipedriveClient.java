@@ -4,7 +4,6 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveResponse;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
-import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class PipedriveClient {
     private final WebClient pipedriveWebClient;
-    private final UserService userService;
 
     public PipedriveDeal getDeal(Long id) {
         return pipedriveWebClient.get()
@@ -44,7 +42,7 @@ public class PipedriveClient {
     }
 
     private String getBaseUrl() {
-        return userService.findById(SecurityUtils.getCurrentUserId())
+        return SecurityUtils.getCurrentUser()
                 .getClient()
                 .getUrl();
     }

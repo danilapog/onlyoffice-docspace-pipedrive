@@ -10,7 +10,6 @@ import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
 import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.DocspaceTokenService;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
-import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsSaveRequest;
 import com.onlyoffice.docspacepipedrive.web.mapper.SettingsMapper;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class SettingsController {
-    private final UserService userService;
     private final SettingsService settingsService;
     private final SettingsMapper settingsMapper;
     private final DocspaceClient docspaceClient;
@@ -38,8 +36,7 @@ public class SettingsController {
 
     @GetMapping
     public ResponseEntity<SettingsResponse> get() {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        User currentUser = userService.findById(currentUserId);
+        User currentUser = SecurityUtils.getCurrentUser();
 
         Settings settings;
         try {
@@ -57,8 +54,8 @@ public class SettingsController {
 
     @PostMapping
     public ResponseEntity<SettingsResponse> save(@RequestBody SettingsSaveRequest request) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        User currentUser = userService.findById(currentUserId);
+        User currentUser = SecurityUtils.getCurrentUser();
+
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
 
         if (!pipedriveUser.getIsAdmin()

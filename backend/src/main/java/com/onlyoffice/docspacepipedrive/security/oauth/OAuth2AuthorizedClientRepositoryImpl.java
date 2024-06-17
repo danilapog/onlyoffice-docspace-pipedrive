@@ -4,22 +4,23 @@ import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.user.AccessToken;
 import com.onlyoffice.docspacepipedrive.entity.user.RefreshToken;
 import com.onlyoffice.docspacepipedrive.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 
 @Service
 @RequiredArgsConstructor
-public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClientService {
+public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedClientRepository {
     @Value("${spring.security.oauth2.client.provider.pipedrive.nested-user-name-attribute}")
     private String userNameAttribute;
     @Value("${spring.security.oauth2.client.provider.pipedrive.nested-client-id-attribute}")
@@ -30,11 +31,14 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
 
     @Override
     public <T extends OAuth2AuthorizedClient> T loadAuthorizedClient(String clientRegistrationId,
-                                                                     String principalName) {
-        Assert.hasText(clientRegistrationId, "clientRegistrationId cannot be empty");
-        Assert.hasText(principalName, "principalName cannot be empty");
+                                                                     Authentication authentication,
+                                                                     HttpServletRequest request) {
+        OAuth2AuthenticatedPrincipal oAuth2User = (OAuth2AuthenticatedPrincipal) authentication.getPrincipal();
 
-        User user = userService.findById(Long.valueOf(principalName));
+        Long userId = ((Number) oAuth2User.getAttributes().get(userNameAttribute)).longValue();
+        Long clientId = ((Number) oAuth2User.getAttributes().get(clientIdAttribute)).longValue();
+
+        User user = userService.findByUserIdAndClientId(userId, clientId);
 
         OAuth2AccessToken accessToken = new OAuth2AccessToken(
                 OAuth2AccessToken.TokenType.BEARER,
@@ -59,11 +63,9 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
     }
 
     @Override
-    public void saveAuthorizedClient(OAuth2AuthorizedClient authorizedClient, Authentication principal) {
-        Assert.notNull(authorizedClient, "authorizedClient cannot be null");
-        Assert.notNull(principal, "principal cannot be null");
-
-        var oAuth2User = (DefaultOAuth2User) principal.getPrincipal();
+    public void saveAuthorizedClient(OAuth2AuthorizedClient authorizedClient, Authentication authentication,
+                                     HttpServletRequest request, HttpServletResponse response) {
+        OAuth2AuthenticatedPrincipal oAuth2User = (OAuth2AuthenticatedPrincipal) authentication.getPrincipal();
 
         Long userId = ((Number) oAuth2User.getAttributes().get(userNameAttribute)).longValue();
         Long clientId = ((Number) oAuth2User.getAttributes().get(clientIdAttribute)).longValue();
@@ -80,7 +82,7 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
                 .build();
 
         User user = User.builder()
-                .id(userId)
+                .userId(userId)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -89,10 +91,8 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
     }
 
     @Override
-    public void removeAuthorizedClient(String clientRegistrationId, String principalName) {
-        Assert.hasText(clientRegistrationId, "clientRegistrationId cannot be empty");
-        Assert.hasText(principalName, "principalName cannot be empty");
-
-        userService.delete(Long.valueOf(principalName));
+    public void removeAuthorizedClient(String clientRegistrationId, Authentication principal,
+                                       HttpServletRequest request, HttpServletResponse response) {
+//        userService.delete(Long.valueOf(principalName)); //ToDo
     }
 }

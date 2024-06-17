@@ -1,10 +1,7 @@
 package com.onlyoffice.docspacepipedrive.configuration;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.filter.DocspaceAuthorizationExchangeFilterFunction;
-import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.DocspaceTokenService;
-import com.onlyoffice.docspacepipedrive.service.SettingsService;
-import com.onlyoffice.docspacepipedrive.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -15,9 +12,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class ClientConfiguration {
     @Bean
-    WebClient docspaceWebClient(UserService userService, DocspaceTokenService docspaceTokenService) {
+    WebClient docspaceWebClient(DocspaceTokenService docspaceTokenService) {
         DocspaceAuthorizationExchangeFilterFunction docspaceAuthorizationExchangeFilterFunction =
-                new DocspaceAuthorizationExchangeFilterFunction(userService, docspaceTokenService);
+                new DocspaceAuthorizationExchangeFilterFunction(docspaceTokenService);
 
         return WebClient.builder()
                 .filter(docspaceAuthorizationExchangeFilterFunction)

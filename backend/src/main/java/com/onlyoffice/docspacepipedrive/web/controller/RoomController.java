@@ -8,7 +8,6 @@ import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
-import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.RoomMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RoomController {
     private final RoomService roomService;
-    private final UserService userService;
     private final RoomMapper roomMapper;
     private final PipedriveClient pipedriveClient;
     private final DocspaceClient docspaceClient;
@@ -39,8 +37,7 @@ public class RoomController {
 
     @PostMapping("/{dealId}")
     public ResponseEntity<RoomResponse> create(@PathVariable Long dealId) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        User user = userService.findById(currentUserId);
+        User user = SecurityUtils.getCurrentUser();
 
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
 

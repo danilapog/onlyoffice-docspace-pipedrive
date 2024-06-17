@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
     private final DocspaceAccountService docspaceAccountService;
     private final UserMapper userMapper;
     private final PipedriveClient pipedriveClient;
@@ -34,8 +33,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<UserResponse> getUser() {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        User currentUser = userService.findById(currentUserId);
+        User currentUser = SecurityUtils.getCurrentUser();
 
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
 
@@ -53,7 +51,7 @@ public class UserController {
 
     @PostMapping("/docspace-account")
     public ResponseEntity<UserResponse> postDocspaceAccount(@RequestBody DocspaceAccountSaveRequest request) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
+        User currentUser = SecurityUtils.getCurrentUser();
 
         DocspaceUser docspaceUser = docspaceClient.getUser(request.getUserName());
 
@@ -61,16 +59,16 @@ public class UserController {
         docspaceAccount.setId(docspaceUser.getId());
         docspaceAccount.setPasswordHash(request.getPasswordHash());
 
-        docspaceAccountService.save(currentUserId, docspaceAccount);
+        docspaceAccountService.save(currentUser.getId(), docspaceAccount);
 
         return ResponseEntity.ok(null);
     }
 
     @DeleteMapping("/docspace-account")
     public ResponseEntity<Void> postDocspaceAccount() {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
+        User currentUser = SecurityUtils.getCurrentUser();
 
-        docspaceAccountService.deleteByUserId(currentUserId);
+        docspaceAccountService.deleteByUserId(currentUser.getId());
 
         return ResponseEntity.noContent().build();
     }

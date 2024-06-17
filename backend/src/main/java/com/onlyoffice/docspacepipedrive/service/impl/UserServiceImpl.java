@@ -23,6 +23,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByUserIdAndClientId(Long userId, Long clientId) {
+        return userRepository.findByUserIdAndClientId(userId, clientId)
+                .orElseThrow(() -> new UserNotFoundException(userId, clientId));
+    }
+
+    @Override
     public User create(Long clientId, User user) {
         Client client = clientService.findById(clientId);
 

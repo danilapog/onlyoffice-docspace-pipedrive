@@ -23,12 +23,10 @@ import java.util.Map;
 
 
 public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilterFunction {
-    private final UserService userService;
     private final DocspaceTokenService docspaceTokenService;
     private final WebClient webClient;
 
-    public DocspaceAuthorizationExchangeFilterFunction(UserService userService, DocspaceTokenService docspaceTokenService) {
-        this.userService = userService;
+    public DocspaceAuthorizationExchangeFilterFunction(DocspaceTokenService docspaceTokenService) {
         this.docspaceTokenService = docspaceTokenService;
 
         this.webClient = WebClient.builder().build();
@@ -60,7 +58,7 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
     }
 
     private ClientRequest configureRequest(ClientRequest request) {
-        Settings settingsFromStorage = userService.findById(SecurityUtils.getCurrentUserId())
+        Settings settingsFromStorage = SecurityUtils.getCurrentUser()
                 .getClient()
                 .getSettings();
 

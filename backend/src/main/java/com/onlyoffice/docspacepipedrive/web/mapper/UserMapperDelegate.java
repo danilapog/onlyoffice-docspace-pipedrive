@@ -13,7 +13,7 @@ public abstract class UserMapperDelegate implements UserMapper {
     public UserResponse userToUserResponse(User user, PipedriveUser pipedriveUser, DocspaceUser docspaceUser) {
         UserResponse userResponse = new UserResponse();
 
-        userResponse.setId(user.getId());
+        userResponse.setId(user.getUserId());
         userResponse.setName(pipedriveUser.getName());
         userResponse.setLanguage(pipedriveUser.getLanguage());
         userResponse.setAccess(pipedriveUser.getAccess());

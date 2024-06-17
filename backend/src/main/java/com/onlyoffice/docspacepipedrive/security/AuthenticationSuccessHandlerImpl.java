@@ -1,5 +1,6 @@
 package com.onlyoffice.docspacepipedrive.security;
 
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -24,7 +26,7 @@ import java.net.URI;
 @AllArgsConstructor
 public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHandler {
 
-    private final UserService userService;
+    private final ClientService clientService;
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Override
@@ -36,17 +38,17 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
                 auth2AuthenticationToken.getAuthorizedClientRegistrationId()
         );
 
-        Long userId = null;
+        Long clientId = null;
 
-        if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
-            DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
-            userId = Long.valueOf(defaultOAuth2User.getName());
+        if (authentication.getPrincipal() instanceof OAuth2AuthenticatedPrincipal) {
+            OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal = (OAuth2AuthenticatedPrincipal) authentication.getPrincipal();
+            clientId = ((Number) oAuth2AuthenticatedPrincipal.getAttribute("company_id")).longValue(); //ToDo name from properties
         }
 
-        User user = userService.findById(userId);
+        Client client = clientService.findById(clientId);
 
-        URI redirectUri = UriComponentsBuilder.fromUriString(user.getClient().getUrl())
-                .path("settings/marketplace/app/{clientId}/app-setting")
+        URI redirectUri = UriComponentsBuilder.fromUriString(client.getUrl())
+                .path("/settings/marketplace/app/{clientId}/app-setting")
                 .build(clientRegistration.getClientId());
 
         response.sendRedirect(redirectUri.toString());

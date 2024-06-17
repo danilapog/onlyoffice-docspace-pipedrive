@@ -95,23 +95,21 @@ public class JwtLoginAuthenticationFilter extends AbstractAuthenticationProcessi
         }
 
         Long userId = Long.valueOf((Integer) body.get(userNameAttribute));
-        Long companyId = Long.valueOf((Integer) body.get("companyId"));
+        Long clientId = Long.valueOf((Integer) body.get("companyId"));
 
-        if (userId == null) {
+        if (userId == null || clientId == null) {
             throw new JwtAuthenticationException("Authorization request is not valid.");
         }
 
-        User user;
-
         try {
-            user = userService.findById(userId);
+            User user = userService.findByUserIdAndClientId(userId, clientId);
         } catch (UserNotFoundException e) {
             throw new JwtAuthenticationException(e.getMessage(), e);
         }
 
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put(oauthUserNameAttribute, user.getId());
-        attributes.put("company_id", companyId);
+        attributes.put(oauthUserNameAttribute, userId);
+        attributes.put("company_id", clientId); //ToDo company_id from props
 
         var oAuth2User = new DefaultOAuth2User(null, attributes, oauthUserNameAttribute);
 
