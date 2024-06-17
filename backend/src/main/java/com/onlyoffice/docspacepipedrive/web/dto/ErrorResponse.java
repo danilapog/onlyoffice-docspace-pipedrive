@@ -5,10 +5,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-@Data
 @AllArgsConstructor
+@Data
 @NoArgsConstructor
 public class ErrorResponse {
-    private Integer code;
+    private int code;
     private String message;
+    private Provider provider;
+
+    public enum Provider {
+        INTEGRATION_APP,
+        PIPEDRIVE,
+        DOCSPACE
+    }
 }
