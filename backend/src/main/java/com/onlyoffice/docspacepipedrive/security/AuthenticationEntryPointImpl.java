@@ -1,6 +1,7 @@
 package com.onlyoffice.docspacepipedrive.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onlyoffice.docspacepipedrive.web.dto.ErrorResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,8 +12,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Component
@@ -24,17 +23,15 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException, ServletException {
         log.info("Responding with unauthorized error. Message: {}", authException.getMessage());
 
-//        authException.printStackTrace(); ToDo: print stack trace in debug mode
-
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        final Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-        body.put("error", "Unauthorized");
-        body.put("message", authException.getLocalizedMessage());
-        body.put("path", request.getServletPath());
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpServletResponse.SC_UNAUTHORIZED,
+                authException.getLocalizedMessage(),
+                ErrorResponse.Provider.INTEGRATION_APP
+        );
 
-        objectMapper.writeValue(response.getOutputStream(), body);
+        objectMapper.writeValue(response.getOutputStream(), errorResponse);
     }
 }
