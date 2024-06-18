@@ -22,27 +22,28 @@ import AppExtensionsSDK, { Command } from "@pipedrive/app-extensions-sdk";
 
 import { SettingsResponse } from "src/types/settings";
 
+
 export const getSettings = async (sdk: AppExtensionsSDK) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
-    retries: 3,
+    retries: 2,
     retryCondition: (error) => error.status !== 200,
     retryDelay: (count) => count * 50,
     shouldResetTimeout: true,
   });
 
-  const settings = await client<SettingsResponse>({
+  const response = await client<SettingsResponse>({
     method: "GET",
     url: `/api/v1/settings`,
     headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + pctx.token,
     },
-    timeout: 3000,
+    timeout: 5000,
   });
 
-  return settings.data;
+  return response.data;
 };
 
 export const postSettings = async (
@@ -54,7 +55,7 @@ export const postSettings = async (
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
-    retries: 2,
+    retries: 1,
     retryCondition: (error) => error.status === 429,
   });
 
@@ -70,6 +71,6 @@ export const postSettings = async (
       userName: userName,
       passwordHash: passwordHash,
     },
-    timeout: 4000,
+    timeout: 15000,
   });
 };
