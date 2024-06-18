@@ -16,27 +16,46 @@
  *
  */
 
-import { OnlyofficeSpinner } from "@components/spinner";
-import AppExtensionsSDK from "@pipedrive/app-extensions-sdk";
-import { AxiosError } from "axios";
 import React, { useEffect, useState } from "react";
+import AppExtensionsSDK from "@pipedrive/app-extensions-sdk";
+import i18next from "i18next";
+import { useTranslation } from "react-i18next";
+
+import { AxiosError } from "axios";
+
+import { OnlyofficeSpinner } from "@components/spinner";
+import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
+
+import { getUser } from "@services/user";
+import { getCurrentURL } from "@utils/url";
+
+import { UserResponse } from "src/types/user";
+
+import CommonError from "@assets/common-error.svg";
+import TokenError from "@assets/token-error.svg";
+
 
 type AppContextProps = {
   children?: JSX.Element | JSX.Element[];
 };
 
 export interface IAppContext {
+  sdk: AppExtensionsSDK;
+  user: UserResponse | undefined,
+  setUser: (value: UserResponse) => void;
   error: AxiosError | undefined;
   setError: (value: AxiosError) => void;
-  sdk: AppExtensionsSDK;
 }
 
 export const AppContext = React.createContext<IAppContext>({} as IAppContext);
 
 export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
+  const [sdk, setSDK] = useState<AppExtensionsSDK>();
+  const [user, setUser] = useState<UserResponse>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<AxiosError>();
-  const [sdk, setSDK] = useState<AppExtensionsSDK>();
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     try {
@@ -44,7 +63,16 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         .initialize()
         .then((s) => {
           setSDK(s);
-          setLoading(false);
+          getUser(s).then(async (user) => {
+            await i18next.changeLanguage(`${user.language.language_code}-${user.language.country_code}`);
+
+            setUser(user);
+          }).catch((e: AxiosError) => {
+            console.error(e);
+            setError(e);
+          }).finally(()=>{
+            setLoading(false);
+          })
         })
         .catch((e) => console.error(e));
     } catch (e) {
@@ -54,11 +82,40 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
 
   return(
     <>
-      {loading && !sdk && (
+      {loading && (
         <OnlyofficeSpinner />
       )}
-      {!loading && sdk && (
-        <AppContext.Provider value={{error, setError, sdk}}>{children}</AppContext.Provider>
+      {error && !loading && (
+        <OnlyofficeBackgroundError
+          Icon={
+            error.response?.status === 401
+              ? <TokenError className="mb-5" />
+              : <CommonError className="mb-5" />
+          }
+          title={t(
+            error.response?.status === 401 ? "background.error.title.token-expired" : "background.error.title.common",
+            error.response?.status === 401 ? "The document security token has expired" : "Error"
+          )}
+          subtitle={t(
+            error.response?.status === 401 ? "background.error.subtitle.token-expired" : "background.error.subtitle.common",
+            error.response?.status === 401
+              ? "Something went wrong. Please reinstall the app."
+              : "Something went wrong. Please reload the app."
+          )}
+          button={t("button.reinstall", "Reinstall") || "Reinstall"}
+          onClick={
+            error.response?.status === 401
+              ? () =>
+                  window.open(
+                    `${getCurrentURL().url}settings/marketplace`,
+                    "_blank"
+                  )
+              : undefined
+          }
+        />
+      )}
+      {!loading && !error && sdk &&(
+        <AppContext.Provider value={{sdk, user, setUser, error, setError}}>{children}</AppContext.Provider>
       )}
     </>
   );
