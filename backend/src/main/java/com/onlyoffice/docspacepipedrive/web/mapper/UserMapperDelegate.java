@@ -15,6 +15,7 @@ public abstract class UserMapperDelegate implements UserMapper {
 
         userResponse.setId(user.getUserId());
         userResponse.setName(pipedriveUser.getName());
+        userResponse.setIsAdmin(pipedriveUser.getIsAdmin());
         userResponse.setLanguage(pipedriveUser.getLanguage());
         userResponse.setAccess(pipedriveUser.getAccess());
 

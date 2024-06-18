@@ -1,5 +1,6 @@
 package com.onlyoffice.docspacepipedrive.web.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountResponse;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
@@ -16,6 +17,7 @@ import java.util.List;
 public class UserResponse {
     private Long id;
     private String name;
+    @JsonProperty("is_admin")
     private Boolean isAdmin;
     private PipedriveUser.Language language;
     private List<PipedriveUser.Access> access;
