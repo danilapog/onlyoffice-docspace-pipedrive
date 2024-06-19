@@ -25,7 +25,7 @@ export type UserResponse = {
     country_code: string;
     language_code: string;
   }
-  access: Access;
+  access: Access[];
   docspaceAccount: DocspaceAccount | null;
   docspaceSettings: DocspaceSettings;
 };
@@ -37,7 +37,7 @@ export type Access = {
 
 export type DocspaceAccount = {
   userName: string;
-  passwordHash: string | null;
+  passwordHash: string;
 };
 
 export type DocspaceSettings = {
