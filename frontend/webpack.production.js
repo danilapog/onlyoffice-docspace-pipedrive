@@ -19,7 +19,7 @@
 /* eslint-disable */
 const { merge } = require("webpack-merge");
 const webpack = require('webpack');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config();
 const common = require("./webpack.common.js");
 
 module.exports = merge(common, {
