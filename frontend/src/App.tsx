@@ -26,7 +26,10 @@ import {
 } from "react-router-dom";
 
 import { SettingsPage } from "@pages/Settings";
+import { RoomPage } from "@pages/Room";
+
 import { AppContextProvider } from "@context/AppContext";
+
 
 const LazyRoutes: React.FC = () => {
   const location = useLocation();
@@ -38,6 +41,14 @@ const LazyRoutes: React.FC = () => {
           element={
             <AppContextProvider>
               <SettingsPage />
+            </AppContextProvider>
+          }
+        />
+        <Route
+          path="room"
+          element={
+            <AppContextProvider>
+              <RoomPage />
             </AppContextProvider>
           }
         />
