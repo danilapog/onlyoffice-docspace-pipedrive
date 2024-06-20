@@ -48,7 +48,7 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
         Client client = clientService.findById(clientId);
 
         URI redirectUri = UriComponentsBuilder.fromUriString(client.getUrl())
-                .path("/settings/marketplace/app/{clientId}/app-setting")
+                .path("/settings/marketplace/app/{clientId}/app-settings")
                 .build(clientRegistration.getClientId());
 
         response.sendRedirect(redirectUri.toString());
