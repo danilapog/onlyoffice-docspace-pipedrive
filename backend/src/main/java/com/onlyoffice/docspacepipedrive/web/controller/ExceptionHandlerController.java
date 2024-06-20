@@ -1,5 +1,9 @@
 package com.onlyoffice.docspacepipedrive.web.controller;
 
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
+import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
+import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.web.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -19,6 +23,54 @@ public class ExceptionHandlerController {
                                 HttpStatus.NOT_FOUND.value(),
                                 e.getLocalizedMessage(),
                                 ErrorResponse.Provider.INTEGRATION_APP
+                        )
+                );
+    }
+
+    @ExceptionHandler(PipedriveWebClientResponseException.class)
+    public ResponseEntity<ErrorResponse> pipedriveWebClientResponseException(PipedriveWebClientResponseException e) {
+        return ResponseEntity.status(e.getStatusCode())
+                .body(
+                        new ErrorResponse(
+                                e.getStatusCode().value(),
+                                e.getLocalizedMessage(),
+                                ErrorResponse.Provider.PIPEDRIVE
+                        )
+                );
+    }
+
+    @ExceptionHandler(PipedriveAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> pipedriveAccessDeniedException(PipedriveAccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.FORBIDDEN.value(),
+                                e.getLocalizedMessage(),
+                                ErrorResponse.Provider.PIPEDRIVE
+                        )
+                );
+    }
+
+    @ExceptionHandler(DocspaceWebClientResponseException.class)
+    public ResponseEntity<ErrorResponse> docspaceWebClientResponseException(DocspaceWebClientResponseException e) {
+        return ResponseEntity.status(e.getStatusCode())
+                .body(
+                        new ErrorResponse(
+                                e.getStatusCode().value(),
+                                e.getLocalizedMessage(),
+                                ErrorResponse.Provider.DOCSPACE
+                        )
+                );
+    }
+
+    @ExceptionHandler(DocspaceAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> docspaceAccessDeniedException(DocspaceAccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.FORBIDDEN.value(),
+                                e.getLocalizedMessage(),
+                                ErrorResponse.Provider.DOCSPACE
                         )
                 );
     }
