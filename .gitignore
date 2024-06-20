@@ -4,5 +4,9 @@
 *.iml
 *.ipr
 
+target/
+build/
+.env
+
 # dependencies
 frontend/node_modules
