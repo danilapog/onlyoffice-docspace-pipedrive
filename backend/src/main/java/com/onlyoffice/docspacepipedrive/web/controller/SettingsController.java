@@ -6,6 +6,8 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
+import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
 import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.DocspaceTokenService;
@@ -63,7 +65,7 @@ public class SettingsController {
                 .filter(access -> access.getApp().equals("global") && access.getAdmin())
                 .toList().size() == 0
         ) {
-            throw new RuntimeException("Pipedrive user is not admin"); //ToDo
+            throw new PipedriveAccessDeniedException(currentUser.getUserId());
         }
 
         Settings settings = settingsMapper.settingsSaveRequestToSettings(request);
@@ -73,7 +75,7 @@ public class SettingsController {
 
         if (!docspaceUser.getIsAdmin()) {
             docspaceTokenService.deleteByClientId(currentUser.getClient().getId());
-            throw new RuntimeException("Docspace user is not admin"); //ToDo
+            throw new DocspaceAccessDeniedException(settings.getUserName());
         }
 
         settings = settingsService.put(
