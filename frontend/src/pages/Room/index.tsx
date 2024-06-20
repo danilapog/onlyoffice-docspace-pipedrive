@@ -17,11 +17,10 @@
  */
 
 import React, { useContext, useEffect, useState } from "react";
+import i18next from "i18next";
 import { useTranslation } from "react-i18next";
 import { Command, View } from "@pipedrive/app-extensions-sdk";
 import { DocSpace, TFrameConfig, TFrameEvents } from "@onlyoffice/docspace-react";
-
-import axios, { AxiosError } from "axios";
 
 import { AppContext } from "@context/AppContext";
 
@@ -83,7 +82,7 @@ export const RoomPage: React.FC = () => {
       setIError({
         Icon: <CommonError />,
         title: t("background.error.title", "Error"),
-        message: `${t("background.error.subtitle.docspace-connection", "You are not connected to ONLYOFFICE DocSpace app.")} 
+        message: `${t("background.error.subtitle.docspace-connection", "You are not connected to ONLYOFFICE DocSpace portal.")} 
                   ${(user?.is_admin && user.access.find((a) => a.app === "global" && a.admin))
                     ? t("background.error.hint.admin.docspace-connection", "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.")
                     : t("background.error.hint.docspace-connection", "Please contact the administrator.")
@@ -98,7 +97,7 @@ export const RoomPage: React.FC = () => {
     }
 
     getRoom(sdk, Number(parameters.get("selectedIds"))).then(response => {
-      setConfig({...config, id: response.roomId});
+      setConfig({...config, id: response.roomId, locale: i18next.language.split('-')[0]});
     }).catch(async (e) => {
       if (e?.response?.status == 404) {
         await sdk.execute(Command.RESIZE, { height: 150 });
@@ -113,7 +112,7 @@ export const RoomPage: React.FC = () => {
     setLoading(true);
 
     createRoom(sdk, Number(parameters.get("selectedIds"))).then(async (response) => {
-      setConfig({...config, id: response.roomId});
+      setConfig({...config, id: response.roomId, locale: i18next.language.split('-')[0]});
 
       await sdk.execute(Command.RESIZE, { height: 350 });
       await sdk.execute(Command.SHOW_SNACKBAR, {
@@ -126,7 +125,7 @@ export const RoomPage: React.FC = () => {
       await sdk.execute(Command.SHOW_SNACKBAR, {
         message: t(
           "room.creating.error",
-          "ONLYOFFICE DocSpace room was not created!"
+          "Failed to create ONLYOFFICE DocSpace room!"
         ),
       });
     }).finally(()=> {
