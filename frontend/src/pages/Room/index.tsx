@@ -100,14 +100,11 @@ export const RoomPage: React.FC = () => {
     getRoom(sdk, Number(parameters.get("selectedIds"))).then(response => {
       setConfig({...config, id: response.roomId});
     }).catch(async (e) => {
-      if (axios.isAxiosError(e) && !axios.isCancel(e)) {
-        const error = e as AxiosError;
-        if (error.response?.status == 404) {
-          await sdk.execute(Command.RESIZE, { height: 150 });
-          setLoading(false);
-        } else {
-          setError(e as AxiosError);
-        }
+      if (e?.response?.status == 404) {
+        await sdk.execute(Command.RESIZE, { height: 150 });
+        setLoading(false);
+      } else {
+        setError(e);
       }
     });
   }, []);
@@ -145,7 +142,7 @@ export const RoomPage: React.FC = () => {
     setIError({
       Icon: <UnreachableError />,
       title: t("background.error.title", "Error"),
-      message: `${t("background.error.subtitle.docspace-unreachable", "ONLYOFFICE DocSpace unavailable!")} 
+      message: `${t("docspace.error.unreached", "ONLYOFFICE DocSpace cannot be reached")}. 
                   ${(user?.is_admin && user.access.find((a) => a.app === "global" && a.admin))
                     ? t("background.error.hint.admin.docspace-connection", "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.")
                     : t("background.error.hint.docspace-connection", "Please contact the administrator.")
