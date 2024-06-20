@@ -53,7 +53,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const [sdk, setSDK] = useState<AppExtensionsSDK>();
   const [user, setUser] = useState<UserResponse>();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<AxiosError>();
+  const [error, setError] = useState<any>();
 
   const { t } = useTranslation();
 
@@ -67,8 +67,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
             await i18next.changeLanguage(`${user.language.language_code}-${user.language.country_code}`);
 
             setUser(user);
-          }).catch((e: AxiosError) => {
-            console.error(e);
+          }).catch((e) => {
             setError(e);
           }).finally(()=>{
             setLoading(false);
@@ -85,26 +84,26 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
       {loading && (
         <OnlyofficeSpinner />
       )}
-      {error && !loading && (
+      {!loading && error && (
         <OnlyofficeBackgroundError
           Icon={
-            error.response?.status === 401
+            error?.response?.status === 401
               ? <TokenError className="mb-5" />
               : <CommonError className="mb-5" />
           }
           title={t(
-            error.response?.status === 401 ? "background.error.title.token-expired" : "background.error.title.common",
-            error.response?.status === 401 ? "The document security token has expired" : "Error"
+            error?.response?.status === 401 ? "background.error.title.token-expired" : "background.error.title.common",
+            error?.response?.status === 401 ? "The document security token has expired" : "Error"
           )}
           subtitle={t(
-            error.response?.status === 401 ? "background.error.subtitle.token-expired" : "background.error.subtitle.common",
-            error.response?.status === 401
+            error?.response?.status === 401 ? "background.error.subtitle.token-expired" : "background.error.subtitle.common",
+            error?.response?.status === 401
               ? "Something went wrong. Please reinstall the app."
               : "Something went wrong. Please reload the app."
           )}
           button={t("button.reinstall", "Reinstall") || "Reinstall"}
           onClick={
-            error.response?.status === 401
+            error?.response?.status === 401
               ? () =>
                   window.open(
                     `${getCurrentURL().url}settings/marketplace`,
