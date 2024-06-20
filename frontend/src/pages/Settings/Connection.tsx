@@ -19,8 +19,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
-import { DocSpace } from "@onlyoffice/docspace-react";
-import axios, { AxiosError } from "axios";
+import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
+import axios from "axios";
 
 import { OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
@@ -36,55 +36,75 @@ const DOCSPACE_SYSTEM_FRAME_ID="docspace-system-frame"
 export const ConnectionSettings: React.FC= () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [address, setAddress] = useState<string | undefined>(undefined);
-  const [login, setLogin] = useState<string | undefined>(undefined);
-  const [password, setPassword] = useState<string | undefined>(undefined);
+  const [showValidationMessage, setShowValidationMessage] = useState(false);
+  const [address, setAddress] = useState<string | undefined>("");
+  const [login, setLogin] = useState<string | undefined>("");
+  const [password, setPassword] = useState<string | undefined>("");
 
   const { t } = useTranslation();
   const { sdk, setError } = useContext(AppContext);
 
   useEffect(() => {
     getSettings(sdk).then(response => {
-      setAddress(response.url);
-      setLogin(response.userName);
+      setAddress(response.url || "");
+      setLogin(response.userName || "");
       setLoading(false);
-    }).catch(e => {
-      if (axios.isAxiosError(e) && !axios.isCancel(e)) {
-        setError(e as AxiosError);
-      }
+    }).catch((e) => {
+      setError(e);
     });
   }, []);
 
   const handleSettings = async () => {
     if (address && login && password) {
       setSaving(true);
+    } else {
+      setShowValidationMessage(true);
     }
   };
 
   const onAppReady = async () => {
     if (address && login && password) {
-      try {
-        const hashSettings = await window.DocSpace.SDK.frames[DOCSPACE_SYSTEM_FRAME_ID].getHashSettings();
-        const passwordHash = await window.DocSpace.SDK.frames[DOCSPACE_SYSTEM_FRAME_ID].createHash(password, hashSettings);
+      const hashSettings = await window.DocSpace.SDK.frames[DOCSPACE_SYSTEM_FRAME_ID].getHashSettings();
+      const passwordHash = await window.DocSpace.SDK.frames[DOCSPACE_SYSTEM_FRAME_ID].createHash(password, hashSettings);
 
-        await postSettings(sdk, address, login, passwordHash);
-
+      postSettings(sdk, address, login, passwordHash).then(async () => {
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
             "settings.connection.saving.ok",
-            "ONLYOFFICE settings have been saved"
+            "ONLYOFFICE DocSpace settings have been saved"
           ),
         });
-      } catch (e) {
+      })
+      .catch(async (e) => {
+        if (axios.isAxiosError(e)) {
+          if (e.response?.status === 403 && e.response?.data?.provider === "DOCSPACE") {
+            await sdk.execute(Command.SHOW_SNACKBAR, {
+              message: t(
+                "settings.connection.saving.error.forbidden",
+                "The specified user is not a ONLYOFFICE DocSpace administrator"
+              ),
+            });
+            return;
+          }
+          if (e.response?.status === 401 && e.response?.data?.provider === "DOCSPACE") {
+            await sdk.execute(Command.SHOW_SNACKBAR, {
+              message: t(
+                "docspace.error.login",
+                "User authentication failed"
+              ),
+            });
+            return;
+          }
+        }
+
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
             "settings.connection.saving.error",
-            "Could not save ONLYOFFICE settings"
+            "Could not save ONLYOFFICE DocSpace settings"
           ),
         });
-      } finally {
-        setSaving(false);
-      }
+      })
+      .finally(() => {setSaving(false)});
     }
   }
 
@@ -92,13 +112,13 @@ export const ConnectionSettings: React.FC= () => {
     if ( errorMessage === "The current domain is not set in the Content Security Policy (CSP) settings." ) {
       await sdk.execute(Command.SHOW_SNACKBAR, {
         message: t(
-          "settings.connection.saving.error.docspace.csp",
+          "docspace.error.csp",
           "The current domain is not set in the Content Security Policy (CSP) settings. Please add it via the Developer Tools section."
         ),
         link: {
           url: `${address}/portal-settings/developer-tools/javascript-sdk`,
           label: t(
-            "settings.connection.link.docspace.developer-tools",
+            "docspace.link.developer-tools",
             "Developer Tools section"
           )
         }
@@ -116,12 +136,12 @@ export const ConnectionSettings: React.FC= () => {
   const onLoadComponentError = async () => {
     await sdk.execute(Command.SHOW_SNACKBAR, {
       message: t(
-        "settings.connection.saving.error.docspace.unreached",
-        "ONLYOFFICE DocSpace cannot be reached."
+        "docspace.error.unreached",
+        "ONLYOFFICE DocSpace cannot be reached"
       ),
     });
     setSaving(false);
-  }
+  };
 
   const stripTrailingSlash = (url: string) => {
     return url.endsWith( '/' )
@@ -159,7 +179,7 @@ export const ConnectionSettings: React.FC= () => {
             <div className="pl-5 pr-5 pb-2">
               <OnlyofficeInput
                 text={t("settings.connection.inputs.address", "DocSpace Service Address")}
-                valid={!!address}
+                valid={showValidationMessage ? !!address : true}
                 disabled={saving}
                 value={address}
                 onChange={(e) => setAddress(stripTrailingSlash(e.target.value.trim()))}
@@ -168,7 +188,7 @@ export const ConnectionSettings: React.FC= () => {
             <div className="pl-5 pr-5 pb-2">
               <OnlyofficeInput
                 text={t("settings.connection.inputs.login", "DocSpace Login")}
-                valid={!!login}
+                valid={showValidationMessage ? !!login : true}
                 disabled={saving}
                 value={login}
                 onChange={(e) => setLogin(e.target.value.trim())}
@@ -178,7 +198,7 @@ export const ConnectionSettings: React.FC= () => {
               <OnlyofficeInput
                 text={t("settings.connection.inputs.password", "DocSpace Password")}
                 type="password"
-                valid={!!password}
+                valid={showValidationMessage ? !!password : true}
                 disabled={saving}
                 value={password}
                 onChange={(e) => setPassword(e.target.value.trim())}
@@ -198,13 +218,17 @@ export const ConnectionSettings: React.FC= () => {
       {!loading && saving && address && (
         <div style={{ display: "none" }}>
           <DocSpace
-            id={DOCSPACE_SYSTEM_FRAME_ID}
             url={address}
-            mode="system"
-            events={{
-              onAppReady: onAppReady,
-              onAppError: onAppError
-            }}
+            config={
+              {
+                frameId: DOCSPACE_SYSTEM_FRAME_ID,
+                mode: "system",
+                events: {
+                  onAppReady: onAppReady,
+                  onAppError: onAppError
+                } as unknown
+              } as TFrameConfig
+            }
             onLoadComponentError={onLoadComponentError}
           />
         </div>
