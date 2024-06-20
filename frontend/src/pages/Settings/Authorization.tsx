@@ -19,38 +19,48 @@ import CommonError from "@assets/common-error.svg";
 const DOCSPACE_SYSTEM_FRAME_ID="docspace-system-frame"
 
 export const AuthorizationSetting: React.FC = () => {
-  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setdDeleting] = useState(false);
   const [showValidationMessage, setShowValidationMessage] = useState(false);
-  const [email, setEmail] = useState<string | undefined>(undefined);
-  const [password, setPassword] = useState<string | undefined>(undefined);
+  const [email, setEmail] = useState<string | undefined>("");
+  const [password, setPassword] = useState<string | undefined>("");
 
   const { t } = useTranslation();
   const { user, setUser, sdk } = useContext(AppContext);
 
   const handleLogin = async () => {
-    setShowValidationMessage(true);
     if (email && password) {
-      setLoading(true);
+      setSaving(true);
+    } else {
+      setShowValidationMessage(true);
     }
   };
 
   const handleLogout = async () => {
-      setLoading(true);
-      
-      deleteDocspaceAccount(sdk).then(() => {
-        if (user) {
-          setUser({...user, docspaceAccount: null});
-        }
-      })
-      .catch(async (e) => {
-        await sdk.execute(Command.SHOW_SNACKBAR, {
-          message: t(
-            "background.error.subtitle.common",
-            "Something went wrong. Please reload the app."
-          ),
-        });
-      })
-      setLoading(false);
+    setdDeleting(true);
+    deleteDocspaceAccount(sdk).then(async () => {
+      setEmail("");
+      setPassword("");
+      setShowValidationMessage(false);
+      if (user) {
+        setUser({...user, docspaceAccount: null});
+      }
+      await sdk.execute(Command.SHOW_SNACKBAR, {
+        message: t(
+          "settings.authorization.deleting.ok",
+          "ONLYOFFICE DocSpace authorization has been successfully deleted"
+        ),
+      });
+    })
+    .catch(async (e) => {
+      await sdk.execute(Command.SHOW_SNACKBAR, {
+        message: t(
+          "background.error.subtitle.common",
+          "Something went wrong. Please reload the app."
+        ),
+      });
+    })
+    .finally(() => setdDeleting(false));
   };
 
   const onAppReady = async () => {
@@ -67,7 +77,7 @@ export const AuthorizationSetting: React.FC = () => {
             "User authentication failed"
           ),
         });
-        setLoading(false);
+        setSaving(false);
       } else {
         postDocspaceAccount(sdk, email, passwordHash).then(async () => {
           if (user) {
@@ -89,7 +99,7 @@ export const AuthorizationSetting: React.FC = () => {
             ),
           });
         })
-        .finally(() => setLoading(false));
+        .finally(() => setSaving(false));
       }
     }
   };
@@ -102,7 +112,7 @@ export const AuthorizationSetting: React.FC = () => {
       ),
     });
     delete window.DocSpace;
-    setLoading(false);
+    setSaving(false);
   };
 
   const onLoadComponentError = async () => {
@@ -112,35 +122,12 @@ export const AuthorizationSetting: React.FC = () => {
         "ONLYOFFICE DocSpace cannot be reached"
       ),
     });
-    setLoading(false);
+    setSaving(false);
   };
 
   return (
     <>
-      {loading && user?.docspaceSettings.url && (
-        <>
-          <div className="h-full w-full flex justify-center items-center">
-            <OnlyofficeSpinner />
-          </div>
-          <div hidden>
-            <DocSpace
-              url={user?.docspaceSettings.url}
-              config={
-                {
-                  frameId: DOCSPACE_SYSTEM_FRAME_ID,
-                  mode: "system",
-                  events: {
-                    onAppReady: onAppReady,
-                    onAppError: onAppError
-                  } as unknown
-                } as TFrameConfig
-              }
-              onLoadComponentError={onLoadComponentError}
-            />
-          </div>
-        </>
-      )}
-      {!loading && (!user?.docspaceSettings || !user?.docspaceSettings.url) && (
+      {(!user?.docspaceSettings || !user?.docspaceSettings.url) && (
         <OnlyofficeBackgroundError
           Icon={<CommonError />}
           title={t("background.error.title", "Error")}
@@ -153,7 +140,7 @@ export const AuthorizationSetting: React.FC = () => {
           }
         />
       )}
-      {!loading && user?.docspaceSettings && user?.docspaceSettings.url && (
+      {user?.docspaceSettings && user?.docspaceSettings.url && (
         <>
           <div className="flex flex-col items-start pl-5 pr-5 pt-5 pb-3">
             <div className="pb-2">
@@ -178,6 +165,7 @@ export const AuthorizationSetting: React.FC = () => {
                 <OnlyofficeButton
                   text={t("button.logout", "Logout")}
                   primary
+                  disabled={deleting}
                   onClick={handleLogout}
                 />
               </div>
@@ -190,6 +178,7 @@ export const AuthorizationSetting: React.FC = () => {
                   text={t("settings.authorization.inputs.email", "Email")}
                   valid={showValidationMessage ? !!email : true}
                   value={email}
+                  disabled={saving}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
@@ -199,6 +188,7 @@ export const AuthorizationSetting: React.FC = () => {
                   valid={showValidationMessage ? !!password : true}
                   value={password}
                   type="password"
+                  disabled={saving}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
@@ -206,12 +196,31 @@ export const AuthorizationSetting: React.FC = () => {
                 <OnlyofficeButton
                   text={t("button.login", "Login")}
                   primary
+                  disabled={saving}
                   onClick={handleLogin}
                 />
               </div>
             </div>
           )}
         </>
+      )}
+      {saving && user?.docspaceSettings.url && (
+        <div hidden>
+        <DocSpace
+          url={user?.docspaceSettings.url}
+          config={
+            {
+              frameId: DOCSPACE_SYSTEM_FRAME_ID,
+              mode: "system",
+              events: {
+                onAppReady: onAppReady,
+                onAppError: onAppError
+              } as unknown
+            } as TFrameConfig
+          }
+          onLoadComponentError={onLoadComponentError}
+        />
+      </div>
       )}
     </>
   );
