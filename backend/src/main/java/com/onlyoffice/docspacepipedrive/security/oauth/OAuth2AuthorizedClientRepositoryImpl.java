@@ -87,12 +87,11 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
                 .refreshToken(refreshToken)
                 .build();
 
-        userService.create(clientId, user);
+        userService.put(clientId, user);
     }
 
     @Override
     public void removeAuthorizedClient(String clientRegistrationId, Authentication principal,
                                        HttpServletRequest request, HttpServletResponse response) {
-//        userService.delete(Long.valueOf(principalName)); //ToDo
     }
 }
