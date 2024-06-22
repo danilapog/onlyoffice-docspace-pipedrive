@@ -3,11 +3,13 @@ package com.onlyoffice.docspacepipedrive.configuration;
 import com.onlyoffice.docspacepipedrive.security.AuthenticationEntryPointImpl;
 import com.onlyoffice.docspacepipedrive.security.AuthenticationSuccessHandlerImpl;
 import com.onlyoffice.docspacepipedrive.security.jwt.JwtLoginAuthenticationFilter;
-import com.onlyoffice.docspacepipedrive.security.jwt.JwtLogoutAuthenticationFilter;
 import com.onlyoffice.docspacepipedrive.security.jwt.manager.JwtManager;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2LogoutFilter;
 import com.onlyoffice.docspacepipedrive.service.UserService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,9 +22,11 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import java.util.Arrays;
 
@@ -47,13 +51,12 @@ public class SecurityConfiguration {
     private final JwtManager jwtManager;
     private final UserService userService;
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
-
+    private final OAuth2LogoutFilter oAuth2LogoutFilter;
     private final AuthenticationSuccessHandlerImpl authenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         AuthenticationManager authenticationManager = (AuthenticationManager)http.getSharedObject(AuthenticationManager.class);
-
         AuthenticationFailureHandler authenticationFailureHandler = getAuthenticationFailureHandler();
 
         JwtLoginAuthenticationFilter jwtLoginAuthenticationFilter = createJwtLoginAuthenticationFilter(
@@ -63,17 +66,11 @@ public class SecurityConfiguration {
                 authenticationFailureHandler
         );
 
-        JwtLoginAuthenticationFilter jwtLogoutAuthenticationFilter = createJwtLogoutAuthenticationFilter(
-                authenticationManager,
-                userService,
-                jwtManager,
-                authenticationFailureHandler
-        );
-
         http
                 .authorizeHttpRequests(auth -> {
                     auth
-                            .anyRequest().authenticated();
+                            .requestMatchers("/api/**").authenticated()
+                            .anyRequest().permitAll();
                 })
 
                 // OAuth security configuration
@@ -94,7 +91,10 @@ public class SecurityConfiguration {
                         httpSecuritySessionManagementConfigurer
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
-                .addFilterBefore(jwtLogoutAuthenticationFilter, OAuth2LoginAuthenticationFilter.class)
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+                        httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint))
+                .addFilterAfter(new ForwardedHeaderFilter(), WebAsyncManagerIntegrationFilter.class)
+                .addFilterBefore(oAuth2LogoutFilter, OAuth2LoginAuthenticationFilter.class)
                 .addFilterAfter(jwtLoginAuthenticationFilter, OAuth2LoginAuthenticationFilter.class);
 
         return http.build();
@@ -127,7 +127,6 @@ public class SecurityConfiguration {
                 jwtManager
         );
 
-        jwtLoginAuthenticationFilter.setFilterProcessesUrl("/**");
         jwtLoginAuthenticationFilter.setSecretKey(jwtSecretKey);
         jwtLoginAuthenticationFilter.setOauthUserNameAttribute(oauthUserNameAttribute);
         jwtLoginAuthenticationFilter.setUserNameAttribute(jwtUserNameAttribute);
@@ -136,26 +135,6 @@ public class SecurityConfiguration {
         jwtLoginAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
 
         return jwtLoginAuthenticationFilter;
-    }
-
-    private JwtLogoutAuthenticationFilter createJwtLogoutAuthenticationFilter(AuthenticationManager authenticationManager,
-                                                                              UserService userService,
-                                                                              JwtManager jwtManager,
-                                                                              AuthenticationFailureHandler authenticationFailureHandler) {
-        JwtLogoutAuthenticationFilter jwtLogoutAuthenticationFilter = new JwtLogoutAuthenticationFilter(
-                authenticationManager,
-                userService,
-                jwtManager
-        );
-
-        jwtLogoutAuthenticationFilter.setFilterProcessesUrl("/login/oauth2/code/pipedrive", "DELETE");
-        jwtLogoutAuthenticationFilter.setSecretKey(jwtSecretKey);
-        jwtLogoutAuthenticationFilter.setUserNameAttribute(jwtUserNameAttribute);
-        jwtLogoutAuthenticationFilter.setAuthorizationHeader(jwtHeader);
-        jwtLogoutAuthenticationFilter.setAuthorizationPrefix(jwtPrefix);
-        jwtLogoutAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
-
-        return jwtLogoutAuthenticationFilter;
     }
 
     private AuthenticationFailureHandler getAuthenticationFailureHandler() {
