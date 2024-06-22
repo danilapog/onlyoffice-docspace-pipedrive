@@ -6,7 +6,6 @@ import com.onlyoffice.docspacepipedrive.entity.User;
 public interface UserService {
     User findById(Long id);
     User findByUserIdAndClientId(Long userId, Long clientId);
-    User create(Long clientId, User user);
-    User update(User user);
-    void delete(Long id);
+    User put(Long clientId, User user);
+    void deleteByUserIdAndClientId(Long userId, Long clientId);
 }

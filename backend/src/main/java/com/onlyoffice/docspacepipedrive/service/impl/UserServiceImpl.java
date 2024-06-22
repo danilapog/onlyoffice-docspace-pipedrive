@@ -29,31 +29,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User create(Long clientId, User user) {
-        Client client = clientService.findById(clientId);
+    public User put(Long clientId, User user) {
+        try {
+            User existedUser = findByUserIdAndClientId(user.getUserId(), clientId);
 
-        user.setClient(client);
+            if (user.getAccessToken() != null) {
+                existedUser.setAccessToken(user.getAccessToken());
+            }
 
-        return userRepository.save(user);
+            if (user.getRefreshToken() != null) {
+                existedUser.setRefreshToken(user.getRefreshToken());
+            }
+
+            return userRepository.save(existedUser);
+        } catch (UserNotFoundException e) {
+            Client client = clientService.findById(clientId);
+
+            user.setClient(client);
+
+            return userRepository.save(user);
+        }
     }
 
     @Override
-    public User update(User user) {
-        User existedUser = findById(user.getId());
-
-        if (user.getAccessToken() != null) {
-            existedUser.setAccessToken(user.getAccessToken());
-        }
-
-        if (user.getRefreshToken() != null) {
-            existedUser.setRefreshToken(user.getRefreshToken());
-        }
-
-        return userRepository.save(user);
-    }
-
-    @Override
-    public void delete(Long id) {
-        userRepository.deleteById(id);
+    public void deleteByUserIdAndClientId(Long userId, Long clientId) {
+        userRepository.delete(findByUserIdAndClientId(userId, clientId));
     }
 }
