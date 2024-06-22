@@ -98,15 +98,15 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
           subtitle={t(
             error?.response?.status === 401 ? "background.error.subtitle.token-expired" : "background.error.subtitle.common",
             error?.response?.status === 401
-              ? "Something went wrong. Please reinstall the app."
+              ? "Something went wrong. Please re-authorize the app."
               : "Something went wrong. Please reload the app."
           )}
-          button={t("button.reinstall", "Reinstall") || "Reinstall"}
+          button={t("button.reauthorize", "Re-authorize") || "Re-authorize"}
           onClick={
             error?.response?.status === 401
               ? () =>
                   window.open(
-                    `${getCurrentURL().url}settings/marketplace`,
+                    `${process.env.BACKEND_URL}/oauth2/authorization/pipedrive`,
                     "_blank"
                   )
               : undefined
