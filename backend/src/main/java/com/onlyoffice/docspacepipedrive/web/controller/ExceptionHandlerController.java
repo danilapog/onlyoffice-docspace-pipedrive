@@ -3,6 +3,7 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
+import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.web.dto.ErrorResponse;
@@ -45,6 +46,18 @@ public class ExceptionHandlerController {
                 .body(
                         new ErrorResponse(
                                 HttpStatus.FORBIDDEN.value(),
+                                e.getLocalizedMessage(),
+                                ErrorResponse.Provider.PIPEDRIVE
+                        )
+                );
+    }
+
+    @ExceptionHandler(PipedriveOAuth2AuthorizationException.class)
+    public ResponseEntity<ErrorResponse> pipedriveOAuth2AuthorizationException(PipedriveOAuth2AuthorizationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.UNAUTHORIZED.value(),
                                 e.getLocalizedMessage(),
                                 ErrorResponse.Provider.PIPEDRIVE
                         )

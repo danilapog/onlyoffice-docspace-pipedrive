@@ -3,10 +3,12 @@ package com.onlyoffice.docspacepipedrive.client.pipedrive;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveResponse;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
+import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -46,6 +48,9 @@ public class PipedriveClient {
                 .map(PipedriveResponse<PipedriveUser>::getData)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new PipedriveWebClientResponseException(e));
+                })
+                .onErrorResume(OAuth2AuthorizationException.class, e -> {
+                    return Mono.error(new PipedriveOAuth2AuthorizationException(e));
                 })
                 .block();
     }
