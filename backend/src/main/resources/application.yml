@@ -8,7 +8,7 @@ spring:
             client-id: 00d721245188575d
             client-secret: 42f2809571ae9e48f0b6397903e06b95731549b6
             authorization-grant-type: authorization_code
-            redirect-uri: "https://3812-95-79-121-86.ngrok-free.app/login/oauth2/code/{registrationId}"
+            redirect-uri: "https://bfd4-95-79-121-86.ngrok-free.app/login/oauth2/code/{registrationId}"
         provider:
           pipedrive:
             authorization-uri: https://oauth.pipedrive.com/oauth/authorize
@@ -19,9 +19,10 @@ spring:
             nested-client-id-attribute: company_id
             nested-client-url-attribute: api_domain
     jwt:
-      user-name-attribute: userId
       header: Authorization
       prefix: Bearer
+      client-name-attribute: companyId
+      user-name-attribute: userId
   jpa:
     generate-ddl: true
   datasource:

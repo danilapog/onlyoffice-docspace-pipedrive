@@ -44,8 +44,8 @@ public class OAuth2LogoutFilter extends GenericFilterBean {
                               final UserService userService, final AuthenticationEntryPoint authenticationEntryPoint) {
         this.clientRegistrationRepository = clientRegistrationRepository;
         this.userService = userService;
-
         this.failureHandler = new AuthenticationEntryPointFailureHandler(authenticationEntryPoint);
+
         logoutRequestMatcher = new AntPathRequestMatcher("/login/oauth2/code/{registrationId}", "DELETE");
     }
 
