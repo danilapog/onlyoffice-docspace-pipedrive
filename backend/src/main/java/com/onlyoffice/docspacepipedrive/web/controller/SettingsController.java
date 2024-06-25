@@ -1,19 +1,15 @@
 package com.onlyoffice.docspacepipedrive.web.controller;
 
-import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
-import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
 import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
-import com.onlyoffice.docspacepipedrive.service.DocspaceTokenService;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
+import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
-import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsSaveRequest;
 import com.onlyoffice.docspacepipedrive.web.mapper.SettingsMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SettingsController {
     private final SettingsService settingsService;
     private final SettingsMapper settingsMapper;
-    private final DocspaceClient docspaceClient;
     private final PipedriveClient pipedriveClient;
-    private final DocspaceTokenService docspaceTokenService;
 
     @GetMapping
     public ResponseEntity<SettingsResponse> get() {
@@ -55,7 +49,7 @@ public class SettingsController {
     }
 
     @PostMapping
-    public ResponseEntity<SettingsResponse> save(@RequestBody SettingsSaveRequest request) {
+    public ResponseEntity<SettingsResponse> save(@RequestBody SettingsRequest request) {
         User currentUser = SecurityUtils.getCurrentUser();
 
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
@@ -68,23 +62,13 @@ public class SettingsController {
             throw new PipedriveAccessDeniedException(currentUser.getUserId());
         }
 
-        Settings settings = settingsMapper.settingsSaveRequestToSettings(request);
-        settings.setClient(currentUser.getClient());
-
-        DocspaceUser docspaceUser = docspaceClient.getUser(settings.getUserName(), settings);
-
-        if (!docspaceUser.getIsAdmin()) {
-            docspaceTokenService.deleteByClientId(currentUser.getClient().getId());
-            throw new DocspaceAccessDeniedException(settings.getUserName());
-        }
-
-        settings = settingsService.put(
+        Settings savedSettings = settingsService.put(
                 currentUser.getClient().getId(),
-                settingsMapper.settingsSaveRequestToSettings(request)
+                settingsMapper.settingsRequestToSettings(request)
         );
 
         return ResponseEntity.ok(
-                settingsMapper.settingsToSettingsResponse(settings)
+                settingsMapper.settingsToSettingsResponse(savedSettings)
         );
     }
 }

@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-public class SettingsSaveRequest {
+public class SettingsRequest {
     private String url;
-    private String userName;
-    private String passwordHash;
 }
