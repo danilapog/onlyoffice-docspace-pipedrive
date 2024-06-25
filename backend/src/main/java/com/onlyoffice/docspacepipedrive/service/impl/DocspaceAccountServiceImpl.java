@@ -2,6 +2,7 @@ package com.onlyoffice.docspacepipedrive.service.impl;
 
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 import com.onlyoffice.docspacepipedrive.repository.DocspaceAccountRepository;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
@@ -16,14 +17,14 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     private final DocspaceAccountRepository docspaceAccountRepository;
 
     @Override
-    public DocspaceAccount findByUserId(Long userId) {
-        return docspaceAccountRepository.findByUserId(userId)
+    public DocspaceAccount findById(Long id) {
+        return docspaceAccountRepository.findById(id)
                 .orElse(null);
     }
 
     @Override
-    public DocspaceAccount save(Long userId, DocspaceAccount docspaceAccount) {
-        User user = userService.findById(userId);
+    public DocspaceAccount save(Long id, DocspaceAccount docspaceAccount) {
+        User user = userService.findById(id);
 
         docspaceAccount.setUser(user);
 
@@ -31,9 +32,20 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     }
 
     @Override
-    public void deleteByUserId(Long userId) {
-        DocspaceAccount docspaceAccount = findByUserId(userId);
+    public DocspaceToken saveToken(Long id, String value) {
+        DocspaceAccount docspaceAccount = findById(id);
 
-        docspaceAccountRepository.delete(docspaceAccount);
+        DocspaceToken docspaceToken = DocspaceToken.builder()
+                .value(value)
+                .build();
+
+        docspaceAccount.setDocspaceToken(docspaceToken);
+
+        return docspaceAccountRepository.save(docspaceAccount).getDocspaceToken();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        docspaceAccountRepository.deleteById(id);
     }
 }

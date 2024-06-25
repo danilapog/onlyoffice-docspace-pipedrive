@@ -9,6 +9,5 @@ import java.util.UUID;
 
 
 @Repository
-public interface DocspaceAccountRepository extends JpaRepository<DocspaceAccount, UUID> {
-    Optional<DocspaceAccount> findByUserId(Long userId);
+public interface DocspaceAccountRepository extends JpaRepository<DocspaceAccount, Long> {
 }

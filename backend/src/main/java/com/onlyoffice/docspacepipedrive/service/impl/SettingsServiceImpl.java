@@ -34,14 +34,6 @@ public class SettingsServiceImpl implements SettingsService {
                 existedSetting.setUrl(settings.getUrl());
             }
 
-            if (StringUtils.hasText(settings.getUserName())) {
-                existedSetting.setUserName(settings.getUserName());
-            }
-
-            if (StringUtils.hasText(settings.getPasswordHash())) {
-                existedSetting.setPasswordHash(settings.getPasswordHash());
-            }
-
             return settingsRepository.save(existedSetting);
         } catch (SettingsNotFoundException e) {
             settings.setClient(client);

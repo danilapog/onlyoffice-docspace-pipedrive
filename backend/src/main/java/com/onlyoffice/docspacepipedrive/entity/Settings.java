@@ -25,8 +25,6 @@ public class Settings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String url;
-    private String userName;
-    private String passwordHash;
     @OneToOne
     @JoinColumn(name = "client_id")
     @ToString.Exclude

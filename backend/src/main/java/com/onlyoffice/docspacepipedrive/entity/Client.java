@@ -33,9 +33,6 @@ public class Client {
     @OneToOne(mappedBy = "client", cascade = CascadeType.REMOVE)
     @ToString.Exclude
     private Settings settings;
-    @OneToOne(mappedBy = "client", cascade = CascadeType.REMOVE)
-    @ToString.Exclude
-    private DocspaceToken docspaceToken;
     @OneToMany(mappedBy = "client", cascade = CascadeType.REMOVE)
     @ToString.Exclude
     @Builder.Default
@@ -44,4 +41,10 @@ public class Client {
     @ToString.Exclude
     @Builder.Default
     private List<Room> rooms = new ArrayList<>();
+
+    public User getSystemUser() {
+        return this.users.stream()
+                .filter(user -> user.getSystem())
+                .findFirst().orElse(null);
+    }
 }
