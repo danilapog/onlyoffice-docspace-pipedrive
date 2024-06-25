@@ -64,7 +64,7 @@ public class UserController {
     }
 
     @DeleteMapping("/docspace-account")
-    public ResponseEntity<Void> postDocspaceAccount() {
+    public ResponseEntity<Void> deleteDocspaceAccount() {
         User currentUser = SecurityUtils.getCurrentUser();
 
         docspaceAccountService.deleteByUserId(currentUser.getId());
