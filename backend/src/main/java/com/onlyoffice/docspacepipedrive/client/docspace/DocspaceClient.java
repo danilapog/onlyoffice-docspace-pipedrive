@@ -1,11 +1,14 @@
 package com.onlyoffice.docspacepipedrive.client.docspace;
 
+import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceAuthentication;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceResponse;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceUser;
-import com.onlyoffice.docspacepipedrive.entity.Settings;
+import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
+import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -24,11 +27,31 @@ import java.util.UUID;
 public class DocspaceClient {
     private final WebClient docspaceWebClient;
 
+    public DocspaceAuthentication login(String userName, String passwordHash) {
+        User user = SecurityUtils.getCurrentUser();
+
+        Map<String, String> map = new HashMap<>();
+
+        map.put("userName", userName);
+        map.put("passwordHash", passwordHash);
+
+        return WebClient.builder().build().post()
+                .uri(user.getClient().getSettings().getUrl() + "/api/2.0/authentication")
+                .bodyValue(map)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceAuthentication>>() {})
+                .map(DocspaceResponse<DocspaceAuthentication>::getResponse)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new DocspaceWebClientResponseException(e));
+                })
+                .block();
+    }
+
     public DocspaceUser getUser(String email) {
         return getUser(email, null);
     }
 
-    public DocspaceUser getUser(String email, Settings settings) {
+    public DocspaceUser getUser(String email, DocspaceToken docspaceToken) {
         return docspaceWebClient.get()
                 .uri(uriBuilder -> {
                     return uriBuilder.path("/api/2.0/people/email")
@@ -36,8 +59,8 @@ public class DocspaceClient {
                             .build();
                 })
                 .attributes(attributes -> {
-                    if (settings != null) {
-                        attributes.put(Settings.class.getName(), settings);
+                    if (docspaceToken != null) {
+                        attributes.put(DocspaceToken.class.getName(), docspaceToken);
                     }
                 })
                 .retrieve()
