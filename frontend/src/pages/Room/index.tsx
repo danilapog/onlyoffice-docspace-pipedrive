@@ -74,10 +74,20 @@ export const RoomPage: React.FC = () => {
   } as TFrameConfig);
 
   const { t } = useTranslation();
-  const { user, sdk, setError } = useContext(AppContext);
+  const { user, appStatus, sdk, setError } = useContext(AppContext);
   const { parameters } = getCurrentURL();
 
   useEffect(() => {
+    if(!appStatus?.isActive) {
+      setIError({
+        Icon: <CommonError />,
+        title: t("background.error.title", "Error"),
+        message: t("background.error.subtitle.plugin.not-active", "ONLYOFFICE DocSpace App is not available. Your administrator should be installed and configured this plugin."),
+      });
+      setLoading(false);
+      return;
+    }
+
     if(!user?.docspaceSettings || !user?.docspaceSettings.url) {
       setIError({
         Icon: <CommonError />,

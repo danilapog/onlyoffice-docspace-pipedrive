@@ -5,6 +5,7 @@
   "background.error.subtitle.token-expired": "Something went wrong. Please re-authorize the app.",
   "background.error.subtitle.docspace-authorization": "Can not get authorize in ONLYOFFICE DocSpace. Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings.",
   "background.error.subtitle.docspace-connection": "You are not connected to ONLYOFFICE DocSpace portal.",
+  "background.error.subtitle.plugin.not-active": "ONLYOFFICE DocSpace App is not available. Your administrator should be installed and configured this plugin.",
   "background.error.hint.admin.docspace-connection": "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
   "background.error.hint.docspace-connection": "Please contact the administrator.",
   "button.login": "Login",

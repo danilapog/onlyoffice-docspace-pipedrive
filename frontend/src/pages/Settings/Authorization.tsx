@@ -24,10 +24,11 @@ export const AuthorizationSetting: React.FC = () => {
   const [showValidationMessage, setShowValidationMessage] = useState(false);
   const [email, setEmail] = useState<string | undefined>("");
   const [password, setPassword] = useState<string | undefined>("");
-  const [system, setSystem] = useState<boolean>(false);
 
   const { t } = useTranslation();
-  const { user, setUser, sdk } = useContext(AppContext);
+  const { user, appStatus, setUser, sdk } = useContext(AppContext);
+
+  const [system, setSystem] = useState<boolean>(!appStatus?.isActive);
 
   const handleLogin = async () => {
     if (email && password) {
@@ -214,7 +215,7 @@ export const AuthorizationSetting: React.FC = () => {
                   <OnlyofficeCheckbox
                     checked={system}
                     text={t("settings.authorization.inputs.system", "System User")}
-                    disabled={false}
+                    disabled={!appStatus?.isActive}
                     onChange={(e) => setSystem(!system)}
                   />
                 </div>
