@@ -20,7 +20,6 @@ import React, { useState, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
 import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
-import axios from "axios";
 
 import { OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
@@ -38,16 +37,13 @@ export const ConnectionSettings: React.FC= () => {
   const [saving, setSaving] = useState(false);
   const [showValidationMessage, setShowValidationMessage] = useState(false);
   const [address, setAddress] = useState<string | undefined>("");
-  const [login, setLogin] = useState<string | undefined>("");
-  const [password, setPassword] = useState<string | undefined>("");
 
   const { t } = useTranslation();
-  const { sdk, setError } = useContext(AppContext);
+  const { user, setUser, sdk, setError } = useContext(AppContext);
 
   useEffect(() => {
     getSettings(sdk).then(response => {
       setAddress(response.url || "");
-      setLogin(response.userName || "");
       setLoading(false);
     }).catch((e) => {
       setError(e);
@@ -55,7 +51,7 @@ export const ConnectionSettings: React.FC= () => {
   }, []);
 
   const handleSettings = async () => {
-    if (address && login && password) {
+    if (address) {
       setSaving(true);
     } else {
       setShowValidationMessage(true);
@@ -63,11 +59,11 @@ export const ConnectionSettings: React.FC= () => {
   };
 
   const onAppReady = async () => {
-    if (address && login && password) {
-      const hashSettings = await window.DocSpace.SDK.frames[DOCSPACE_SYSTEM_FRAME_ID].getHashSettings();
-      const passwordHash = await window.DocSpace.SDK.frames[DOCSPACE_SYSTEM_FRAME_ID].createHash(password, hashSettings);
-
-      postSettings(sdk, address, login, passwordHash).then(async () => {
+    if (address) {
+      postSettings(sdk, address).then(async () => {
+        if (user) {
+          setUser({...user, docspaceSettings: {url: address}});
+        }
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
             "settings.connection.saving.ok",
@@ -76,27 +72,6 @@ export const ConnectionSettings: React.FC= () => {
         });
       })
       .catch(async (e) => {
-        if (axios.isAxiosError(e)) {
-          if (e.response?.status === 403 && e.response?.data?.provider === "DOCSPACE") {
-            await sdk.execute(Command.SHOW_SNACKBAR, {
-              message: t(
-                "settings.connection.saving.error.forbidden",
-                "The specified user is not a ONLYOFFICE DocSpace administrator"
-              ),
-            });
-            return;
-          }
-          if (e.response?.status === 401 && e.response?.data?.provider === "DOCSPACE") {
-            await sdk.execute(Command.SHOW_SNACKBAR, {
-              message: t(
-                "docspace.error.login",
-                "User authentication failed"
-              ),
-            });
-            return;
-          }
-        }
-
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
             "settings.connection.saving.error",
@@ -183,25 +158,6 @@ export const ConnectionSettings: React.FC= () => {
                 disabled={saving}
                 value={address}
                 onChange={(e) => setAddress(stripTrailingSlash(e.target.value.trim()))}
-              />
-            </div>
-            <div className="pl-5 pr-5 pb-2">
-              <OnlyofficeInput
-                text={t("settings.connection.inputs.login", "DocSpace Login")}
-                valid={showValidationMessage ? !!login : true}
-                disabled={saving}
-                value={login}
-                onChange={(e) => setLogin(e.target.value.trim())}
-              />
-            </div>
-            <div className="pl-5 pr-5">
-              <OnlyofficeInput
-                text={t("settings.connection.inputs.password", "DocSpace Password")}
-                type="password"
-                valid={showValidationMessage ? !!password : true}
-                disabled={saving}
-                value={password}
-                onChange={(e) => setPassword(e.target.value.trim())}
               />
             </div>
             <div className="flex justify-start items-center mt-4 ml-5">

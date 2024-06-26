@@ -48,9 +48,7 @@ export const getSettings = async (sdk: AppExtensionsSDK) => {
 
 export const postSettings = async (
   sdk: AppExtensionsSDK,
-  url: string,
-  userName: string,
-  passwordHash: string
+  url: string
 ) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
@@ -67,10 +65,8 @@ export const postSettings = async (
       "Authorization": "Bearer " + pctx.token,
     },
     data: {
-      url: url,
-      userName: userName,
-      passwordHash: passwordHash,
+      url: url
     },
-    timeout: 15000,
+    timeout: 10000,
   });
 };
