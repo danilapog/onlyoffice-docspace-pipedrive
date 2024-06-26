@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
             if (user.getRefreshToken() != null) {
                 existedUser.setRefreshToken(user.getRefreshToken());
             }
+
             if (user.getSystem() != null) {
                 existedUser.setSystem(user.getSystem());
             }
