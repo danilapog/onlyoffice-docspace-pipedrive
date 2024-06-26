@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-public class DocspaceAccountSaveRequest {
+public class DocspaceAccountRequest {
     private String userName;
     private String passwordHash;
 }
