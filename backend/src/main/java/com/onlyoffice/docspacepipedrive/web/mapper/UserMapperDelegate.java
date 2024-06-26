@@ -16,9 +16,10 @@ public abstract class UserMapperDelegate implements UserMapper {
         userResponse.setId(user.getUserId());
         userResponse.setSystem(user.getSystem());
         userResponse.setName(pipedriveUser.getName());
-        userResponse.setIsAdmin(pipedriveUser.getIsAdmin());
+        userResponse.setIsAdmin(pipedriveUser.getAccess().stream()
+                .filter(access -> access.getApp().equals("sales") && access.getAdmin())
+                .toList().size() > 0);
         userResponse.setLanguage(pipedriveUser.getLanguage());
-        userResponse.setAccess(pipedriveUser.getAccess());
 
         if (user.getDocspaceAccount() != null && docspaceUser != null) {
             DocspaceAccountResponse docspaceAccountResponse = new DocspaceAccountResponse(

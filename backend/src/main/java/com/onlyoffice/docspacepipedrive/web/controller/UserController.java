@@ -61,9 +61,8 @@ public class UserController {
         DocspaceAccount docspaceAccount = new DocspaceAccount();
         if (request.getSystem()) {
             PipedriveUser pipedriveUser = pipedriveClient.getUser();
-            if (!pipedriveUser.getIsAdmin()
-                    || pipedriveUser.getAccess().stream()
-                    .filter(access -> access.getApp().equals("global") && access.getAdmin())
+            if (pipedriveUser.getAccess().stream()
+                    .filter(access -> access.getApp().equals("sales") && access.getAdmin())
                     .toList().size() == 0
             ) {
                 throw new PipedriveAccessDeniedException(currentUser.getUserId());
