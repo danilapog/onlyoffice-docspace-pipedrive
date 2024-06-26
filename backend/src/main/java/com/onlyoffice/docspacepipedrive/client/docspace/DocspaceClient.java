@@ -124,30 +124,22 @@ public class DocspaceClient {
                 .block();
     }
 
-    public DocspaceGroup addMembersToGroup(UUID groupId, List<UUID> members) {
+    public DocspaceGroup updateGroup(UUID groupId, String groupName, UUID groupManager, List<UUID> membersToAdd,
+                                     List<UUID> membersToRemove) {
         Map<String, Object> map = new HashMap<>();
 
-        map.put("membersToAdd", members);
-
-        return docspaceWebClient.put()
-                .uri( uriBuilder -> {
-                    return uriBuilder.path("/api/2.0/group/{groupId}")
-                            .build(groupId);
-                })
-                .bodyValue(map)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceGroup>>() {})
-                .map(DocspaceResponse<DocspaceGroup>::getResponse)
-                .onErrorResume(WebClientResponseException.class, e -> {
-                    return Mono.error(new DocspaceWebClientResponseException(e));
-                })
-                .block();
-    }
-
-    public DocspaceGroup removeMembersFromGroup(UUID groupId, List<UUID> members) {
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("membersToRemove", members);
+        if (groupId != null) {
+            map.put("groupName", groupName);
+        }
+        if (groupManager != null) {
+            map.put("groupManager", groupManager);
+        }
+        if (membersToAdd != null) {
+            map.put("membersToAdd", membersToAdd);
+        }
+        if (membersToRemove != null) {
+            map.put("membersToRemove", membersToRemove);
+        }
 
         return docspaceWebClient.put()
                 .uri( uriBuilder -> {
