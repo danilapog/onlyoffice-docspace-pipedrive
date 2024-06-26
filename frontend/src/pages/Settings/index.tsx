@@ -42,7 +42,7 @@ export const SettingsPage: React.FC = () => {
     {id: "authorization", title: t("settings.authorization.menu-item", "Authorization"), available: true},
   ];
 
-  if (!(user?.is_admin && user.access.find((a) => a.app === "global" && a.admin))) {
+  if (!user?.isAdmin) {
     sections[0].available = false;
   }
 
@@ -52,14 +52,14 @@ export const SettingsPage: React.FC = () => {
 
   return (
     <>
-      {!appStatus?.isActive && !(user?.is_admin && user.access.find((a) => a.app === "global" && a.admin)) && (
+      {!appStatus?.isActive && !user?.isAdmin && (
         <OnlyofficeBackgroundError
           Icon={<CommonError className="mb-5" />}
           title={t("background.error.title.common",  "Error")}
           subtitle={t("background.error.subtitle.plugin.not-active", "ONLYOFFICE DocSpace App is not available. Your administrator should be installed and configured this plugin.")}
         />
       )}
-      {!(!appStatus?.isActive && !(user?.is_admin && user.access.find((a) => a.app === "global" && a.admin))) && (
+      {!(!appStatus?.isActive && !user?.isAdmin) && (
         <div className="w-screen h-screen">
           <div className="flex flex-row">
             <div className="basis-1/5 border-r-2 p-1">

@@ -21,19 +21,13 @@ export type UserResponse = {
   id: string;
   name: string;
   system: boolean;
-  is_admin: boolean;
+  isAdmin: boolean;
   language: {
     country_code: string;
     language_code: string;
   }
-  access: Access[];
   docspaceAccount: DocspaceAccount | null;
   docspaceSettings: DocspaceSettings;
-};
-
-export type Access = {
-  app: string;
-  admin: boolean;
 };
 
 export type DocspaceAccount = {

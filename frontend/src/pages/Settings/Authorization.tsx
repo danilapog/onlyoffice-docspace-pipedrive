@@ -145,7 +145,7 @@ export const AuthorizationSetting: React.FC = () => {
           title={t("background.error.title", "Error")}
           subtitle={
               `${t("background.error.subtitle.docspace-connection", "You are not connected to ONLYOFFICE DocSpace portal.")} 
-                ${(user?.is_admin && user.access.find((a) => a.app === "global" && a.admin))
+                ${user?.isAdmin
                   ? t("background.error.hint.admin.docspace-connection", "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.")
                   : t("background.error.hint.docspace-connection", "Please contact the administrator.")
                 }`
@@ -210,7 +210,7 @@ export const AuthorizationSetting: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              {user?.is_admin && user.access.find((a) => a.app === "global" && a.admin) && (
+              {user?.isAdmin && (
                 <div className="pl-5 pr-5">
                   <OnlyofficeCheckbox
                     checked={system}

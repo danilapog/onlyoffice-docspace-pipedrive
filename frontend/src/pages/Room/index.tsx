@@ -93,12 +93,12 @@ export const RoomPage: React.FC = () => {
         Icon: <CommonError />,
         title: t("background.error.title", "Error"),
         message: `${t("background.error.subtitle.docspace-connection", "You are not connected to ONLYOFFICE DocSpace portal.")} 
-                  ${(user?.is_admin && user.access.find((a) => a.app === "global" && a.admin))
+                  ${user?.isAdmin
                     ? t("background.error.hint.admin.docspace-connection", "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.")
                     : t("background.error.hint.docspace-connection", "Please contact the administrator.")
                   }`,
         button: t("button.settings", "Settings") || "Settings",
-        onClick: user?.is_admin && user.access.find((a) => a.app === "global" && a.admin)
+        onClick: user?.isAdmin
               ? async () => await sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS})
               : undefined
       });
@@ -152,12 +152,12 @@ export const RoomPage: React.FC = () => {
       Icon: <UnreachableError />,
       title: t("background.error.title", "Error"),
       message: `${t("docspace.error.unreached", "ONLYOFFICE DocSpace cannot be reached")}. 
-                  ${(user?.is_admin && user.access.find((a) => a.app === "global" && a.admin))
+                  ${(user?.isAdmin)
                     ? t("background.error.hint.admin.docspace-connection", "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.")
                     : t("background.error.hint.docspace-connection", "Please contact the administrator.")
                   }`,
       button: t("button.settings", "Settings") || "Settings",
-      onClick: user?.is_admin && user.access.find((a) => a.app === "global" && a.admin)
+      onClick: user?.isAdmin
         ? async () => await sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS})
         : undefined
     });
