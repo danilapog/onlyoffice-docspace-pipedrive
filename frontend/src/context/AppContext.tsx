@@ -27,9 +27,10 @@ import { OnlyofficeSpinner } from "@components/spinner";
 import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 
 import { getUser } from "@services/user";
-import { getCurrentURL } from "@utils/url";
+import { getAppStatus } from "@services/appStatus";
 
 import { UserResponse } from "src/types/user";
+import { AppStatusResponse } from "src/types/appStatus";
 
 import CommonError from "@assets/common-error.svg";
 import TokenError from "@assets/token-error.svg";
@@ -41,8 +42,10 @@ type AppContextProps = {
 
 export interface IAppContext {
   sdk: AppExtensionsSDK;
-  user: UserResponse | undefined,
+  user: UserResponse | undefined;
   setUser: (value: UserResponse) => void;
+  appStatus: AppStatusResponse | undefined;
+  setAppStatus: (value: AppStatusResponse) => void;
   error: AxiosError | undefined;
   setError: (value: AxiosError) => void;
 }
@@ -52,31 +55,31 @@ export const AppContext = React.createContext<IAppContext>({} as IAppContext);
 export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const [sdk, setSDK] = useState<AppExtensionsSDK>();
   const [user, setUser] = useState<UserResponse>();
+  const [appStatus, setAppStatus] = useState<AppStatusResponse>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>();
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    try {
-      new AppExtensionsSDK()
-        .initialize()
-        .then((s) => {
-          setSDK(s);
-          getUser(s).then(async (user) => {
-            await i18next.changeLanguage(`${user.language.language_code}-${user.language.country_code}`);
+    new AppExtensionsSDK()
+      .initialize()
+      .then(async (s) => {
+        setSDK(s);
+        try {
+          const user = await getUser(s);
+          const appStatus = await getAppStatus(s);  
 
-            setUser(user);
-          }).catch((e) => {
-            setError(e);
-          }).finally(()=>{
-            setLoading(false);
-          })
-        })
-        .catch((e) => console.error(e));
-    } catch (e) {
-      console.error(e);
-    }
+          await i18next.changeLanguage(`${user.language.language_code}-${user.language.country_code}`);
+          setUser(user);
+          setAppStatus(appStatus);
+        } catch (e) {
+          setError(e);
+        } finally {
+          setLoading(false);
+        }
+      })
+      .catch((e) => console.error(e));
   }, []);
 
   return(
@@ -114,7 +117,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         />
       )}
       {!loading && !error && sdk &&(
-        <AppContext.Provider value={{sdk, user, setUser, error, setError}}>{children}</AppContext.Provider>
+        <AppContext.Provider value={{sdk, user, setUser, appStatus, setAppStatus, error, setError}}>{children}</AppContext.Provider>
       )}
     </>
   );
