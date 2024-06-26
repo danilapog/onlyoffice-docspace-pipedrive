@@ -6,15 +6,15 @@ import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
 import { OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
-import { OnlyofficeSpinner } from "@components/spinner";
 import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 
 import { AppContext } from "@context/AppContext";
 
-import { postDocspaceAccount, deleteDocspaceAccount } from "@services/user";
+import { postUser, deleteDocspaceAccount } from "@services/user";
 
 import Authorized from "@assets/authorized.svg"
 import CommonError from "@assets/common-error.svg";
+import { OnlyofficeCheckbox } from "@components/checkbox";
 
 const DOCSPACE_SYSTEM_FRAME_ID="docspace-system-frame"
 
@@ -24,6 +24,7 @@ export const AuthorizationSetting: React.FC = () => {
   const [showValidationMessage, setShowValidationMessage] = useState(false);
   const [email, setEmail] = useState<string | undefined>("");
   const [password, setPassword] = useState<string | undefined>("");
+  const [system, setSystem] = useState<boolean>(false);
 
   const { t } = useTranslation();
   const { user, setUser, sdk } = useContext(AppContext);
@@ -43,7 +44,7 @@ export const AuthorizationSetting: React.FC = () => {
       setPassword("");
       setShowValidationMessage(false);
       if (user) {
-        setUser({...user, docspaceAccount: null});
+        setUser({...user, docspaceAccount: null, system: false});
       }
       await sdk.execute(Command.SHOW_SNACKBAR, {
         message: t(
@@ -79,9 +80,9 @@ export const AuthorizationSetting: React.FC = () => {
         });
         setSaving(false);
       } else {
-        postDocspaceAccount(sdk, email, passwordHash).then(async () => {
+        postUser(sdk, email, passwordHash, system).then(async () => {
           if (user) {
-            setUser({...user, docspaceAccount: {userName: email, passwordHash: ""}});
+            setUser({...user, docspaceAccount: {userName: email, passwordHash: ""}, system: system});
           }
 
           await sdk.execute(Command.SHOW_SNACKBAR, {
@@ -92,6 +93,16 @@ export const AuthorizationSetting: React.FC = () => {
           });
         })
         .catch(async (e)=> {
+          if (e.response?.status === 403 && e.response?.data?.provider === "DOCSPACE") {
+            await sdk.execute(Command.SHOW_SNACKBAR, {
+              message: t(
+                "settings.connection.saving.error.forbidden",
+                "The specified user is not a ONLYOFFICE DocSpace administrator"
+              ),
+            });
+            return;
+          }
+
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "settings.authorization.saving.error",
@@ -159,6 +170,12 @@ export const AuthorizationSetting: React.FC = () => {
                   className="pl-3"
                 >
                   {t("settings.authorization.status.authorized", "You have successfully logged in to your ONLYOFFICE DocSpace account")}
+                  {user.system && (
+                    <>
+                      <br/>
+                      {t("settings.authorization.status.system", "Current user is System Admin")}
+                    </>
+                  )}
                 </span>
               </div>
               <div className="flex justify-start items-center mt-4 ml-5">
@@ -182,7 +199,7 @@ export const AuthorizationSetting: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div className="pl-5 pr-5">
+              <div className="pl-5 pr-5 pb-2">
                 <OnlyofficeInput
                   text={t("settings.authorization.inputs.password", "Password")}
                   valid={showValidationMessage ? !!password : true}
@@ -192,6 +209,16 @@ export const AuthorizationSetting: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
+              {user?.is_admin && user.access.find((a) => a.app === "global" && a.admin) && (
+                <div className="pl-5 pr-5">
+                  <OnlyofficeCheckbox
+                    checked={system}
+                    text={t("settings.authorization.inputs.system", "System User")}
+                    disabled={false}
+                    onChange={(e) => setSystem(!system)}
+                  />
+                </div>
+              )}
               <div className="flex justify-start items-center mt-4 ml-5">
                 <OnlyofficeButton
                   text={t("button.login", "Login")}

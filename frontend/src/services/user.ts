@@ -46,10 +46,11 @@ export const getUser = async (sdk: AppExtensionsSDK) => {
   return response.data;
 };
 
-export const postDocspaceAccount = async (
+export const postUser = async (
   sdk: AppExtensionsSDK,
   userName: string,
-  passwordHash: string
+  passwordHash: string,
+  system: boolean
 ) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
@@ -60,14 +61,17 @@ export const postDocspaceAccount = async (
 
   await client({
     method: "POST",
-    url: `/api/v1/user/docspace-account`,
+    url: `/api/v1/user`,
     headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + pctx.token,
     },
     data: {
-      userName: userName,
-      passwordHash: passwordHash,
+      system: system,
+      docspaceAccount: {
+        userName: userName,
+        passwordHash: passwordHash,
+      }
     },
     timeout: 10000,
   });
