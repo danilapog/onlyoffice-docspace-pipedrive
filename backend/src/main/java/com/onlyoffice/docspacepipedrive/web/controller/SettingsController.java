@@ -54,11 +54,7 @@ public class SettingsController {
 
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
 
-        if (!pipedriveUser.getIsAdmin()
-            || pipedriveUser.getAccess().stream()
-                .filter(access -> access.getApp().equals("global") && access.getAdmin())
-                .toList().size() == 0
-        ) {
+        if (!pipedriveUser.isSalesAdmin()) {
             throw new PipedriveAccessDeniedException(currentUser.getUserId());
         }
 
