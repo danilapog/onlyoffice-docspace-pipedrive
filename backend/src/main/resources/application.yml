@@ -5,10 +5,10 @@ spring:
         registration:
           pipedrive:
             provider: pipedrive
-            client-id: 00d721245188575d
-            client-secret: 42f2809571ae9e48f0b6397903e06b95731549b6
+            client-id: ${PIPEDRIVE_CLIENT_ID}
+            client-secret: ${PIPEDRIVE_CLIENT_SECRET}
             authorization-grant-type: authorization_code
-            redirect-uri: "https://bfd4-95-79-121-86.ngrok-free.app/login/oauth2/code/{registrationId}"
+            redirect-uri: "https://3974-95-79-121-86.ngrok-free.app/login/oauth2/code/{registrationId}"
         provider:
           pipedrive:
             authorization-uri: https://oauth.pipedrive.com/oauth/authorize
