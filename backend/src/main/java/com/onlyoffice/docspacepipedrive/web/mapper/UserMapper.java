@@ -16,7 +16,6 @@ import org.mapstruct.ReportingPolicy;
 public interface UserMapper {
     @Mappings({
         @Mapping(target = "id", source = "user.id"),
-        @Mapping(target = "isAdmin", source = "pipedriveUser.isAdmin")
     })
     UserResponse userToUserResponse(User user, PipedriveUser pipedriveUser, DocspaceUser docspaceUser);
 }
