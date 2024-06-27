@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +41,14 @@ public class SettingsServiceImpl implements SettingsService {
             settings.setClient(client);
             return settingsRepository.save(settings);
         }
+    }
+
+    @Override
+    public Settings saveSharedGroup(Long clientId, UUID groupId) {
+        Settings existedSetting = findByClientId(clientId);
+
+        existedSetting.setSharedGroupId(groupId);
+
+        return settingsRepository.save(existedSetting);
     }
 }

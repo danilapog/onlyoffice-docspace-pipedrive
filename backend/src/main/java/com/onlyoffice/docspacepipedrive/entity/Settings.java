@@ -13,6 +13,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.UUID;
+
 
 @Builder
 @Data
@@ -25,6 +27,7 @@ public class Settings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String url;
+    private UUID sharedGroupId;
     @OneToOne
     @JoinColumn(name = "client_id")
     @ToString.Exclude
