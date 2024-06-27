@@ -9,12 +9,10 @@ import java.util.UUID;
 
 
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PipedriveUser {
     private Long id;
     private String name;
     private Language language;
-    private Boolean isAdmin;
     private List<Access> access;
 
     @Data
@@ -30,5 +28,11 @@ public class PipedriveUser {
         private String app;
         private Boolean admin;
         private UUID permissionSetId;
+    }
+
+    public Boolean isSalesAdmin() {
+        return getAccess().stream()
+                .filter(access -> access.getApp().equals("sales") && access.getAdmin())
+                .toList().size() > 0;
     }
 }
