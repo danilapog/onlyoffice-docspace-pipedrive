@@ -27,6 +27,7 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
         User user = userService.findById(id);
 
         docspaceAccount.setUser(user);
+        user.setDocspaceAccount(docspaceAccount);
 
         return docspaceAccountRepository.save(docspaceAccount);
     }
