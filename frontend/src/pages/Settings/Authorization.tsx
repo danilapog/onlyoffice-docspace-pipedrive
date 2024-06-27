@@ -10,7 +10,7 @@ import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 
 import { AppContext } from "@context/AppContext";
 
-import { postUser, deleteDocspaceAccount } from "@services/user";
+import { putDocspaceAccount, deleteDocspaceAccount } from "@services/user";
 
 import Authorized from "@assets/authorized.svg"
 import CommonError from "@assets/common-error.svg";
@@ -81,7 +81,7 @@ export const AuthorizationSetting: React.FC = () => {
         });
         setSaving(false);
       } else {
-        postUser(sdk, email, passwordHash, system).then(async () => {
+        putDocspaceAccount(sdk, email, passwordHash, system).then(async () => {
           if (user) {
             setUser({...user, docspaceAccount: {userName: email, passwordHash: ""}, system: system});
           }
@@ -214,7 +214,7 @@ export const AuthorizationSetting: React.FC = () => {
                 <div className="pl-5 pr-5">
                   <OnlyofficeCheckbox
                     checked={system}
-                    text={t("settings.authorization.inputs.system", "System User")}
+                    text={t("settings.authorization.inputs.system", "System User (DocSpace administrator role required)")}
                     disabled={!appStatus?.isActive}
                     onChange={(e) => setSystem(!system)}
                   />

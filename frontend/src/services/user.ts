@@ -46,7 +46,7 @@ export const getUser = async (sdk: AppExtensionsSDK) => {
   return response.data;
 };
 
-export const postUser = async (
+export const putDocspaceAccount = async (
   sdk: AppExtensionsSDK,
   userName: string,
   passwordHash: string,
@@ -60,18 +60,15 @@ export const postUser = async (
   });
 
   await client({
-    method: "POST",
-    url: `/api/v1/user`,
+    method: "PUT",
+    url: `/api/v1/user/docspace-account?system=${system}`,
     headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + pctx.token,
     },
     data: {
-      system: system,
-      docspaceAccount: {
-        userName: userName,
-        passwordHash: passwordHash,
-      }
+      userName: userName,
+      passwordHash: passwordHash
     },
     timeout: 10000,
   });
