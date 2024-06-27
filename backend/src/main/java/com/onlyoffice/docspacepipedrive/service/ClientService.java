@@ -8,5 +8,6 @@ public interface ClientService {
     boolean existById(Long id);
     Client create(Client client);
     Client update(Client client);
+    void unsetSystemUser(Long clientId);
     void delete(Long id);
 }

@@ -3,6 +3,7 @@ package com.onlyoffice.docspacepipedrive.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -41,10 +42,7 @@ public class Client {
     @ToString.Exclude
     @Builder.Default
     private List<Room> rooms = new ArrayList<>();
-
-    public User getSystemUser() {
-        return this.users.stream()
-                .filter(user -> user.getSystem())
-                .findFirst().orElse(null);
-    }
+    @OneToOne
+    @JoinColumn(name = "system_user_id")
+    private User systemUser;
 }

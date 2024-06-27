@@ -41,16 +41,11 @@ public class UserServiceImpl implements UserService {
                 existedUser.setRefreshToken(user.getRefreshToken());
             }
 
-            if (user.getSystem() != null) {
-                existedUser.setSystem(user.getSystem());
-            }
-
             return userRepository.save(existedUser);
         } catch (UserNotFoundException e) {
             Client client = clientService.findById(clientId);
 
             user.setClient(client);
-            user.setSystem(false);
 
             return userRepository.save(user);
         }

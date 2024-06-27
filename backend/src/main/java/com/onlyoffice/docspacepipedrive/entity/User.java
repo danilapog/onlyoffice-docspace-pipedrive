@@ -39,7 +39,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
-    private Boolean system = false;
     @Embedded
     @AttributeOverrides({
             @AttributeOverride( name = "value", column = @Column(name = "access_token_value", length = 1024)),
@@ -60,4 +59,10 @@ public class User {
     @JoinColumn(name = "client_id")
     @ToString.Exclude
     private Client client;
+
+    public boolean isSystemUser() {
+        User systemUser = this.client.getSystemUser();
+
+        return systemUser != null && systemUser.getId().equals(this.id);
+    }
 }

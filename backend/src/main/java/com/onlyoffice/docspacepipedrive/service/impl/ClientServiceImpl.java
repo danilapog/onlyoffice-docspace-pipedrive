@@ -39,7 +39,20 @@ public class ClientServiceImpl implements ClientService {
             existedClient.setUrl(client.getUrl());
         }
 
+        if (client.getSystemUser() != null) {
+            existedClient.setSystemUser(client.getSystemUser());
+        }
+
         return clientRepository.save(existedClient);
+    }
+
+    @Override
+    public void unsetSystemUser(Long clientId) {
+        Client client = findById(clientId);
+
+        client.setSystemUser(null);
+
+        clientRepository.save(client);
     }
 
     @Override

@@ -5,12 +5,14 @@ import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceAuthent
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserRequest;
@@ -18,6 +20,7 @@ import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
+    private final ClientService clientService;
     private final DocspaceAccountService docspaceAccountService;
     private final UserMapper userMapper;
     private final PipedriveClient pipedriveClient;
@@ -55,16 +58,14 @@ public class UserController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<UserResponse> updateUser(@RequestBody UserRequest request) {
         User currentUser = SecurityUtils.getCurrentUser();
 
         DocspaceAccount docspaceAccount = new DocspaceAccount();
         if (request.getSystem()) {
             PipedriveUser pipedriveUser = pipedriveClient.getUser();
-            if (pipedriveUser.getAccess().stream()
-                    .filter(access -> access.getApp().equals("sales") && access.getAdmin())
-                    .toList().size() == 0
-            ) {
+            if (!pipedriveUser.isSalesAdmin()) {
                 throw new PipedriveAccessDeniedException(currentUser.getUserId());
             }
 
@@ -91,10 +92,11 @@ public class UserController {
             docspaceAccount.setPasswordHash(request.getDocspaceAccount().getPasswordHash());
             docspaceAccount.setDocspaceToken(docspaceToken);
 
-            currentUser.setSystem(true);
-            userService.put(currentUser.getClient().getId(), currentUser);
-
             docspaceAccountService.save(currentUser.getId(), docspaceAccount);
+
+            Client client = currentUser.getClient();
+            client.setSystemUser(currentUser);
+            clientService.update(client);
         } else {
             DocspaceUser docspaceUser = docspaceClient.getUser(request.getDocspaceAccount().getUserName());
 
@@ -108,14 +110,14 @@ public class UserController {
     }
 
     @DeleteMapping("/docspace-account")
+    @Transactional
     public ResponseEntity<Void> deleteDocspaceAccount() {
         User currentUser = SecurityUtils.getCurrentUser();
 
         docspaceAccountService.deleteById(currentUser.getId());
 
-        if (currentUser.getSystem()) {
-            currentUser.setSystem(false);
-            userService.put(currentUser.getClient().getId(), currentUser);
+        if (currentUser.isSystemUser()) {
+            clientService.unsetSystemUser(currentUser.getClient().getId());
         }
 
         return ResponseEntity.noContent().build();
