@@ -11,4 +11,5 @@ public class PipedriveDeal {
     private Long id;
     private String title;
     private Integer visibleTo;
+    private Integer followersCount;
 }
