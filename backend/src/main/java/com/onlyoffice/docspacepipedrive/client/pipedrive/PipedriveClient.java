@@ -1,5 +1,6 @@
 package com.onlyoffice.docspacepipedrive.client.pipedrive;
 
+import com.onlyoffice.docspacepipedrive.client.pipedrive.request.PipedriveWebhook;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveResponse;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
@@ -46,6 +47,26 @@ public class PipedriveClient {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveUser>>() {})
                 .map(PipedriveResponse<PipedriveUser>::getData)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new PipedriveWebClientResponseException(e));
+                })
+                .onErrorResume(OAuth2AuthorizationException.class, e -> {
+                    return Mono.error(new PipedriveOAuth2AuthorizationException(e));
+                })
+                .block();
+    }
+
+    public PipedriveWebhook createWebhook(PipedriveWebhook pipedriveWebhook) {
+        return pipedriveWebClient.post()
+                .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
+                        .path("/v1/webhooks")
+                        .build()
+                        .toUri()
+                )
+                .bodyValue(pipedriveWebhook)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveWebhook>>() {})
+                .map(PipedriveResponse<PipedriveWebhook>::getData)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new PipedriveWebClientResponseException(e));
                 })
