@@ -1,7 +1,9 @@
 package com.onlyoffice.docspacepipedrive.client.docspace;
 
+import com.onlyoffice.docspacepipedrive.client.docspace.request.DocspaceRoomInvitationRequest;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceAuthentication;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceGroup;
+import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceMembers;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceResponse;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceUser;
@@ -99,6 +101,22 @@ public class DocspaceClient {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceRoom>>() {})
                 .map(DocspaceResponse<DocspaceRoom>::getResponse)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new DocspaceWebClientResponseException(e));
+                })
+                .block();
+    }
+
+    public DocspaceMembers shareRoom(Long roomId, DocspaceRoomInvitationRequest docspaceRoomInvitationRequest) {
+        return docspaceWebClient.put()
+                .uri(uriBuilder -> {
+                    return uriBuilder.path("api/2.0/files/rooms/{roomId}/share")
+                            .build(roomId);
+                })
+                .bodyValue(docspaceRoomInvitationRequest)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceMembers>>() {})
+                .map(DocspaceResponse<DocspaceMembers>::getResponse)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new DocspaceWebClientResponseException(e));
                 })
