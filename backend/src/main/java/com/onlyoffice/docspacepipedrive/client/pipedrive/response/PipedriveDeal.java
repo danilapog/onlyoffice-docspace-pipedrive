@@ -12,4 +12,5 @@ public class PipedriveDeal {
     private String title;
     private Integer visibleTo;
     private Integer followersCount;
+    private String updateTime;
 }
