@@ -2,7 +2,7 @@ package com.onlyoffice.docspacepipedrive.client.pipedrive;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.request.PipedriveWebhook;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollower;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollowerEvent;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveResponse;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
@@ -41,24 +41,24 @@ public class PipedriveClient {
                 .block();
     }
 
-    public List<PipedriveDealFollower> getDealFollowersFlow(Long id) {
-        List<PipedriveDealFollower> followers = new ArrayList<>();
+    public List<PipedriveDealFollowerEvent> getDealFollowersFlow(Long id) {
+        List<PipedriveDealFollowerEvent> followers = new ArrayList<>();
 
         boolean moreItemInCollection = true;
         Integer start = 0;
         Integer limit = 100;
 
         while (moreItemInCollection) {
-            PipedriveResponse<List<PipedriveDealFollower>> response = pipedriveWebClient.get()
+            PipedriveResponse<List<PipedriveDealFollowerEvent>> response = pipedriveWebClient.get()
                     .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
-                            .path("/v1/deals/{id}/flow/")
+                            .path("/v1/deals/{id}/flow")
                             .queryParam("start", start)
                             .queryParam("limit", limit)
                             .queryParam("items", "dealFollower")
                             .build(id)
                     )
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<List<PipedriveDealFollower>>>() {})
+                    .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<List<PipedriveDealFollowerEvent>>>() {})
                     .onErrorResume(WebClientResponseException.class, e -> {
                         return Mono.error(new PipedriveWebClientResponseException(e));
                     })

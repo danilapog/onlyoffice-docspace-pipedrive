@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class PipedriveDealFollower {
+public class PipedriveDealFollowerEvent {
     private String timestamp;
     private Data data;
 
