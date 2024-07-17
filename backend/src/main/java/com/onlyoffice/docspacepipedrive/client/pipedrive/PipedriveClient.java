@@ -2,6 +2,7 @@ package com.onlyoffice.docspacepipedrive.client.pipedrive;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.request.PipedriveWebhook;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollower;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollowerEvent;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveResponse;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
@@ -39,6 +40,39 @@ public class PipedriveClient {
                     return Mono.error(new PipedriveWebClientResponseException(e));
                 })
                 .block();
+    }
+
+    public List<PipedriveDealFollower> getDealFollowers(Long id) {
+        List<PipedriveDealFollower> dealFollowers = new ArrayList<>();
+
+        boolean moreItemInCollection = true;
+        Integer start = 0;
+        Integer limit = 100;
+
+        while (moreItemInCollection) {
+            PipedriveResponse<List<PipedriveDealFollower>> response = pipedriveWebClient.get()
+                    .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
+                            .path("/v1/deals/{id}/followers")
+                            .queryParam("start", start)
+                            .queryParam("limit", limit)
+                            .build(id)
+                    )
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<List<PipedriveDealFollower>>>() {})
+                    .onErrorResume(WebClientResponseException.class, e -> {
+                        return Mono.error(new PipedriveWebClientResponseException(e));
+                    })
+                    .block();
+
+            dealFollowers.addAll(response.getData());
+
+            moreItemInCollection = response.getAdditionalData().getPagination().getMoreItemsInCollection();
+            if (moreItemInCollection) {
+                start = response.getAdditionalData().getPagination().getNextStart();
+            }
+        }
+
+        return dealFollowers;
     }
 
     public List<PipedriveDealFollowerEvent> getDealFollowersFlow(Long id) {
