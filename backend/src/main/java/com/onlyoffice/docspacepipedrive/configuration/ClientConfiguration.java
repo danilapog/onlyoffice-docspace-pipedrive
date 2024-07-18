@@ -25,6 +25,7 @@ public class ClientConfiguration {
     WebClient pipedriveWebClient(OAuth2AuthorizedClientManager authorizedClientManager) {
         ServletOAuth2AuthorizedClientExchangeFilterFunction servletOAuth2AuthorizedClientExchangeFilterFunction =
                 new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
+        servletOAuth2AuthorizedClientExchangeFilterFunction.setDefaultClientRegistrationId("pipedrive");
         servletOAuth2AuthorizedClientExchangeFilterFunction.setDefaultOAuth2AuthorizedClient(true);
 
         return WebClient.builder()
