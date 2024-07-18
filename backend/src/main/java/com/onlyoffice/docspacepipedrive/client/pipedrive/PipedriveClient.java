@@ -8,7 +8,6 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveRespo
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
-import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
@@ -149,8 +148,9 @@ public class PipedriveClient {
     }
 
     private String getBaseUrl() {
-        return SecurityUtils.getCurrentUser()
-                .getClient()
-                .getUrl();
+//        return SecurityUtils.getCurrentUser()
+//                .getClient()
+//                .getUrl();
+        return "https://api.pipedrive.com"; //ToDo:: base url from client
     }
 }
