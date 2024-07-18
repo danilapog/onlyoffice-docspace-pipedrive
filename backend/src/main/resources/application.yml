@@ -1,3 +1,6 @@
+app:
+  base-url: ${BASE_URL}
+
 spring:
   security:
     oauth2:
@@ -8,16 +11,11 @@ spring:
             client-id: ${PIPEDRIVE_CLIENT_ID}
             client-secret: ${PIPEDRIVE_CLIENT_SECRET}
             authorization-grant-type: authorization_code
-            redirect-uri: "https://3974-95-79-121-86.ngrok-free.app/login/oauth2/code/{registrationId}"
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
           pipedrive:
             authorization-uri: https://oauth.pipedrive.com/oauth/authorize
             token-uri: https://oauth.pipedrive.com/oauth/token
-            user-info-uri: https://api.pipedrive.com/v1/users/me
-            user-name-attribute: data
-            nested-user-name-attribute: id
-            nested-client-id-attribute: company_id
-            nested-client-url-attribute: api_domain
     jwt:
       header: Authorization
       prefix: Bearer

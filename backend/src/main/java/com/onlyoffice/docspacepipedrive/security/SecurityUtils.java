@@ -15,24 +15,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public final class SecurityUtils {
-    private static UserService userService;
-
-    @Autowired
-    public void setUserService(UserService userService) {
-        SecurityUtils.userService = userService;
-    }
-
     public static User getCurrentUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
 
         if (authentication != null) {
-            if (authentication.getPrincipal() instanceof OAuth2User) { //ToDo user in principal
-                OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-                Long userId = oAuth2User.getAttribute("id");
-                Long companyId = oAuth2User.getAttribute("company_id");
-
-                return userService.findByUserIdAndClientId(userId, companyId);
+            if (authentication.getPrincipal() instanceof User) {
+                return (User) authentication.getPrincipal();
             }
         }
 

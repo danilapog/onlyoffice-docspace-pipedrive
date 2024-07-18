@@ -1,19 +1,19 @@
 package com.onlyoffice.docspacepipedrive.security.oauth;
 
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.user.AccessToken;
 import com.onlyoffice.docspacepipedrive.entity.user.RefreshToken;
+import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedClientRepository {
-    @Value("${spring.security.oauth2.client.provider.pipedrive.nested-user-name-attribute}")
-    private String userNameAttribute;
-    @Value("${spring.security.oauth2.client.provider.pipedrive.nested-client-id-attribute}")
-    private String clientIdAttribute;
-
+    private final ClientService clientService;
     private final UserService userService;
     private final ClientRegistrationRepository clientRegistrationRepository;
 
@@ -33,12 +29,7 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
     public <T extends OAuth2AuthorizedClient> T loadAuthorizedClient(String clientRegistrationId,
                                                                      Authentication authentication,
                                                                      HttpServletRequest request) {
-        OAuth2AuthenticatedPrincipal oAuth2User = (OAuth2AuthenticatedPrincipal) authentication.getPrincipal();
-
-        Long userId = ((Number) oAuth2User.getAttributes().get(userNameAttribute)).longValue();
-        Long clientId = ((Number) oAuth2User.getAttributes().get(clientIdAttribute)).longValue();
-
-        User user = userService.findByUserIdAndClientId(userId, clientId);
+        User user = (User) authentication.getPrincipal();
 
         OAuth2AccessToken accessToken = new OAuth2AccessToken(
                 OAuth2AccessToken.TokenType.BEARER,
@@ -65,11 +56,6 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
     @Override
     public void saveAuthorizedClient(OAuth2AuthorizedClient authorizedClient, Authentication authentication,
                                      HttpServletRequest request, HttpServletResponse response) {
-        OAuth2AuthenticatedPrincipal oAuth2User = (OAuth2AuthenticatedPrincipal) authentication.getPrincipal();
-
-        Long userId = ((Number) oAuth2User.getAttributes().get(userNameAttribute)).longValue();
-        Long clientId = ((Number) oAuth2User.getAttributes().get(clientIdAttribute)).longValue();
-
         AccessToken accessToken = AccessToken.builder()
                 .value(authorizedClient.getAccessToken().getTokenValue())
                 .issuedAt(authorizedClient.getAccessToken().getIssuedAt())
@@ -81,13 +67,26 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
                 .issuedAt(authorizedClient.getRefreshToken().getIssuedAt())
                 .build();
 
+        String[] partsRefreshToken = refreshToken.getValue().split(":");
+
+        Client client = Client.builder()
+                .id(Long.parseLong(partsRefreshToken[0]))
+                .url("")
+                .build();
+
+        if (clientService.existById(client.getId())) {
+            clientService.update(client);
+        } else {
+            clientService.create(client);
+        }
+
         User user = User.builder()
-                .userId(userId)
+                .userId(Long.parseLong(partsRefreshToken[1]))
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
 
-        userService.put(clientId, user);
+        userService.put(client.getId(), user);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.onlyoffice.docspacepipedrive.configuration;
 
 import com.onlyoffice.docspacepipedrive.security.AuthenticationEntryPointImpl;
-import com.onlyoffice.docspacepipedrive.security.AuthenticationSuccessHandlerImpl;
 import com.onlyoffice.docspacepipedrive.security.jwt.JwtAuthenticationFilter;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2LogoutFilter;
 
@@ -14,9 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -35,7 +34,6 @@ public class SecurityConfiguration {
     private final OAuth2LogoutFilter oAuth2LogoutFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
-    private final AuthenticationSuccessHandlerImpl authenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,13 +43,9 @@ public class SecurityConfiguration {
                             .requestMatchers("/api/**").authenticated()
                             .anyRequest().permitAll();
                 })
-
-                .oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
-                    httpSecurityOAuth2LoginConfigurer
-                        .failureHandler(new AuthenticationEntryPointFailureHandler(authenticationEntryPoint))
-                        .successHandler(authenticationSuccessHandler);
+                .oauth2Client(httpSecurityOAuth2ClientConfigurer -> {
+                    httpSecurityOAuth2ClientConfigurer.init(http);
                 })
-
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -66,8 +60,8 @@ public class SecurityConfiguration {
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterAfter(new ForwardedHeaderFilter(), WebAsyncManagerIntegrationFilter.class)
-                .addFilterBefore(oAuth2LogoutFilter, OAuth2LoginAuthenticationFilter.class)
-                .addFilterAfter(jwtAuthenticationFilter, OAuth2LoginAuthenticationFilter.class);
+                .addFilterBefore(oAuth2LogoutFilter, OAuth2AuthorizationCodeGrantFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter, OAuth2AuthorizationCodeGrantFilter.class);
 
         return http.build();
     }

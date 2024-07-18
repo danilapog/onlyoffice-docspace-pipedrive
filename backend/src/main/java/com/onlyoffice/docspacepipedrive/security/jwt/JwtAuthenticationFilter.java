@@ -9,9 +9,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.log.LogMessage;
@@ -19,8 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -30,7 +25,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -47,12 +41,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String jwtUserNameAttribute;
     @Value("${spring.security.jwt.client-name-attribute}")
     private String jwtClientNameAttribute;
-
-    @Value("${spring.security.oauth2.client.provider.pipedrive.nested-user-name-attribute}")
-    private String oauthUserNameAttribute;
-    @Value("${spring.security.oauth2.client.provider.pipedrive.nested-client-id-attribute}")
-    private String oauthClientNameAttribute;
-
 
     private final UserService userService;
     private final JwtManager jwtManager;
@@ -76,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
             try {
-                OAuth2AuthenticationToken authentication = attemptAuthentication(jwtToken);
+                JwtAuthenticationToken authentication = attemptAuthentication(jwtToken);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 successfulAuthentication(request, response, filterChain, authentication);
@@ -86,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    public OAuth2AuthenticationToken attemptAuthentication(String jwtToken)
+    public JwtAuthenticationToken attemptAuthentication(String jwtToken)
             throws AuthenticationException {
         Map<String, Object> body;
 
@@ -103,25 +91,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throw new JwtAuthenticationException("Authorization request is not valid");
         }
 
+        User user;
         try {
-            User user = userService.findByUserIdAndClientId(userId, clientId);
+            user = userService.findByUserIdAndClientId(userId, clientId);
         } catch (UserNotFoundException e) {
             throw new JwtAuthenticationException(e.getMessage(), e);
         }
 
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put(oauthUserNameAttribute, userId);
-        attributes.put(oauthClientNameAttribute, clientId); //ToDo company_id from props
-
-        var oAuth2User = new DefaultOAuth2User(null, attributes, oauthUserNameAttribute);
-
-        OAuth2AuthenticationToken authentication = new OAuth2AuthenticationToken(
-                oAuth2User,
-                null,
-                "pipedrive"
-        );
-
-        return authentication;
+        return new JwtAuthenticationToken(user);
     }
 
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
