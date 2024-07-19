@@ -1,15 +1,10 @@
 package com.onlyoffice.docspacepipedrive.security;
 
 import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.service.UserService;
-import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.onlyoffice.docspacepipedrive.security.jwt.JwtAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
 
@@ -27,4 +22,33 @@ public final class SecurityUtils {
 
         return null;
     }
+
+    public static <R> R runAs(RunAsWork<R> runAsWork, User user) {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication currentAuthentication = securityContext.getAuthentication();
+
+        final R result;
+        try {
+            securityContext.setAuthentication(new JwtAuthenticationToken(user));
+
+            result = runAsWork.doWork();
+            return result;
+        } catch (Throwable exception) {
+            if (exception instanceof RuntimeException)
+            {
+                throw (RuntimeException) exception;
+            }
+            else
+            {
+                throw new RuntimeException("Error during run as.", exception);
+            }
+        } finally {
+            securityContext.setAuthentication(currentAuthentication);
+        }
+    }
+
+    public interface RunAsWork<Result> {
+        Result doWork() throws Exception;
+    }
+
 }
