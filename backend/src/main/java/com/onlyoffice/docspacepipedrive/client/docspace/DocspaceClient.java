@@ -7,6 +7,7 @@ import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceMembers
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceResponse;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceUser;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollowerEvent;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
@@ -16,8 +17,10 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +81,42 @@ public class DocspaceClient {
                     return Mono.error(new DocspaceWebClientResponseException(e));
                 })
                 .block();
+    }
+
+    public List<DocspaceUser> findUsers(Integer employeeType) {
+        List<DocspaceUser> docspaceUsers = new ArrayList<>();
+
+        boolean moreItemInCollection = true;
+        Integer startIndex = 0;
+        Integer count = 100;
+
+        while (moreItemInCollection) {
+             DocspaceResponse<List<DocspaceUser>> response = docspaceWebClient.get()
+                    .uri(UriComponentsBuilder.fromUriString("")
+                            .path("/api/2.0/people/simple/filter")
+                            .queryParam("employeeType", employeeType)
+                            .queryParam("startIndex", startIndex)
+                            .queryParam("count", count)
+                            .build()
+                            .toUriString()
+                    )
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<List<DocspaceUser>>>() {
+                    })
+                    .onErrorResume(WebClientResponseException.class, e -> {
+                        return Mono.error(new DocspaceWebClientResponseException(e));
+                    })
+                    .block();
+
+            docspaceUsers.addAll(response.getResponse());
+
+            startIndex = startIndex + count;
+            if (response.getTotal() <= startIndex) {
+                moreItemInCollection = false;
+            }
+        }
+
+        return docspaceUsers;
     }
 
     public DocspaceRoom createRoom(String title, Integer roomType) {
