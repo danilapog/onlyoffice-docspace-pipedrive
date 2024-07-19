@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -64,18 +63,24 @@ public class UserController {
     @PutMapping(path = "/docspace-account", params = "system=false")
     @Transactional
     @JoinToSharedGroup(execution = Execution.AFTER)
-    public ResponseEntity<Void> putDocspaceAccount(@RequestBody DocspaceAccountRequest request,
-                                                   @RequestParam Boolean system) {
+    public ResponseEntity<Void> putDocspaceAccount(@RequestBody DocspaceAccountRequest request) {
         User currentUser = SecurityUtils.getCurrentUser();
 
-        DocspaceUser docspaceUser = docspaceClient.getUser(request.getUserName());
+        DocspaceUser docspaceUser = SecurityUtils.runAs(new SecurityUtils.RunAsWork<DocspaceUser>() {
+            public DocspaceUser doWork() {
+                return docspaceClient.getUser(request.getUserName());
+            }
+        }, currentUser.getClient().getSystemUser());
 
         DocspaceAccount docspaceAccount = DocspaceAccount.builder()
                 .uuid(docspaceUser.getId())
+                .email(docspaceUser.getEmail())
                 .passwordHash(request.getPasswordHash())
-                .build(); docspaceAccount.setUuid(docspaceUser.getId());
+                .build();
 
-        docspaceAccountService.save(currentUser.getId(), docspaceAccount);
+        DocspaceAccount savedDocspaceAccount = docspaceAccountService.save(currentUser.getId(), docspaceAccount);
+        currentUser.setDocspaceAccount(savedDocspaceAccount);
+
         return ResponseEntity.ok(null);
     }
 
@@ -83,8 +88,7 @@ public class UserController {
     @PutMapping(path = "/docspace-account", params = "system=true")
     @Transactional
     @InitSharedGroup(execution = Execution.AFTER)
-    public ResponseEntity<Void> putSystemDocspaceAccount(@RequestBody DocspaceAccountRequest request,
-                                                                 @RequestParam Boolean system) {
+    public ResponseEntity<Void> putSystemDocspaceAccount(@RequestBody DocspaceAccountRequest request) {
         User currentUser = SecurityUtils.getCurrentUser();
 
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
@@ -101,27 +105,30 @@ public class UserController {
                 .value(docspaceAuthentication.getToken())
                 .build();
 
-        DocspaceUser docspaceUser = docspaceClient.getUser(
-                request.getUserName(),
-                docspaceToken
-        );
+        DocspaceAccount docspaceAccount = DocspaceAccount.builder()
+                .docspaceToken(docspaceToken)
+                .build();
+
+        currentUser.setDocspaceAccount(docspaceAccount);
+
+        DocspaceUser docspaceUser = docspaceClient.getUser(request.getUserName());
 
         if (!docspaceUser.getIsAdmin()) {
             throw new DocspaceAccessDeniedException(request.getUserName());
         }
 
-        DocspaceAccount docspaceAccount = DocspaceAccount.builder()
-                .uuid(docspaceUser.getId())
-                .email(docspaceUser.getEmail())
-                .passwordHash(request.getPasswordHash())
-                .docspaceToken(docspaceToken)
-                .build();
+        docspaceAccount.setUuid(docspaceUser.getId());
+        docspaceAccount.setEmail(docspaceUser.getEmail());
+        docspaceAccount.setPasswordHash(request.getPasswordHash());
 
-        docspaceAccountService.save(currentUser.getId(), docspaceAccount);
+        DocspaceAccount savedDocspaceAccount = docspaceAccountService.save(currentUser.getId(), docspaceAccount);
 
         Client client = currentUser.getClient();
         client.setSystemUser(currentUser);
-        clientService.update(client);
+        Client updatedClient = clientService.update(client);
+
+        currentUser.setDocspaceAccount(savedDocspaceAccount);
+        currentUser.setClient(updatedClient);
 
         return ResponseEntity.ok(null);
     }
