@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PipedriveWebhook {
+    private Long id;
     private String subscriptionUrl;
     private String eventAction;
     private String eventObject;
