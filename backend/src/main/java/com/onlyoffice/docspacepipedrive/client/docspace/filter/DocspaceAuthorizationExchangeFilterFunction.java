@@ -1,5 +1,6 @@
 package com.onlyoffice.docspacepipedrive.client.docspace.filter;
 
+import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
@@ -35,27 +36,18 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
     public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
         return Mono.just(configureRequest(request))
                 .flatMap((configuredRequest) -> {
-                    return Mono.just(configuredRequest)
-                            .filter(req -> req.attribute(DocspaceToken.class.getName()).isPresent())
+                    return authorize(configuredRequest)
                             .flatMap((req) -> {
-                                return next.exchange(
-                                        setAuthorizationToRequest(req, (DocspaceToken) req.attribute(DocspaceToken.class.getName()).get())
-                                );
-                            })
-                            .switchIfEmpty(Mono.defer(() -> {
-                                return authorize(configuredRequest)
-                                        .flatMap((req) -> {
-                                            return next.exchange(req)
-                                                    .flatMap(clientResponse -> {
-                                                        if (clientResponse.statusCode().equals(HttpStatus.UNAUTHORIZED)) {
-                                                            return reauthorize(request).flatMap(next::exchange);
-                                                        }
+                                return next.exchange(req)
+                                        .flatMap(clientResponse -> {
+                                            if (clientResponse.statusCode().equals(HttpStatus.UNAUTHORIZED)) {
+                                                return reauthorize(configuredRequest).flatMap(next::exchange);
+                                            }
 
-                                                        return Mono.just(clientResponse);
-                                                    });
-                                        }).switchIfEmpty(Mono.defer(() -> {
-                                            return reauthorize(request).flatMap(next::exchange);
-                                        }));
+                                            return Mono.just(clientResponse);
+                                        });
+                            }).switchIfEmpty(Mono.defer(() -> {
+                                    return reauthorize(configuredRequest).flatMap(next::exchange);
                             }));
                 });
     }
@@ -79,13 +71,12 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
         User user = SecurityUtils.getCurrentUser();
 
         return Mono.defer(() -> {
-            DocspaceToken docspaceToken = user.getClient()
-                    .getSystemUser()
-                    .getDocspaceAccount()
-                    .getDocspaceToken();
+            DocspaceAccount docspaceAccount = user.getDocspaceAccount();
 
-            if (docspaceToken != null && docspaceToken.getValue() != null) {
-                return Mono.just(setAuthorizationToRequest(request, docspaceToken));
+            if (docspaceAccount != null
+                    && docspaceAccount.getDocspaceToken() != null
+                    && docspaceAccount.getDocspaceToken().getValue() != null) {
+                return Mono.just(setAuthorizationToRequest(request, docspaceAccount.getDocspaceToken()));
             } else {
                 return Mono.empty();
             }
@@ -101,6 +92,7 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
                     token
             );
         }).map(docspaceToken -> {
+            user.getDocspaceAccount().setDocspaceToken(docspaceToken);
             return setAuthorizationToRequest(request, docspaceToken);
         });
     }
