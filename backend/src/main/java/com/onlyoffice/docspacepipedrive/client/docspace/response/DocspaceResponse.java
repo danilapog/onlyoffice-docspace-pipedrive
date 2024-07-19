@@ -7,5 +7,7 @@ import lombok.Data;
 public class DocspaceResponse<T> {
     private Integer status;
     private Integer statusCode;
+    private Integer count;
+    private Integer total;
     private T response;
 }
