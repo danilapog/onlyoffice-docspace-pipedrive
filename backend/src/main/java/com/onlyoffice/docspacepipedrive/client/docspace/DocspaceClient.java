@@ -50,20 +50,11 @@ public class DocspaceClient {
     }
 
     public DocspaceUser getUser(String email) {
-        return getUser(email, null);
-    }
-
-    public DocspaceUser getUser(String email, DocspaceToken docspaceToken) {
         return docspaceWebClient.get()
                 .uri(uriBuilder -> {
                     return uriBuilder.path("/api/2.0/people/email")
                             .queryParam("email", email)
                             .build();
-                })
-                .attributes(attributes -> {
-                    if (docspaceToken != null) {
-                        attributes.put(DocspaceToken.class.getName(), docspaceToken);
-                    }
                 })
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceUser>>() {})
