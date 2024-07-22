@@ -15,9 +15,8 @@ import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.web.aop.Execution;
-import com.onlyoffice.docspacepipedrive.web.aop.InitSharedGroup;
-import com.onlyoffice.docspacepipedrive.web.aop.JoinToSharedGroup;
-import com.onlyoffice.docspacepipedrive.web.aop.LeaveFromSharedGroup;
+import com.onlyoffice.docspacepipedrive.web.aop.docspace.DocspaceAction;
+import com.onlyoffice.docspacepipedrive.web.aop.docspace.ExecuteDocspaceAction;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.UserMapper;
@@ -62,7 +61,7 @@ public class UserController {
 
     @PutMapping(path = "/docspace-account", params = "system=false")
     @Transactional
-    @JoinToSharedGroup(execution = Execution.AFTER)
+    @ExecuteDocspaceAction(action = DocspaceAction.INVITE_CURRENT_USER_TO_SHARED_GROUP, execution = Execution.AFTER)
     public ResponseEntity<Void> putDocspaceAccount(@RequestBody DocspaceAccountRequest request) {
         User currentUser = SecurityUtils.getCurrentUser();
 
@@ -87,7 +86,7 @@ public class UserController {
 
     @PutMapping(path = "/docspace-account", params = "system=true")
     @Transactional
-    @InitSharedGroup(execution = Execution.AFTER)
+    @ExecuteDocspaceAction(action = DocspaceAction.INIT_SHARED_GROUP, execution = Execution.AFTER)
     public ResponseEntity<Void> putSystemDocspaceAccount(@RequestBody DocspaceAccountRequest request) {
         User currentUser = SecurityUtils.getCurrentUser();
 
@@ -135,7 +134,7 @@ public class UserController {
 
     @DeleteMapping("/docspace-account")
     @Transactional
-    @LeaveFromSharedGroup(execution = Execution.BEFORE)
+    @ExecuteDocspaceAction(action = DocspaceAction.REMOVE_CURRENT_USER_FROM_SHARED_GROUP, execution = Execution.BEFORE)
     public ResponseEntity<Void> deleteDocspaceAccount() {
         User currentUser = SecurityUtils.getCurrentUser();
 
