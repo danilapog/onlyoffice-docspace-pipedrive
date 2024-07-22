@@ -8,10 +8,14 @@ import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
+import com.onlyoffice.docspacepipedrive.web.aop.Execution;
+import com.onlyoffice.docspacepipedrive.web.aop.docspace.DocspaceAction;
+import com.onlyoffice.docspacepipedrive.web.aop.docspace.ExecuteDocspaceAction;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.RoomMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +40,8 @@ public class RoomController {
     }
 
     @PostMapping("/{dealId}")
+    @Transactional
+    @ExecuteDocspaceAction(action = DocspaceAction.INVITE_DEAL_FOLLOWERS_TO_ROOM, execution = Execution.AFTER)
     public ResponseEntity<RoomResponse> create(@PathVariable Long dealId) {
         User user = SecurityUtils.getCurrentUser();
 
