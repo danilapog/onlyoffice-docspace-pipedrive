@@ -1,4 +1,4 @@
-package com.onlyoffice.docspacepipedrive.security;
+package com.onlyoffice.docspacepipedrive.security.util;
 
 import org.springframework.stereotype.Component;
 

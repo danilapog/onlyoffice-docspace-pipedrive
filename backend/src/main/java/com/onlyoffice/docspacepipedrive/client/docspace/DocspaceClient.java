@@ -7,11 +7,9 @@ import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceMembers
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceResponse;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceUser;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollowerEvent;
 import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
-import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;

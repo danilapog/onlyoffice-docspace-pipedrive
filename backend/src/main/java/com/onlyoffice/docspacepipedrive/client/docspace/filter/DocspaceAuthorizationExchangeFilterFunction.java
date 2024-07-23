@@ -3,7 +3,7 @@ package com.onlyoffice.docspacepipedrive.client.docspace.filter;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
-import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

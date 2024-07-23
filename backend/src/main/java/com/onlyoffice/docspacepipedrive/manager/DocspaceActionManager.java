@@ -7,7 +7,7 @@ import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceAccess;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

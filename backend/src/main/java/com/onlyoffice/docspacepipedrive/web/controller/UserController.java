@@ -11,7 +11,7 @@ import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
-import com.onlyoffice.docspacepipedrive.security.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.web.aop.Execution;

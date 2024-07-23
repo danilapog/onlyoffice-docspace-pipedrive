@@ -1,4 +1,4 @@
-package com.onlyoffice.docspacepipedrive.security;
+package com.onlyoffice.docspacepipedrive.security.util;
 
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.security.jwt.JwtAuthenticationToken;
