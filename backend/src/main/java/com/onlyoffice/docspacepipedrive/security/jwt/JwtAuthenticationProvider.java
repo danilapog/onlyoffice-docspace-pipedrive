@@ -2,14 +2,13 @@ package com.onlyoffice.docspacepipedrive.security.jwt;
 
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
-import com.onlyoffice.docspacepipedrive.security.jwt.manager.JwtManager;
 import com.onlyoffice.docspacepipedrive.service.UserService;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
@@ -26,7 +25,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationProvider implements AuthenticationProvider {
-    private final JwtManager jwtManager;
     private final UserService userService;
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
@@ -48,7 +46,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
         Map<String, Object> body;
         try {
-            body = jwtManager.getBody(secret, bearer.getToken());
+            body = Jwts.parser()
+                    .setSigningKey(secret)
+                    .parseClaimsJws(bearer.getToken())
+                    .getBody();
         } catch (Exception e) {
             log.debug("Failed to authenticate since the JWT was invalid");
             throw new InvalidBearerTokenException(e.getMessage(), e);
