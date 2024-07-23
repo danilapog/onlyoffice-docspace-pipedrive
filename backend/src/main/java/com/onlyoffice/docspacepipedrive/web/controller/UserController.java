@@ -17,6 +17,8 @@ import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.web.aop.Execution;
 import com.onlyoffice.docspacepipedrive.web.aop.docspace.DocspaceAction;
 import com.onlyoffice.docspacepipedrive.web.aop.docspace.ExecuteDocspaceAction;
+import com.onlyoffice.docspacepipedrive.web.aop.pipedrive.ExecutePipedriveAction;
+import com.onlyoffice.docspacepipedrive.web.aop.pipedrive.PipedriveAction;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.UserMapper;
@@ -87,6 +89,7 @@ public class UserController {
     @PutMapping(path = "/docspace-account", params = "system=true")
     @Transactional
     @ExecuteDocspaceAction(action = DocspaceAction.INIT_SHARED_GROUP, execution = Execution.AFTER)
+    @ExecutePipedriveAction(action = PipedriveAction.INIT_WEBHOOKS, execution = Execution.AFTER)
     public ResponseEntity<Void> putSystemDocspaceAccount(@RequestBody DocspaceAccountRequest request) {
         User currentUser = SecurityUtils.getCurrentUser();
 
@@ -135,6 +138,7 @@ public class UserController {
     @DeleteMapping("/docspace-account")
     @Transactional
     @ExecuteDocspaceAction(action = DocspaceAction.REMOVE_CURRENT_USER_FROM_SHARED_GROUP, execution = Execution.BEFORE)
+    @ExecutePipedriveAction(action = PipedriveAction.REMOVE_WEBHOOKS, execution = Execution.AFTER)
     public ResponseEntity<Void> deleteDocspaceAccount() {
         User currentUser = SecurityUtils.getCurrentUser();
 
