@@ -1,12 +1,12 @@
 package com.onlyoffice.docspacepipedrive.configuration;
 
 import com.onlyoffice.docspacepipedrive.security.AuthenticationEntryPointImpl;
+import com.onlyoffice.docspacepipedrive.security.basic.WebhookAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.jwt.JwtAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2LogoutFilter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +19,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -38,7 +40,8 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   BearerTokenAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+                                                   BearerTokenAuthenticationFilter jwtAuthenticationFilter,
+                                                   BasicAuthenticationFilter webhookAuthenticationFilter) throws Exception {
         http
                 .authorizeHttpRequests(auth -> {
                     auth
@@ -63,11 +66,11 @@ public class SecurityConfiguration {
                         httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterAfter(new ForwardedHeaderFilter(), WebAsyncManagerIntegrationFilter.class)
                 .addFilterBefore(oAuth2LogoutFilter, OAuth2AuthorizationCodeGrantFilter.class)
-                .addFilterAfter(jwtAuthenticationFilter, OAuth2AuthorizationCodeGrantFilter.class);
+                .addFilterAfter(jwtAuthenticationFilter, OAuth2AuthorizationCodeGrantFilter.class)
+                .addFilterAfter(webhookAuthenticationFilter, OAuth2AuthorizationCodeGrantFilter.class);
 
         return http.build();
     }
-
 
     //ToDo: Modify Cors settings
     @Bean
@@ -104,5 +107,22 @@ public class SecurityConfiguration {
         jwtAuthenticationFilter.setAuthenticationEntryPoint(authenticationEntryPoint);
 
         return jwtAuthenticationFilter;
+    }
+
+    @Bean
+    BasicAuthenticationFilter webhookAuthenticationFilter(HttpSecurity http,
+                                                          WebhookAuthenticationProvider webhookAuthenticationProvider) throws Exception {
+        var authManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        authManagerBuilder.authenticationProvider(webhookAuthenticationProvider);
+
+        AuthenticationManager authenticationManager = authManagerBuilder.build();
+
+        return new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint) {
+            @Override
+            protected boolean shouldNotFilter(HttpServletRequest request)  {
+                return new NegatedRequestMatcher(new AntPathRequestMatcher("/api/v1/webhook/**")).matches(request);
+            }
+        };
     }
 }
