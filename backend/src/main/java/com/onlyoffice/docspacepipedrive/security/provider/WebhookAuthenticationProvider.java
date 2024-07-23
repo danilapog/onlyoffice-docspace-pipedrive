@@ -1,8 +1,9 @@
-package com.onlyoffice.docspacepipedrive.security.basic;
+package com.onlyoffice.docspacepipedrive.security.provider;
 
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
 import com.onlyoffice.docspacepipedrive.exceptions.WebhookNotFoundException;
+import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
 import com.onlyoffice.docspacepipedrive.service.WebhookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +56,7 @@ public class WebhookAuthenticationProvider implements AuthenticationProvider {
     }
 
     protected Authentication createSuccessAuthentication(User principal, Authentication authentication) {
-        WebhookAuthenticationToken result = new WebhookAuthenticationToken(principal);
+        UserAuthenticationToken result = new UserAuthenticationToken(principal);
         result.setDetails(authentication.getDetails());
 
         log.debug("Authenticated user");

@@ -1,7 +1,8 @@
-package com.onlyoffice.docspacepipedrive.security.jwt;
+package com.onlyoffice.docspacepipedrive.security.provider;
 
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
+import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     }
 
     protected Authentication createSuccessAuthentication(User principal, Authentication authentication) {
-        JwtAuthenticationToken result = new JwtAuthenticationToken(principal);
+        UserAuthenticationToken result = new UserAuthenticationToken(principal);
         result.setDetails(authentication.getDetails());
 
         log.debug("Authenticated user");

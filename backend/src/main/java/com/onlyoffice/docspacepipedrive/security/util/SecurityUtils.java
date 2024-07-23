@@ -1,7 +1,7 @@
 package com.onlyoffice.docspacepipedrive.security.util;
 
 import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.security.jwt.JwtAuthenticationToken;
+import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,7 +29,7 @@ public final class SecurityUtils {
 
         final R result;
         try {
-            securityContext.setAuthentication(new JwtAuthenticationToken(user));
+            securityContext.setAuthentication(new UserAuthenticationToken(user));
 
             result = runAsWork.doWork();
             return result;

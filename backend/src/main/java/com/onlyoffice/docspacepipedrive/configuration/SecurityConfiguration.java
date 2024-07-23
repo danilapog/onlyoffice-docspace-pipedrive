@@ -1,9 +1,9 @@
 package com.onlyoffice.docspacepipedrive.configuration;
 
 import com.onlyoffice.docspacepipedrive.security.AuthenticationEntryPointImpl;
-import com.onlyoffice.docspacepipedrive.security.ClientRegistrationAuthenticationProvider;
-import com.onlyoffice.docspacepipedrive.security.basic.WebhookAuthenticationProvider;
-import com.onlyoffice.docspacepipedrive.security.jwt.JwtAuthenticationProvider;
+import com.onlyoffice.docspacepipedrive.security.provider.ClientRegistrationAuthenticationProvider;
+import com.onlyoffice.docspacepipedrive.security.provider.WebhookAuthenticationProvider;
+import com.onlyoffice.docspacepipedrive.security.provider.JwtAuthenticationProvider;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

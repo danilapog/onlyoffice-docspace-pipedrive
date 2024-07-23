@@ -1,14 +1,15 @@
-package com.onlyoffice.docspacepipedrive.security.basic;
+package com.onlyoffice.docspacepipedrive.security.token;
 
 import com.onlyoffice.docspacepipedrive.entity.User;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 import java.util.Collection;
 
-public class WebhookAuthenticationToken extends AbstractAuthenticationToken {
+
+public class UserAuthenticationToken extends AbstractAuthenticationToken {
     private final User principal;
 
-    public WebhookAuthenticationToken(User principal) {
+    public UserAuthenticationToken(User principal) {
         super((Collection)null);
         this.principal = principal;
         this.setAuthenticated(true);

@@ -1,5 +1,6 @@
-package com.onlyoffice.docspacepipedrive.security;
+package com.onlyoffice.docspacepipedrive.security.provider;
 
+import com.onlyoffice.docspacepipedrive.security.token.ClientRegistrationAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.MessageSourceAccessor;
