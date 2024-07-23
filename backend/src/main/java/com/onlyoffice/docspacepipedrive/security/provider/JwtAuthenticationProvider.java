@@ -48,7 +48,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         Map<String, Object> body;
         try {
             body = Jwts.parser()
-                    .setSigningKey(secret)
+                    .setSigningKey(secret.getBytes())
                     .parseClaimsJws(bearer.getToken())
                     .getBody();
         } catch (Exception e) {
