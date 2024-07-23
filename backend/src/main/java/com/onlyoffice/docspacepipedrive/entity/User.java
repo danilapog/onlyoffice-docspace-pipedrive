@@ -59,7 +59,7 @@ public class User {
     private DocspaceAccount docspaceAccount;
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @ToString.Exclude
-    private List<Webhook> webhook;
+    private List<Webhook> webhooks;
     @ManyToOne
     @JoinColumn(name = "client_id")
     @ToString.Exclude
