@@ -17,8 +17,6 @@ spring:
             authorization-uri: https://oauth.pipedrive.com/oauth/authorize
             token-uri: https://oauth.pipedrive.com/oauth/token
     jwt:
-      header: Authorization
-      prefix: Bearer
       client-name-attribute: companyId
       user-name-attribute: userId
   jpa:

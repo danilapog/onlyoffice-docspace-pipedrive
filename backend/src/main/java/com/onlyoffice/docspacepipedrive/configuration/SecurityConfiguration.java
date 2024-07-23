@@ -1,22 +1,26 @@
 package com.onlyoffice.docspacepipedrive.configuration;
 
 import com.onlyoffice.docspacepipedrive.security.AuthenticationEntryPointImpl;
-import com.onlyoffice.docspacepipedrive.security.jwt.JwtAuthenticationFilter;
+import com.onlyoffice.docspacepipedrive.security.jwt.JwtAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2LogoutFilter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -27,16 +31,14 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@Slf4j
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-
     private final OAuth2LogoutFilter oAuth2LogoutFilter;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   BearerTokenAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .authorizeHttpRequests(auth -> {
                     auth
@@ -66,6 +68,7 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+
     //ToDo: Modify Cors settings
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
@@ -80,5 +83,26 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
+    }
+
+    @Bean
+    BearerTokenAuthenticationFilter jwtAuthenticationFilter(HttpSecurity http,
+                                                            JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
+        var authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        authenticationManagerBuilder.authenticationProvider(jwtAuthenticationProvider);
+
+        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+
+        BearerTokenAuthenticationFilter jwtAuthenticationFilter = new BearerTokenAuthenticationFilter(authenticationManager) {
+            @Override
+            protected boolean shouldNotFilter(HttpServletRequest request)  {
+                return new AntPathRequestMatcher("/api/v1/webhook/**").matches(request);
+            }
+        };
+
+        jwtAuthenticationFilter.setAuthenticationEntryPoint(authenticationEntryPoint);
+
+        return jwtAuthenticationFilter;
     }
 }
