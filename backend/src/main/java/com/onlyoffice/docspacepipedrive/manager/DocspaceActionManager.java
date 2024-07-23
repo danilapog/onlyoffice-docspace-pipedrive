@@ -87,6 +87,44 @@ public class DocspaceActionManager {
         } //ToDo: do something if shared group is null
     }
 
+    public void inviteSharedGroupToRoom(Long roomId) {
+        User currentUser = SecurityUtils.getCurrentUser();
+
+        if (currentUser.getClient().getSettings().getSharedGroupId() != null) {
+            DocspaceRoomInvitation docspaceRoomInvitation =
+                    new DocspaceRoomInvitation(
+                            currentUser.getClient().getSettings().getSharedGroupId(),
+                            DocspaceAccess.EDITING
+                    );
+
+            DocspaceRoomInvitationRequest docspaceRoomInvitationRequest = DocspaceRoomInvitationRequest.builder()
+                    .invitations(Collections.singletonList(docspaceRoomInvitation))
+                    .message("Invitation message")
+                    .notify(true)
+                    .build();
+
+            docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+        } //ToDo: do something if shared group is null
+    }
+
+    public void removeSharedGroupFromRoom(Long roomId) {
+        User currentUser = SecurityUtils.getCurrentUser();
+
+        if (currentUser.getClient().getSettings().getSharedGroupId() != null) {
+            DocspaceRoomInvitation docspaceRoomInvitation =
+                    new DocspaceRoomInvitation(
+                            currentUser.getClient().getSettings().getSharedGroupId(),
+                            DocspaceAccess.NONE
+                    );
+
+            DocspaceRoomInvitationRequest docspaceRoomInvitationRequest = DocspaceRoomInvitationRequest.builder()
+                    .invitations(Collections.singletonList(docspaceRoomInvitation))
+                    .notify(false)
+                    .build();
+
+            docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+        } //ToDo: do something if shared group is null
+    }
 
     public void inviteListDocspaceAccountsToRoom(Long roomId, List<DocspaceAccount> docspaceAccounts) {
         List<UUID> docspaceUnpaidUsers = docspaceClient.findUsers(2) //employeeType 2 = User
@@ -115,6 +153,24 @@ public class DocspaceActionManager {
                     .invitations(invitations)
                     .message("Invitation message")
                     .notify(true)
+                    .build();
+
+            docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+        }
+    }
+
+    public void removeListDocspaceAccountsFromRoom(Long roomId, List<DocspaceAccount> docspaceAccounts) {
+        List<DocspaceRoomInvitation> invitations = docspaceAccounts.stream()
+                .map(docspaceAccount -> new DocspaceRoomInvitation(
+                        docspaceAccount.getUuid(),
+                        DocspaceAccess.NONE
+                ))
+                .toList();
+
+        if (invitations.size() > 0) {
+            DocspaceRoomInvitationRequest docspaceRoomInvitationRequest = DocspaceRoomInvitationRequest.builder()
+                    .invitations(invitations)
+                    .notify(false)
                     .build();
 
             docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
