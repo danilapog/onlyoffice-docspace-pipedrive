@@ -1,10 +1,13 @@
 package com.onlyoffice.docspacepipedrive.web.controller;
 
+import com.onlyoffice.docspacepipedrive.entity.Client;
+import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.login.UninstallRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +25,7 @@ import java.net.URI;
 public class LoginController {
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final UserService userService;
+    private final ClientService clientService;
 
     //ToDo: redirect to page in marketplace if user cancel installation
     @GetMapping("/oauth2/code/pipedrive")
@@ -36,7 +40,14 @@ public class LoginController {
     }
 
     @DeleteMapping("oauth2/code/pipedrive")
+    @Transactional
     public void uninstall(@RequestBody UninstallRequest request) {
+        Client client = clientService.findById(request.getCompanyId());
+
+        if (client.getSystemUser() != null) {
+            clientService.unsetSystemUser(request.getCompanyId());
+        }
+
         userService.deleteByUserIdAndClientId(request.getUserId(), request.getCompanyId());
     }
 }
