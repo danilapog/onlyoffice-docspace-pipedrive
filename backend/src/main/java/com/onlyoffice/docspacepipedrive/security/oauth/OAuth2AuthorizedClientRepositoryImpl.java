@@ -90,7 +90,10 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
     }
 
     @Override
-    public void removeAuthorizedClient(String clientRegistrationId, Authentication principal,
+    public void removeAuthorizedClient(String clientRegistrationId, Authentication authentication,
                                        HttpServletRequest request, HttpServletResponse response) {
+        User user = (User) authentication.getPrincipal();
+
+        userService.deleteByUserIdAndClientId(user.getUserId(), user.getClient().getId());
     }
 }
