@@ -1,6 +1,5 @@
 package com.onlyoffice.docspacepipedrive.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +17,6 @@ import java.io.IOException;
 @Primary
 @Slf4j
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
-    private final ObjectMapper objectMapper = new ObjectMapper();
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
