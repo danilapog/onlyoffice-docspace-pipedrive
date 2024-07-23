@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Component
@@ -138,6 +139,23 @@ public class PipedriveClient {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveWebhook>>() {})
                 .map(PipedriveResponse<PipedriveWebhook>::getData)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new PipedriveWebClientResponseException(e));
+                })
+                .onErrorResume(OAuth2AuthorizationException.class, e -> {
+                    return Mono.error(new PipedriveOAuth2AuthorizationException(e));
+                })
+                .block();
+    }
+
+    public void deleteWebhook(Long id) {
+        pipedriveWebClient.delete()
+                .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
+                        .path("/v1/webhooks/{id}")
+                        .build(id)
+                )
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new PipedriveWebClientResponseException(e));
                 })
