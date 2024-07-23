@@ -13,8 +13,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
@@ -22,6 +22,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 
 @AllArgsConstructor
@@ -55,6 +57,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
     @ToString.Exclude
     private DocspaceAccount docspaceAccount;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @ToString.Exclude
+    private List<Webhook> webhook;
     @ManyToOne
     @JoinColumn(name = "client_id")
     @ToString.Exclude
