@@ -1,15 +1,16 @@
 package com.onlyoffice.docspacepipedrive.configuration;
 
 import com.onlyoffice.docspacepipedrive.security.AuthenticationEntryPointImpl;
+import com.onlyoffice.docspacepipedrive.security.ClientRegistrationAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.basic.WebhookAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.jwt.JwtAuthenticationProvider;
-import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2LogoutFilter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,17 +36,18 @@ import java.util.Arrays;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-    private final OAuth2LogoutFilter oAuth2LogoutFilter;
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   BasicAuthenticationFilter clientRegistrationAuthenticationFilter,
                                                    BearerTokenAuthenticationFilter jwtAuthenticationFilter,
                                                    BasicAuthenticationFilter webhookAuthenticationFilter) throws Exception {
         http
                 .authorizeHttpRequests(auth -> {
                     auth
                             .requestMatchers("/api/**").authenticated()
+                            .requestMatchers(HttpMethod.DELETE, "/login/oauth2/code/{registrationId}").authenticated()
                             .anyRequest().permitAll();
                 })
                 .oauth2Client(httpSecurityOAuth2ClientConfigurer -> {
@@ -65,7 +67,7 @@ public class SecurityConfiguration {
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterAfter(new ForwardedHeaderFilter(), WebAsyncManagerIntegrationFilter.class)
-                .addFilterBefore(oAuth2LogoutFilter, OAuth2AuthorizationCodeGrantFilter.class)
+                .addFilterBefore(clientRegistrationAuthenticationFilter, OAuth2AuthorizationCodeGrantFilter.class)
                 .addFilterAfter(jwtAuthenticationFilter, OAuth2AuthorizationCodeGrantFilter.class)
                 .addFilterAfter(webhookAuthenticationFilter, OAuth2AuthorizationCodeGrantFilter.class);
 
@@ -89,6 +91,25 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    BasicAuthenticationFilter clientRegistrationAuthenticationFilter(HttpSecurity http,
+                                                                     ClientRegistrationAuthenticationProvider clientRegistrationAuthenticationProvider)
+            throws Exception {
+        var authManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        authManagerBuilder.authenticationProvider(clientRegistrationAuthenticationProvider);
+
+        AuthenticationManager authenticationManager = authManagerBuilder.build();
+        return new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint) {
+            @Override
+            protected boolean shouldNotFilter(HttpServletRequest request) {
+                return new NegatedRequestMatcher(
+                        new AntPathRequestMatcher("/login/oauth2/code/{registrationId}", "DELETE")
+                ).matches(request);
+            }
+        };
+    }
+
+    @Bean
     BearerTokenAuthenticationFilter jwtAuthenticationFilter(HttpSecurity http,
                                                             JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
         var authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
@@ -99,7 +120,7 @@ public class SecurityConfiguration {
 
         BearerTokenAuthenticationFilter jwtAuthenticationFilter = new BearerTokenAuthenticationFilter(authenticationManager) {
             @Override
-            protected boolean shouldNotFilter(HttpServletRequest request)  {
+            protected boolean shouldNotFilter(HttpServletRequest request) {
                 return new AntPathRequestMatcher("/api/v1/webhook/**").matches(request);
             }
         };
@@ -120,7 +141,7 @@ public class SecurityConfiguration {
 
         return new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint) {
             @Override
-            protected boolean shouldNotFilter(HttpServletRequest request)  {
+            protected boolean shouldNotFilter(HttpServletRequest request) {
                 return new NegatedRequestMatcher(new AntPathRequestMatcher("/api/v1/webhook/**")).matches(request);
             }
         };
