@@ -6,6 +6,7 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.web.aop.Execution;
@@ -31,6 +32,7 @@ public class RoomController {
     private final RoomMapper roomMapper;
     private final PipedriveClient pipedriveClient;
     private final DocspaceClient docspaceClient;
+    private final DocspaceActionManager docspaceActionManager;
 
     @GetMapping("/{dealId}")
     public ResponseEntity<RoomResponse> findByDealId(@PathVariable Long dealId) {
@@ -48,6 +50,10 @@ public class RoomController {
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
 
         DocspaceRoom docspaceRoom = docspaceClient.createRoom(pipedriveDeal.getTitle(), 2);
+
+        if (pipedriveDeal.getVisibleTo().equals(3)) {
+            docspaceActionManager.inviteSharedGroupToRoom(docspaceRoom.getId());
+        }
 
         Room room = Room.builder()
                 .roomId(docspaceRoom.getId())
