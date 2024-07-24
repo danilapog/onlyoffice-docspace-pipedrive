@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriBuilderFactory;
@@ -63,12 +64,15 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
                 .headers((headers) -> {
                     headers.setContentType(MediaType.APPLICATION_JSON);
                 })
+                .attributes(attributes -> {
+                    attributes.put(User.class.getName(), user);
+                })
                 .url(uri)
                 .build();
     }
 
     private Mono<ClientRequest> authorize(ClientRequest request) {
-        User user = SecurityUtils.getCurrentUser();
+        User user = (User) request.attribute(User.class.getName()).get();
 
         return Mono.defer(() -> {
             DocspaceAccount docspaceAccount = user.getDocspaceAccount();
@@ -84,7 +88,7 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
     }
 
     private Mono<ClientRequest> reauthorize(ClientRequest request) {
-        User user = SecurityUtils.getCurrentUser();
+        User user = (User) request.attribute(User.class.getName()).get();
 
         return login(user).map(token -> {
             return docspaceAccountService.saveToken(
@@ -94,6 +98,12 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
         }).map(docspaceToken -> {
             user.getDocspaceAccount().setDocspaceToken(docspaceToken);
             return setAuthorizationToRequest(request, docspaceToken);
+        }).onErrorResume(WebClientResponseException.class, e -> {
+            if (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+                docspaceAccountService.deleteById(user.getId());
+            }
+
+            return Mono.error(e);
         });
     }
 
