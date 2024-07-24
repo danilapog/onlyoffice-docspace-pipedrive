@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 @RestController
@@ -46,8 +48,20 @@ public class UserController {
     @GetMapping
     public ResponseEntity<UserResponse> getUser() {
         User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentUser().getClient();
 
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
+
+        UriComponents clientUri = UriComponentsBuilder.newInstance()
+                .scheme("https")
+                .host(pipedriveUser.getCompanyDomain() + ".pipedrive.com")
+                .build();
+
+        if (!currentUser.getClient().getUrl().equals(clientUri.toUriString())) {
+            currentClient.setUrl(clientUri.toUriString());
+            Client updatedClient = clientService.update(currentClient);
+            currentUser.setClient(updatedClient);
+        }
 
         DocspaceUser docspaceUser = null;
         try {
