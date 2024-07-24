@@ -13,8 +13,10 @@ import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.aop.Execution;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
@@ -32,26 +34,19 @@ public class ExecuteDocspaceActionAspect {
     private final PipedriveClient pipedriveClient;
     private final UserService userService;
 
-    private boolean afterThrowing = false;
-
-
-    @Before("@annotation(executeDocspaceAction)")
-    public void before(JoinPoint joinPoint, ExecuteDocspaceAction executeDocspaceAction) {
+    @Around("@annotation(executeDocspaceAction)")
+    public Object before(ProceedingJoinPoint joinPoint, ExecuteDocspaceAction executeDocspaceAction) throws Throwable {
         if (executeDocspaceAction.execution().equals(Execution.BEFORE)) {
             execute(executeDocspaceAction.action(), joinPoint);
         }
-    }
 
-    @After("@annotation(executeDocspaceAction)")
-    public void after(JoinPoint joinPoint, ExecuteDocspaceAction executeDocspaceAction) {
-        if (executeDocspaceAction.execution().equals(Execution.AFTER) && !afterThrowing) {
+        Object result = joinPoint.proceed();
+
+        if (executeDocspaceAction.execution().equals(Execution.AFTER)) {
             execute(executeDocspaceAction.action(), joinPoint);
         }
-    }
 
-    @AfterThrowing(pointcut = "@annotation(ExecuteDocspaceAction)", throwing = "exception")
-    public void afterThrowing(JoinPoint joinPoint, Exception exception) {
-        this.afterThrowing = true;
+        return result;
     }
 
     private void execute(DocspaceAction docspaceAction, JoinPoint joinPoint) {

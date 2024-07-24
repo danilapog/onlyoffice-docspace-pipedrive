@@ -6,8 +6,10 @@ import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.web.aop.Execution;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
@@ -19,31 +21,22 @@ import org.springframework.stereotype.Component;
 public class ExecutePipedriveActionAspect {
     private final PipedriveActionManager pipedriveActionManager;
 
-    private boolean afterThrowing = false;
-
-
-    @Before("@annotation(executePipedriveAction)")
-    public void before(JoinPoint joinPoint, ExecutePipedriveAction executePipedriveAction) {
+    @Around("@annotation(executePipedriveAction)")
+    public Object run(ProceedingJoinPoint joinPoint, ExecutePipedriveAction executePipedriveAction) throws Throwable {
         if (executePipedriveAction.execution().equals(Execution.BEFORE)) {
             execute(executePipedriveAction.action(), joinPoint);
         }
-    }
 
-    @After("@annotation(executePipedriveAction)")
-    public void after(JoinPoint joinPoint, ExecutePipedriveAction executePipedriveAction) {
-        if (executePipedriveAction.execution().equals(Execution.AFTER) && !afterThrowing) {
+        Object result = joinPoint.proceed();
+
+        if (executePipedriveAction.execution().equals(Execution.AFTER)) {
             execute(executePipedriveAction.action(), joinPoint);
         }
-    }
 
-    @AfterThrowing(pointcut = "@annotation(ExecutePipedriveAction)", throwing = "exception")
-    public void afterThrowing(JoinPoint joinPoint, Exception exception) {
-        this.afterThrowing = true;
+        return result;
     }
 
     private void execute(PipedriveAction pipedriveAction, JoinPoint joinPoint) {
-        User currentUser = SecurityUtils.getCurrentUser();
-
         switch (pipedriveAction){
             case INIT_WEBHOOKS:
                 pipedriveActionManager.initWebhooks();
