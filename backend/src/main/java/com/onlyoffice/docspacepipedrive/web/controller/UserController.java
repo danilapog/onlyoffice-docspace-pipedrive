@@ -52,6 +52,10 @@ public class UserController {
         DocspaceUser docspaceUser = null;
         try {
             docspaceUser = docspaceClient.getUser(currentUser.getDocspaceAccount().getUuid());
+
+            if (!currentUser.getDocspaceAccount().getUuid().equals(docspaceUser.getId())) {
+                docspaceAccountService.deleteById(currentUser.getId());
+            }
         } catch (Exception e) {
             //ToDo
         }
@@ -143,10 +147,6 @@ public class UserController {
         User currentUser = SecurityUtils.getCurrentUser();
 
         docspaceAccountService.deleteById(currentUser.getId());
-
-        if (currentUser.isSystemUser()) {
-            clientService.unsetSystemUser(currentUser.getClient().getId());
-        }
 
         return ResponseEntity.noContent().build();
     }
