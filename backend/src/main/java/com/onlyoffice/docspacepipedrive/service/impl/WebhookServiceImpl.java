@@ -5,6 +5,7 @@ import com.onlyoffice.docspacepipedrive.exceptions.WebhookNotFoundException;
 import com.onlyoffice.docspacepipedrive.repository.WebhookRepository;
 import com.onlyoffice.docspacepipedrive.service.WebhookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class WebhookServiceImpl implements WebhookService {
     private final WebhookRepository webhookRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Webhook findById(UUID id) {
@@ -29,6 +31,7 @@ public class WebhookServiceImpl implements WebhookService {
 
     @Override
     public Webhook save(Webhook webhook) {
+        webhook.setPassword(passwordEncoder.encode(webhook.getPassword()));
         return webhookRepository.save(webhook);
     }
 

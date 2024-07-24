@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -25,7 +26,7 @@ import java.util.UUID;
 @Slf4j
 public class WebhookAuthenticationProvider implements AuthenticationProvider {
     private final WebhookService webhookService;
-
+    private final PasswordEncoder passwordEncoder;
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
     @Override
@@ -41,7 +42,7 @@ public class WebhookAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException(e.getMessage());
         }
 
-        if (!webhook.getPassword().equals(authentication.getCredentials())) {
+        if (!passwordEncoder.matches(authentication.getCredentials().toString(), webhook.getPassword())) {
             throw new BadCredentialsException(
                     this.messages.getMessage("WebhookAuthenticationProvider.badCredentials", "Bad credentials")
             );

@@ -41,7 +41,7 @@ public class PipedriveActionManager {
                 .eventAction("updated")
                 .eventObject("deal")
                 .httpAuthUser(savedWebhook.getId().toString())
-                .httpAuthPassword(savedWebhook.getPassword())
+                .httpAuthPassword(webhook.getPassword())
                 .build();
 
         pipedriveWebhook = pipedriveClient.createWebhook(pipedriveWebhook);
