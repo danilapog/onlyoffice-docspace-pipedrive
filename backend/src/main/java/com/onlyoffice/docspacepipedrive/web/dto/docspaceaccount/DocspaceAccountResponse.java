@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class DocspaceAccountResponse {
     private String userName;
     private String passwordHash;
+    private Boolean canCreateRoom;
 }
