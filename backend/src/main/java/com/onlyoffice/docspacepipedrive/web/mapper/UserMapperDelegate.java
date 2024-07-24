@@ -24,7 +24,8 @@ public abstract class UserMapperDelegate implements UserMapper {
         if (user.getDocspaceAccount() != null && docspaceUser != null) {
             DocspaceAccountResponse docspaceAccountResponse = new DocspaceAccountResponse(
                     docspaceUser.getEmail(),
-                    user.getDocspaceAccount().getPasswordHash()
+                    user.getDocspaceAccount().getPasswordHash(),
+                    docspaceUser.getIsOwner() || docspaceUser.getIsAdmin() || docspaceUser.getIsRoomAdmin()
             );
 
             userResponse.setDocspaceAccount(docspaceAccountResponse);
