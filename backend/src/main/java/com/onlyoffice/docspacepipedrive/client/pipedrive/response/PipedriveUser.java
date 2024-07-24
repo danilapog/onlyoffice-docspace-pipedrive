@@ -9,11 +9,13 @@ import java.util.UUID;
 
 
 @Data
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PipedriveUser {
     private Long id;
     private String name;
     private Language language;
     private List<Access> access;
+    private String companyDomain;
 
     @Data
     @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
