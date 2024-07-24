@@ -4,15 +4,18 @@ import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 import com.onlyoffice.docspacepipedrive.repository.DocspaceAccountRepository;
+import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
 @RequiredArgsConstructor
 public class DocspaceAccountServiceImpl implements DocspaceAccountService {
+    private final ClientService clientService;
     private final UserService userService;
     private final DocspaceAccountRepository docspaceAccountRepository;
 
@@ -46,7 +49,14 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
+        User user = userService.findById(id);
+
         docspaceAccountRepository.deleteById(id);
+
+        if (user.isSystemUser()) {
+            clientService.unsetSystemUser(user.getClient().getId());
+        }
     }
 }
