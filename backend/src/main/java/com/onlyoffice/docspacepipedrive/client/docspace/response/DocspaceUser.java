@@ -9,6 +9,7 @@ import java.util.UUID;
 public class DocspaceUser {
     private UUID id;
     private String email;
+    private Boolean isOwner;
     private Boolean isAdmin;
     private Boolean isRoomAdmin;
     private Boolean isVisitor;
