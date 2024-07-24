@@ -6,9 +6,11 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealF
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
+import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
@@ -34,11 +36,18 @@ public class WebhookController {
     private final RoomService roomService;
     private final UserService userService;
     private final DocspaceActionManager docspaceActionManager;
+    private final PipedriveActionManager pipedriveActionManager;
 
     @PostMapping("/deal")
     public void updatedDeal(@RequestBody WebhookDealRequest request) {
         PipedriveDeal currentDeal = request.getCurrent();
         PipedriveDeal previousDeal = request.getPrevious();
+
+        User currentUser = SecurityUtils.getCurrentUser();
+        if (!currentUser.isSystemUser()) {
+            pipedriveActionManager.removeWebhooks();
+            throw new PipedriveAccessDeniedException(currentUser.getUserId());
+        }
 
         Room room;
         try {
