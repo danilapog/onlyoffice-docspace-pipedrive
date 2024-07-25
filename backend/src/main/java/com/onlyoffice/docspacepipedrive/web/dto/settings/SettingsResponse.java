@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SettingsResponse {
     private String url;
+    private Boolean existSystemUser;
 }

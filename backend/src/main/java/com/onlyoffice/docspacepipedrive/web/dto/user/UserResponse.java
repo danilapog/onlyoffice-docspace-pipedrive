@@ -14,9 +14,8 @@ import lombok.NoArgsConstructor;
 public class UserResponse {
     private Long id;
     private String name;
-    private Boolean system;
+    private Boolean isSystem;
     private Boolean isAdmin;
     private PipedriveUser.Language language;
     private DocspaceAccountResponse docspaceAccount;
-    private SettingsResponse docspaceSettings;
 }

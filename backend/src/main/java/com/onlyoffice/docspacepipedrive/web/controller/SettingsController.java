@@ -2,6 +2,7 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
@@ -32,18 +33,19 @@ public class SettingsController {
 
     @GetMapping
     public ResponseEntity<SettingsResponse> get() {
-        User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
 
         Settings settings;
         try {
-            settings = settingsService.findByClientId(currentUser.getClient().getId());
+            settings = settingsService.findByClientId(currentClient.getId());
         } catch (SettingsNotFoundException e) {
             settings = new Settings();
         }
 
         return ResponseEntity.ok(
                 settingsMapper.settingsToSettingsResponse(
-                        settings
+                        settings,
+                        currentClient.getSystemUser() != null
                 )
         );
     }
@@ -64,7 +66,10 @@ public class SettingsController {
         );
 
         return ResponseEntity.ok(
-                settingsMapper.settingsToSettingsResponse(savedSettings)
+                settingsMapper.settingsToSettingsResponse(
+                        savedSettings,
+                        currentUser.getClient().getSystemUser() != null
+                )
         );
     }
 }

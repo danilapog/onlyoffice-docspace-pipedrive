@@ -14,7 +14,7 @@ public abstract class UserMapperDelegate implements UserMapper {
         UserResponse userResponse = new UserResponse();
 
         userResponse.setId(user.getUserId());
-        userResponse.setSystem(user.isSystemUser());
+        userResponse.setIsSystem(user.isSystemUser());
         userResponse.setName(pipedriveUser.getName());
         userResponse.setIsAdmin(pipedriveUser.getAccess().stream()
                 .filter(access -> access.getApp().equals("sales") && access.getAdmin())
@@ -29,14 +29,6 @@ public abstract class UserMapperDelegate implements UserMapper {
             );
 
             userResponse.setDocspaceAccount(docspaceAccountResponse);
-        }
-
-        if (user.getClient().getSettings() != null) {
-            SettingsResponse settingsResponse = new SettingsResponse(
-                    user.getClient().getSettings().getUrl()
-            );
-
-            userResponse.setDocspaceSettings(settingsResponse);
         }
 
         return userResponse;
