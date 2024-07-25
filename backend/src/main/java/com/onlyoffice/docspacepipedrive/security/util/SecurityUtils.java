@@ -1,5 +1,6 @@
 package com.onlyoffice.docspacepipedrive.security.util;
 
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,6 +11,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public final class SecurityUtils {
+    public static Client getCurrentClient() {
+        User currentUser = getCurrentUser();
+
+        if (currentUser != null) {
+            return currentUser.getClient();
+        }
+
+        return null;
+    }
+
     public static User getCurrentUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
@@ -34,12 +45,9 @@ public final class SecurityUtils {
             result = runAsWork.doWork();
             return result;
         } catch (Throwable exception) {
-            if (exception instanceof RuntimeException)
-            {
+            if (exception instanceof RuntimeException) {
                 throw (RuntimeException) exception;
-            }
-            else
-            {
+            } else {
                 throw new RuntimeException("Error during run as.", exception);
             }
         } finally {
