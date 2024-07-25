@@ -56,7 +56,7 @@ export const SettingsPage: React.FC = () => {
         <OnlyofficeBackgroundError
           Icon={<CommonError className="mb-5" />}
           title={t("background.error.title.common",  "Error")}
-          subtitle={t("background.error.subtitle.plugin.not-active", "ONLYOFFICE DocSpace App is not available. Your administrator should be installed and configured this plugin.")}
+          subtitle={t("background.error.subtitle.plugin.not-active", "ONLYOFFICE DocSpace App is not yet available. Please wait until a Pipedrive Administrator configures the app settings.")}
         />
       )}
       {(user?.isAdmin || (settings?.url && settings.existSystemUser)) && (
