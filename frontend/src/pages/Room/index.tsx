@@ -98,6 +98,18 @@ export const RoomPage: React.FC = () => {
       return;
     }
 
+    if (!user?.docspaceAccount) {
+      setIError({
+        Icon: <CommonError />,
+        title: t("background.error.title", "Error"),
+        message: t("background.error.subtitle.docspace-authorization", "Can not get authorize in ONLYOFFICE DocSpace. Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings."),
+        button: t("button.settings", "Settings") || "Settings",
+        onClick: async () => await sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS})
+      });
+      setLoading(false);
+      return;
+    }
+
     getRoom(sdk, Number(parameters.get("selectedIds"))).then(response => {
       setConfig({...config, id: response.roomId, locale: i18next.language.split('-')[0]});
     }).catch(async (e) => {
