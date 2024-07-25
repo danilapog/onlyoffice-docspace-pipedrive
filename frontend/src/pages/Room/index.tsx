@@ -32,6 +32,7 @@ import { OnlyofficeSpinner } from "@components/spinner";
 import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 
 import CommonError from "@assets/common-error.svg";
+import DenniedError from "@assets/dennied-error.svg";
 import UnreachableError from "@assets/unreachable-error.svg";
 
 
@@ -110,6 +111,16 @@ export const RoomPage: React.FC = () => {
       setConfig({...config, id: response.roomId, locale: i18next.language.split('-')[0]});
     }).catch(async (e) => {
       if (e?.response?.status == 404) {
+        if(!user.docspaceAccount?.canCreateRoom) {
+          setIError({
+            Icon: <DenniedError />,
+            title: t("background.error.title.create-room", "Sorry, you don't have a permission to create rooms"),
+            message: t("background.error.subtitle.create-room", "Please ask a Pipedrive Administrator to create a room or contact a DocSpace admin to upgrade your role.")
+          });
+          setLoading(false);
+          return;
+        }
+
         await sdk.execute(Command.RESIZE, { height: 150 });
         setLoading(false);
       } else {
@@ -191,7 +202,7 @@ export const RoomPage: React.FC = () => {
           onClick={iError.onClick}
         />
       )}
-      {!loading && !config.id && !iError && (
+      {!loading && !config.id && !iError && user?.docspaceAccount?.canCreateRoom && (
         <div className="h-full p-5">
           <div
             className="w-full pb-4"

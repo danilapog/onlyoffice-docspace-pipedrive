@@ -83,7 +83,7 @@ export const AuthorizationSetting: React.FC = () => {
       } else {
         putDocspaceAccount(sdk, email, passwordHash, system).then(async () => {
           if (user) {
-            setUser({...user, docspaceAccount: {userName: email, passwordHash: ""}, system: system});
+            setUser({...user, docspaceAccount: {userName: email, passwordHash: "", canCreateRoom: false}, system: system});
           }
 
           await sdk.execute(Command.SHOW_SNACKBAR, {

@@ -33,6 +33,7 @@ export type UserResponse = {
 export type DocspaceAccount = {
   userName: string;
   passwordHash: string;
+  canCreateRoom: boolean;
 };
 
 export type DocspaceSettings = {

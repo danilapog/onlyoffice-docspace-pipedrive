@@ -1,7 +1,9 @@
 {
   "background.error.title.common": "Error",
+  "background.error.title.create-room": "Sorry, you don't have a permission to create rooms",
   "background.error.title.token-expired": "The document security token has expired",
   "background.error.subtitle.common": "Something went wrong. Please reload the app.",
+  "background.error.subtitle.create-room": "Please ask a Pipedrive Administrator to create a room or contact a DocSpace admin to upgrade your role.",
   "background.error.subtitle.token-expired": "Something went wrong. Please re-authorize the app.",
   "background.error.subtitle.docspace-authorization": "Can not get authorize in ONLYOFFICE DocSpace. Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings.",
   "background.error.subtitle.docspace-connection": "You are not connected to ONLYOFFICE DocSpace portal.",
