@@ -57,7 +57,7 @@ export const postSettings = async (
     retryCondition: (error) => error.status === 429,
   });
 
-  await client({
+  const response = await client({
     method: "POST",
     url: `/api/v1/settings`,
     headers: {
@@ -69,4 +69,6 @@ export const postSettings = async (
     },
     timeout: 10000,
   });
+
+  return response.data;
 };

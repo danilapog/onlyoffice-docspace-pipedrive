@@ -27,10 +27,10 @@ import { OnlyofficeSpinner } from "@components/spinner";
 import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 
 import { getUser } from "@services/user";
-import { getAppStatus } from "@services/appStatus";
+import { getSettings } from "@services/settings";
 
 import { UserResponse } from "src/types/user";
-import { AppStatusResponse } from "src/types/appStatus";
+import { SettingsResponse } from "src/types/settings";
 
 import CommonError from "@assets/common-error.svg";
 import TokenError from "@assets/token-error.svg";
@@ -44,8 +44,8 @@ export interface IAppContext {
   sdk: AppExtensionsSDK;
   user: UserResponse | undefined;
   setUser: (value: UserResponse) => void;
-  appStatus: AppStatusResponse | undefined;
-  setAppStatus: (value: AppStatusResponse) => void;
+  settings: SettingsResponse | undefined;
+  setSettings: (value: SettingsResponse) => void;
   error: AxiosError | undefined;
   setError: (value: AxiosError) => void;
 }
@@ -55,7 +55,7 @@ export const AppContext = React.createContext<IAppContext>({} as IAppContext);
 export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const [sdk, setSDK] = useState<AppExtensionsSDK>();
   const [user, setUser] = useState<UserResponse>();
-  const [appStatus, setAppStatus] = useState<AppStatusResponse>();
+  const [settings, setSettings] = useState<SettingsResponse>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>();
 
@@ -68,11 +68,11 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         setSDK(s);
         try {
           const user = await getUser(s);
-          const appStatus = await getAppStatus(s);  
+          const settings = await getSettings(s);  
 
           await i18next.changeLanguage(`${user.language.language_code}-${user.language.country_code}`);
           setUser(user);
-          setAppStatus(appStatus);
+          setSettings(settings);
         } catch (e) {
           setError(e);
         } finally {
@@ -117,7 +117,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         />
       )}
       {!loading && !error && sdk &&(
-        <AppContext.Provider value={{sdk, user, setUser, appStatus, setAppStatus, error, setError}}>{children}</AppContext.Provider>
+        <AppContext.Provider value={{sdk, user, setUser, settings, setSettings, error, setError}}>{children}</AppContext.Provider>
       )}
     </>
   );

@@ -24,31 +24,21 @@ import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
 import { OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
-import { OnlyofficeSpinner } from "@components/spinner";
 
-import { getSettings, postSettings } from "@services/settings";
+import { postSettings } from "@services/settings";
 
 import { AppContext } from "@context/AppContext";
+import { SettingsResponse } from "src/types/settings";
 
 const DOCSPACE_SYSTEM_FRAME_ID="docspace-system-frame"
 
 export const ConnectionSettings: React.FC= () => {
-  const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
+  const { settings, setSettings, sdk } = useContext(AppContext);
+
   const [saving, setSaving] = useState(false);
   const [showValidationMessage, setShowValidationMessage] = useState(false);
-  const [address, setAddress] = useState<string | undefined>("");
-
-  const { t } = useTranslation();
-  const { user, setUser, sdk, setError } = useContext(AppContext);
-
-  useEffect(() => {
-    getSettings(sdk).then(response => {
-      setAddress(response.url || "");
-      setLoading(false);
-    }).catch((e) => {
-      setError(e);
-    });
-  }, []);
+  const [address, setAddress] = useState<string | undefined>(settings?.url);
 
   const handleSettings = async () => {
     if (address) {
@@ -60,10 +50,8 @@ export const ConnectionSettings: React.FC= () => {
 
   const onAppReady = async () => {
     if (address) {
-      postSettings(sdk, address).then(async () => {
-        if (user) {
-          setUser({...user, docspaceSettings: {url: address}});
-        }
+      postSettings(sdk, address).then(async (response: SettingsResponse) => {
+        setSettings(response);
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
             "settings.connection.saving.ok",
@@ -126,52 +114,43 @@ export const ConnectionSettings: React.FC= () => {
 
   return (
     <>
-      {loading && (
-        <div className="h-full w-full flex justify-center items-center">
-          <OnlyofficeSpinner />
+      <div className="flex flex-col items-start pl-5 pr-5 pt-5 pb-3">
+        <div className="pb-2">
+          <OnlyofficeTitle
+            text={t("settings.connection.title", "Configure ONLYOFFICE DocSpace app settings")}
+          />
         </div>
-      )}
-      {!loading && (
-        <>
-          <div className="flex flex-col items-start pl-5 pr-5 pt-5 pb-3">
-            <div className="pb-2">
-              <OnlyofficeTitle
-                text={t("settings.connection.title", "Configure ONLYOFFICE DocSpace app settings")}
-              />
-            </div>
-            <p className="text-slate-800 font-normal text-base text-left">
-              {t(
-                "settings.connection.description",
-                `
-                This plugin allows multiple users to collaborate in real time,
-                save back those changes to Pipedrive and enables the users to edit
-                office documents from Pipedrive using ONLYOFFICE DocSpace Server.
-                `
-              )}
-            </p>
-          </div>
-          <div className="max-w-[320px]">
-            <div className="pl-5 pr-5 pb-2">
-              <OnlyofficeInput
-                text={t("settings.connection.inputs.address", "DocSpace Service Address")}
-                valid={showValidationMessage ? !!address : true}
-                disabled={saving}
-                value={address}
-                onChange={(e) => setAddress(stripTrailingSlash(e.target.value.trim()))}
-              />
-            </div>
-            <div className="flex justify-start items-center mt-4 ml-5">
-              <OnlyofficeButton
-                text={t("button.save", "Save")}
-                primary
-                disabled={saving}
-                onClick={handleSettings}
-              />
-            </div>
-          </div>
-        </>
-      )}
-      {!loading && saving && address && (
+        <p className="text-slate-800 font-normal text-base text-left">
+          {t(
+            "settings.connection.description",
+            `
+            This plugin allows multiple users to collaborate in real time,
+            save back those changes to Pipedrive and enables the users to edit
+            office documents from Pipedrive using ONLYOFFICE DocSpace Server.
+            `
+          )}
+        </p>
+      </div>
+      <div className="max-w-[320px]">
+        <div className="pl-5 pr-5 pb-2">
+          <OnlyofficeInput
+            text={t("settings.connection.inputs.address", "DocSpace Service Address")}
+            valid={showValidationMessage ? !!address : true}
+            disabled={saving}
+            value={address}
+            onChange={(e) => setAddress(stripTrailingSlash(e.target.value.trim()))}
+          />
+        </div>
+        <div className="flex justify-start items-center mt-4 ml-5">
+          <OnlyofficeButton
+            text={t("button.save", "Save")}
+            primary
+            disabled={saving}
+            onClick={handleSettings}
+          />
+        </div>
+      </div>
+      {saving && address && (
         <div style={{ display: "none" }}>
           <DocSpace
             url={address}

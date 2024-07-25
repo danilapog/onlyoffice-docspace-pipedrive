@@ -75,21 +75,11 @@ export const RoomPage: React.FC = () => {
   } as TFrameConfig);
 
   const { t } = useTranslation();
-  const { user, appStatus, sdk, setError } = useContext(AppContext);
+  const { sdk, user, settings, setError } = useContext(AppContext);
   const { parameters } = getCurrentURL();
 
   useEffect(() => {
-    if(!appStatus?.isActive) {
-      setIError({
-        Icon: <CommonError />,
-        title: t("background.error.title", "Error"),
-        message: t("background.error.subtitle.plugin.not-active", "ONLYOFFICE DocSpace App is not available. Your administrator should be installed and configured this plugin."),
-      });
-      setLoading(false);
-      return;
-    }
-
-    if(!user?.docspaceSettings || !user?.docspaceSettings.url) {
+    if(!settings?.url) {
       setIError({
         Icon: <CommonError />,
         title: t("background.error.title", "Error"),
@@ -111,7 +101,7 @@ export const RoomPage: React.FC = () => {
       setConfig({...config, id: response.roomId, locale: i18next.language.split('-')[0]});
     }).catch(async (e) => {
       if (e?.response?.status == 404) {
-        if(!user.docspaceAccount?.canCreateRoom) {
+        if(!user?.docspaceAccount?.canCreateRoom) {
           setIError({
             Icon: <DenniedError />,
             title: t("background.error.title.create-room", "Sorry, you don't have a permission to create rooms"),
@@ -216,14 +206,14 @@ export const RoomPage: React.FC = () => {
           />
         </div>
       )}
-      {config.id && user && !iError && (
+      {config.id && user && settings?.url && !iError && (
         <div
           className={`w-full h-full
             ${!showDocspaceWindow ? "hidden" : ""}
           `}
         >
           <DocSpace
-            url={user.docspaceSettings.url}
+            url={settings.url}
             config={config}
             email={user?.docspaceAccount?.userName || "undefined"}
             onLoadComponentError={onLoadComponentError}

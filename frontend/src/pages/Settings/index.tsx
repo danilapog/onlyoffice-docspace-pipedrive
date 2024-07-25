@@ -35,7 +35,7 @@ type Section = {
 
 export const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
-  const { user, appStatus } = useContext(AppContext);
+  const { user, settings } = useContext(AppContext);
 
   const sections: Array<Section> = [
     {id: "conntection",  title: t("settings.connection.menu-item", "Connection"), available: true},
@@ -52,14 +52,14 @@ export const SettingsPage: React.FC = () => {
 
   return (
     <>
-      {!appStatus?.isActive && !user?.isAdmin && (
+      {(!user?.isAdmin && (!settings?.url || !settings.existSystemUser)) && (
         <OnlyofficeBackgroundError
           Icon={<CommonError className="mb-5" />}
           title={t("background.error.title.common",  "Error")}
           subtitle={t("background.error.subtitle.plugin.not-active", "ONLYOFFICE DocSpace App is not available. Your administrator should be installed and configured this plugin.")}
         />
       )}
-      {!(!appStatus?.isActive && !user?.isAdmin) && (
+      {(user?.isAdmin || (settings?.url && settings.existSystemUser)) && (
         <div className="w-screen h-screen">
           <div className="flex flex-row">
             <div className="basis-1/5 border-r-2 p-1">

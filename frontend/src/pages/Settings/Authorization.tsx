@@ -19,16 +19,15 @@ import { OnlyofficeCheckbox } from "@components/checkbox";
 const DOCSPACE_SYSTEM_FRAME_ID="docspace-system-frame"
 
 export const AuthorizationSetting: React.FC = () => {
+  const { t } = useTranslation();
+  const { user, settings, setUser, sdk } = useContext(AppContext);
+
   const [saving, setSaving] = useState(false);
-  const [deleting, setdDeleting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [showValidationMessage, setShowValidationMessage] = useState(false);
   const [email, setEmail] = useState<string | undefined>("");
   const [password, setPassword] = useState<string | undefined>("");
-
-  const { t } = useTranslation();
-  const { user, appStatus, setUser, sdk } = useContext(AppContext);
-
-  const [system, setSystem] = useState<boolean>(!appStatus?.isActive);
+  const [isSystem, setIsSystem] = useState<boolean>(!settings?.existSystemUser);
 
   const handleLogin = async () => {
     if (email && password) {
@@ -39,13 +38,14 @@ export const AuthorizationSetting: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    setdDeleting(true);
+    setDeleting(true);
     deleteDocspaceAccount(sdk).then(async () => {
       setEmail("");
       setPassword("");
+      setIsSystem(!!user?.isSystem);
       setShowValidationMessage(false);
       if (user) {
-        setUser({...user, docspaceAccount: null, system: false});
+        setUser({...user, docspaceAccount: null, isSystem: false});
       }
       await sdk.execute(Command.SHOW_SNACKBAR, {
         message: t(
@@ -62,7 +62,7 @@ export const AuthorizationSetting: React.FC = () => {
         ),
       });
     })
-    .finally(() => setdDeleting(false));
+    .finally(() => setDeleting(false));
   };
 
   const onAppReady = async () => {
@@ -81,9 +81,9 @@ export const AuthorizationSetting: React.FC = () => {
         });
         setSaving(false);
       } else {
-        putDocspaceAccount(sdk, email, passwordHash, system).then(async () => {
+        putDocspaceAccount(sdk, email, passwordHash, isSystem).then(async () => {
           if (user) {
-            setUser({...user, docspaceAccount: {userName: email, passwordHash: "", canCreateRoom: false}, system: system});
+            setUser({...user, docspaceAccount: {userName: email, passwordHash: "", canCreateRoom: false}, isSystem: isSystem});
           }
 
           await sdk.execute(Command.SHOW_SNACKBAR, {
@@ -139,7 +139,7 @@ export const AuthorizationSetting: React.FC = () => {
 
   return (
     <>
-      {(!user?.docspaceSettings || !user?.docspaceSettings.url) && (
+      {!settings?.url && (
         <OnlyofficeBackgroundError
           Icon={<CommonError />}
           title={t("background.error.title", "Error")}
@@ -152,7 +152,7 @@ export const AuthorizationSetting: React.FC = () => {
           }
         />
       )}
-      {user?.docspaceSettings && user?.docspaceSettings.url && (
+      {settings?.url && (
         <>
           <div className="flex flex-col items-start pl-5 pr-5 pt-5 pb-3">
             <div className="pb-2">
@@ -171,7 +171,7 @@ export const AuthorizationSetting: React.FC = () => {
                   className="pl-3"
                 >
                   {t("settings.authorization.status.authorized", "You have successfully logged in to your ONLYOFFICE DocSpace account")}
-                  {user.system && (
+                  {user.isSystem && (
                     <>
                       <br/>
                       {t("settings.authorization.status.system", "Current user is System Admin")}
@@ -213,10 +213,10 @@ export const AuthorizationSetting: React.FC = () => {
               {user?.isAdmin && (
                 <div className="pl-5 pr-5">
                   <OnlyofficeCheckbox
-                    checked={system}
+                    checked={isSystem}
                     text={t("settings.authorization.inputs.system", "System User (DocSpace administrator role required)")}
-                    disabled={!appStatus?.isActive}
-                    onChange={(e) => setSystem(!system)}
+                    disabled={!settings?.existSystemUser}
+                    onChange={(e) => setIsSystem(!isSystem)}
                   />
                 </div>
               )}
@@ -232,10 +232,10 @@ export const AuthorizationSetting: React.FC = () => {
           )}
         </>
       )}
-      {saving && user?.docspaceSettings.url && (
+      {saving && settings?.url && (
         <div hidden>
         <DocSpace
-          url={user?.docspaceSettings.url}
+          url={settings.url}
           config={
             {
               frameId: DOCSPACE_SYSTEM_FRAME_ID,

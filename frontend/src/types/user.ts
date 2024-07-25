@@ -20,14 +20,13 @@
 export type UserResponse = {
   id: string;
   name: string;
-  system: boolean;
+  isSystem: boolean;
   isAdmin: boolean;
   language: {
     country_code: string;
     language_code: string;
   }
   docspaceAccount: DocspaceAccount | null;
-  docspaceSettings: DocspaceSettings;
 };
 
 export type DocspaceAccount = {
