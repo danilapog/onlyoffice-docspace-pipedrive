@@ -26,28 +26,8 @@ public class PipedriveActionManager {
 
     @Transactional
     public void initWebhooks() {
-        User user = SecurityUtils.getCurrentUser();
-
-        Webhook webhook = Webhook.builder()
-                .name("deal.updated")
-                .user(user)
-                .password(RandomPasswordGenerator.generatePassword(32))
-                .build();
-
-        Webhook savedWebhook = webhookService.save(webhook);
-
-        PipedriveWebhook pipedriveWebhook = PipedriveWebhook.builder()
-                .subscriptionUrl(baseUrl + "/api/v1/webhook/deal")
-                .eventAction("updated")
-                .eventObject("deal")
-                .httpAuthUser(savedWebhook.getId().toString())
-                .httpAuthPassword(webhook.getPassword())
-                .build();
-
-        pipedriveWebhook = pipedriveClient.createWebhook(pipedriveWebhook);
-
-        savedWebhook.setWebhookId(pipedriveWebhook.getId());
-        webhookService.save(savedWebhook);
+        initWebhook("deal", "updated");
+        initWebhook("user", "updated");
     }
 
     @Transactional
@@ -60,5 +40,30 @@ public class PipedriveActionManager {
             pipedriveClient.deleteWebhook(webhook.getWebhookId());
             webhookService.deleteById(webhook.getId());
         }
+    }
+
+    private void initWebhook(String eventObject, String eventAction) {
+        User user = SecurityUtils.getCurrentUser();
+
+        Webhook webhook = Webhook.builder()
+                .name(eventObject + "." + eventAction)
+                .user(user)
+                .password(RandomPasswordGenerator.generatePassword(32))
+                .build();
+
+        Webhook savedWebhook = webhookService.save(webhook);
+
+        PipedriveWebhook pipedriveWebhook = PipedriveWebhook.builder()
+                .subscriptionUrl(baseUrl + "/api/v1/webhook/" + eventObject)
+                .eventAction(eventAction)
+                .eventObject(eventObject)
+                .httpAuthUser(savedWebhook.getId().toString())
+                .httpAuthPassword(webhook.getPassword())
+                .build();
+
+        pipedriveWebhook = pipedriveClient.createWebhook(pipedriveWebhook);
+
+        savedWebhook.setWebhookId(pipedriveWebhook.getId());
+        webhookService.save(savedWebhook);
     }
 }

@@ -1,5 +1,6 @@
 package com.onlyoffice.docspacepipedrive.client.pipedrive.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -14,6 +15,7 @@ public class PipedriveUser {
     private Long id;
     private String name;
     private Language language;
+    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<Access> access;
     private String companyDomain;
 

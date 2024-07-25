@@ -1,8 +1,10 @@
 package com.onlyoffice.docspacepipedrive.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollowerEvent;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
@@ -12,16 +14,16 @@ import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
-import com.onlyoffice.docspacepipedrive.web.dto.webhook.deal.WebhookDealRequest;
+import com.onlyoffice.docspacepipedrive.web.dto.webhook.WebhookRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +37,12 @@ public class WebhookController {
     private final PipedriveClient pipedriveClient;
     private final RoomService roomService;
     private final UserService userService;
+    private final ClientService clientService;
     private final DocspaceActionManager docspaceActionManager;
     private final PipedriveActionManager pipedriveActionManager;
 
     @PostMapping("/deal")
-    public void updatedDeal(@RequestBody WebhookDealRequest request) {
+    public void updatedDeal(@RequestBody WebhookRequest<PipedriveDeal> request) {
         PipedriveDeal currentDeal = request.getCurrent();
         PipedriveDeal previousDeal = request.getPrevious();
 
@@ -78,6 +81,40 @@ public class WebhookController {
             if (currentDeal.getFollowersCount() < previousDeal.getFollowersCount()) {
                 handleEventRemoveDealFollowers(currentDeal, room);
             }
+        }
+    }
+
+    @PostMapping("/user")
+    public void updatedUser(@RequestBody WebhookRequest<List<PipedriveUser>> request) throws JsonProcessingException {
+        List<PipedriveUser> currentUsers = request.getCurrent();
+        List<PipedriveUser> previousUsers = request.getPrevious();
+
+        User currentUser = SecurityUtils.getCurrentUser();
+        if (!currentUser.isSystemUser()) {
+            pipedriveActionManager.removeWebhooks();
+            throw new PipedriveAccessDeniedException(currentUser.getUserId());
+        }
+
+        boolean unsetSystemUser = currentUsers.stream()
+                .filter(pipedriveUser -> pipedriveUser.getId().equals(currentUser.getUserId()))
+                .filter(pipedriveUser -> !pipedriveUser.isSalesAdmin())
+                .filter(pipedriveUser -> {
+                    return previousUsers.stream()
+                            .filter(previousUser -> previousUser.getId().equals(pipedriveUser.getId()))
+                            .filter(previousUser -> previousUser.getAccess().stream()
+                                        .filter(access -> access.getAdmin())
+                                        .findFirst()
+                                        .orElse(null) != null
+                            )
+                            .findFirst()
+                            .orElse(null) != null;
+                })
+                .findFirst()
+                .orElse(null) != null;
+
+        if (unsetSystemUser) {
+            clientService.unsetSystemUser(currentUser.getClient().getId());
+            pipedriveActionManager.removeWebhooks();
         }
     }
 
