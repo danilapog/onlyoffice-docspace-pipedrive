@@ -34,6 +34,7 @@ import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 import CommonError from "@assets/common-error.svg";
 import DenniedError from "@assets/dennied-error.svg";
 import UnreachableError from "@assets/unreachable-error.svg";
+import { OnlyofficeSnackbar } from "@components/snackbar";
 
 
 const DOCSPACE_FRAME_ID="docspace-frame";
@@ -139,7 +140,6 @@ export const RoomPage: React.FC = () => {
           "Failed to create ONLYOFFICE DocSpace room!"
         ),
       });
-    }).finally(()=> {
       setLoading(false);
     });
   }
@@ -177,7 +177,7 @@ export const RoomPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex flex-col">
       {loading && (
         <div className="h-full w-full flex justify-center items-center">
           <OnlyofficeSpinner />
@@ -192,23 +192,33 @@ export const RoomPage: React.FC = () => {
           onClick={iError.onClick}
         />
       )}
-      {!loading && !config.id && !iError && user?.docspaceAccount?.canCreateRoom && (
-        <div className="h-full p-5">
-          <div
-            className="w-full pb-4"
-          >
-            {t("room.create.description", "Create ONLYOFFICE DocSpace room to easily collaborate on documents in this deal")}
-          </div>
-          <OnlyofficeButton
-            text={t("button.create.room", "Create room")}
-            primary
-            onClick={handleCreateRoom}
+      {!loading && !iError && !settings?.existSystemUser && (
+        <div className="w-full">
+          <OnlyofficeSnackbar
+            header="System user is not set"
+            text="Some features plugins must be not available"
           />
+        </div>
+      )}
+      {!loading && !config.id && !iError && user?.docspaceAccount?.canCreateRoom && (
+        <div className="h-full flex flex-row">
+          <div className="p-5">
+            <div
+              className="w-full pb-4"
+            >
+              {t("room.create.description", "Create ONLYOFFICE DocSpace room to easily collaborate on documents in this deal")}
+            </div>
+            <OnlyofficeButton
+              text={t("button.create.room", "Create room")}
+              primary
+              onClick={handleCreateRoom}
+            />
+          </div>
         </div>
       )}
       {config.id && user && settings?.url && !iError && (
         <div
-          className={`w-full h-full
+          className={`w-full h-full flex flex-row
             ${!showDocspaceWindow ? "hidden" : ""}
           `}
         >
