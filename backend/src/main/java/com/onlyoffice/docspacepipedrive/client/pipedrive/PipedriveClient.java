@@ -8,10 +8,13 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveRespo
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
+import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,6 +28,9 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class PipedriveClient {
+    @Value("${pipedrive.base-api-url}")
+    private String baseApiUrl;
+
     private final WebClient pipedriveWebClient;
 
     public PipedriveDeal getDeal(Long id) {
@@ -166,9 +172,12 @@ public class PipedriveClient {
     }
 
     private String getBaseUrl() {
-//        return SecurityUtils.getCurrentUser()
-//                .getClient()
-//                .getUrl();
-        return "https://api.pipedrive.com"; //ToDo:: base url from client
+        String clientUrl = SecurityUtils.getCurrentClient().getUrl();
+
+        if (StringUtils.hasText(clientUrl)) {
+            return clientUrl;
+        }
+
+        return baseApiUrl;
     }
 }

@@ -1,6 +1,9 @@
 app:
   base-url: ${BASE_URL}
 
+pipedrive:
+  base-api-url: https://api.pipedrive.com
+
 spring:
   security:
     oauth2:
