@@ -69,6 +69,7 @@ public class UserController {
 
             if (!currentUser.getDocspaceAccount().getUuid().equals(docspaceUser.getId())) {
                 docspaceAccountService.deleteById(currentUser.getId());
+                docspaceUser = null;
             }
         } catch (Exception e) {
             //ToDo
