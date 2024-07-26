@@ -2,6 +2,7 @@ app:
   base-url: ${BASE_URL}
 
 pipedrive:
+  base-url: https://app.pipedrive.com
   base-api-url: https://api.pipedrive.com
 
 spring:

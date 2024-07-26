@@ -5,6 +5,7 @@ import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.login.UninstallRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,9 @@ import java.net.URI;
 @RequestMapping("/login")
 @RequiredArgsConstructor
 public class LoginController {
+    @Value("${pipedrive.base-url}")
+    private String baseUrl;
+
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final UserService userService;
     private final ClientService clientService;
@@ -32,7 +36,7 @@ public class LoginController {
     public RedirectView loginByOAuth2CodePipedrive() {
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("pipedrive");
 
-        URI redirectUrl = UriComponentsBuilder.fromUriString("https://app.pipedrive.com")
+        URI redirectUrl = UriComponentsBuilder.fromUriString(baseUrl)
                 .path("/settings/marketplace/app/{clientId}/app-settings")
                 .build(clientRegistration.getClientId());
 
