@@ -31,13 +31,23 @@ public class LoginController {
     private final UserService userService;
     private final ClientService clientService;
 
-    //ToDo: redirect to page in marketplace if user cancel installation
     @GetMapping("/oauth2/code/pipedrive")
     public RedirectView loginByOAuth2CodePipedrive() {
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("pipedrive");
 
         URI redirectUrl = UriComponentsBuilder.fromUriString(baseUrl)
                 .path("/settings/marketplace/app/{clientId}/app-settings")
+                .build(clientRegistration.getClientId());
+
+        return new RedirectView(redirectUrl.toString());
+    }
+
+    @GetMapping(value = "/oauth2/code/pipedrive", params = "error=user_denied")
+    public RedirectView cancelInstall() {
+        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("pipedrive");
+
+        URI redirectUrl = UriComponentsBuilder.fromUriString("https://www.pipedrive.com")
+                .path("/marketplace/app/onlyoffice-doc-space/{clientId}")
                 .build(clientRegistration.getClientId());
 
         return new RedirectView(redirectUrl.toString());
