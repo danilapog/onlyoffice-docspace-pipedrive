@@ -153,7 +153,7 @@ export const ConnectionSettings: React.FC= () => {
       {saving && address && (
         <div style={{ display: "none" }}>
           <DocSpace
-            url={address}
+            url={address ?? ""}
             config={
               {
                 frameId: DOCSPACE_SYSTEM_FRAME_ID,
