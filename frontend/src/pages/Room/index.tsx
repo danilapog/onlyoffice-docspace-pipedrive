@@ -207,8 +207,11 @@ export const RoomPage: React.FC = () => {
       {!loading && !iError && !settings?.existSystemUser && (
         <div className="w-full">
           <OnlyofficeSnackbar
-            header="System user is not set"
-            text="Some features plugins must be not available"
+            header={t("notification.system-user.not-found", "System User is not set.")}
+            text={`${(user?.isAdmin)
+              ? t("notification.plugin.set-system-user", "Please go to Settings and set yourself as a System User.")
+              : t("notification.plugin.functionality-is-limited", "Plugin functionality is limited.")
+            }`}
           />
         </div>
       )}

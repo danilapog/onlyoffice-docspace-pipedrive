@@ -40,5 +40,8 @@
   "docspace.error.loading": "Error loading ONLYOFFICE DocSpace",
   "docspace.error.unreached": "ONLYOFFICE DocSpace cannot be reached",
   "docspace.error.csp": "The current domain is not set in the Content Security Policy (CSP) settings. Please add it via the Developer Tools section.",
-  "docspace.link.developer-tools": "Developer Tools section"
+  "docspace.link.developer-tools": "Developer Tools section",
+  "notification.system-user.not-found": "System User is not set.",
+  "notification.plugin.functionality-is-limited": "Plugin functionality is limited.",
+  "notification.plugin.set-system-user": "Please go to Settings and set yourself as a System User."
 }
