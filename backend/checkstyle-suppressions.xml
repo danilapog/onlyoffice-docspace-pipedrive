@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.0//EN"
+        "https://checkstyle.org/dtds/suppressions_1_0.dtd">
+
+<suppressions>
+    <suppress files=".*java" checks="JavadocPackage"/>
+    <suppress files=".*java" checks="JavadocVariable"/>
+    <suppress files=".*java" checks="MissingJavadocMethod"/>
+    <suppress files=".*java" checks="DesignForExtension"/>
+
+    <suppress files="Configuration.java" checks="LineLength"/>
+    <suppress files="Configuration.java" checks="MagicNumber"/>
+
+    <suppress files="Controller.java" checks="FinalParameters"/>
+
+    <suppress files="DocspacePipedriveApplication.java" checks="HideUtilityClassConstructor"/>
+</suppressions>
