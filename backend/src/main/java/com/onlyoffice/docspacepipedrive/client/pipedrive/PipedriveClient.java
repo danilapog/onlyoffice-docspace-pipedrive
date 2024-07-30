@@ -24,6 +24,7 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealF
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollowerEvent;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveResponse;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
@@ -147,6 +148,25 @@ public class PipedriveClient {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveUser>>() { })
                 .map(PipedriveResponse<PipedriveUser>::getData)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new PipedriveWebClientResponseException(e));
+                })
+                .onErrorResume(OAuth2AuthorizationException.class, e -> {
+                    return Mono.error(new PipedriveOAuth2AuthorizationException(e));
+                })
+                .block();
+    }
+
+    public PipedriveUserSettings getUserSettings() {
+        return pipedriveWebClient.get()
+                .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
+                        .path("/v1/userSettings")
+                        .build()
+                        .toUri()
+                )
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveUserSettings>>() { })
+                .map(PipedriveResponse<PipedriveUserSettings>::getData)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new PipedriveWebClientResponseException(e));
                 })

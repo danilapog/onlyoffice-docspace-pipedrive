@@ -23,6 +23,7 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollowerEvent;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.channels.Pipe;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,10 +82,19 @@ public class WebhookController {
 
         // Hook on change deal visible
         if (!currentDeal.getVisibleTo().equals(previousDeal.getVisibleTo())) {
-            // If deal visible for all users
-            if (currentDeal.getVisibleTo().equals(3)) {
+            PipedriveUserSettings pipedriveUserSettings = pipedriveClient.getUserSettings();
+
+            int visibleToEveryone = PipedriveDeal.VisibleTo.EVERYONE.integer();
+
+            if (pipedriveUserSettings.getAdvancedPermissions()) {
+                visibleToEveryone = PipedriveDeal.VisibleTo.EVERYONE_ADVANCED_PERMISSIONS.integer();
+            }
+
+            if (currentDeal.getVisibleTo().equals(visibleToEveryone)) {
                 docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
-            } else if (currentDeal.getVisibleTo().equals(1)) { // If deal visible for only followers
+            }
+
+            if (previousDeal.getVisibleTo().equals(visibleToEveryone)) {
                 docspaceActionManager.removeSharedGroupFromRoom(room.getRoomId());
             }
         }

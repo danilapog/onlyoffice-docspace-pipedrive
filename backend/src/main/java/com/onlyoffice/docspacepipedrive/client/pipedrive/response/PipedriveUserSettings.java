@@ -22,28 +22,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
-
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class PipedriveDeal {
-    private Long id;
-    private String title;
-    private Integer visibleTo;
-    private Integer followersCount;
-    private String updateTime;
-
-    public enum VisibleTo {
-        EVERYONE(3),
-        EVERYONE_ADVANCED_PERMISSIONS(7);
-
-        private final int id;
-
-        private VisibleTo(final int id) {
-            this.id = id;
-        }
-
-        public int integer() {
-            return id;
-        }
-    }
+public class PipedriveUserSettings {
+    private Boolean advancedPermissions;
 }

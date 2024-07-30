@@ -22,6 +22,7 @@ import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
@@ -64,12 +65,18 @@ public class RoomController {
     @ExecuteDocspaceAction(action = DocspaceAction.INVITE_DEAL_FOLLOWERS_TO_ROOM, execution = Execution.AFTER)
     public ResponseEntity<RoomResponse> create(@PathVariable Long dealId) {
         User user = SecurityUtils.getCurrentUser();
+        PipedriveUserSettings pipedriveUserSettings = pipedriveClient.getUserSettings();
 
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
 
         DocspaceRoom docspaceRoom = docspaceClient.createRoom(pipedriveDeal.getTitle(), 2);
 
-        if (pipedriveDeal.getVisibleTo().equals(3)) {
+        int visibleToEveryone = PipedriveDeal.VisibleTo.EVERYONE.integer();
+        if (pipedriveUserSettings.getAdvancedPermissions()) {
+            visibleToEveryone = PipedriveDeal.VisibleTo.EVERYONE_ADVANCED_PERMISSIONS.integer();
+        }
+
+        if (pipedriveDeal.getVisibleTo().equals(visibleToEveryone)) {
             docspaceActionManager.inviteSharedGroupToRoom(docspaceRoom.getId());
         }
 
