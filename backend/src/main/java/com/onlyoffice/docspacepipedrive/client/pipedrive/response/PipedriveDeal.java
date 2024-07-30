@@ -38,7 +38,7 @@ public class PipedriveDeal {
 
         private final int id;
 
-        private VisibleTo(final int id) {
+        VisibleTo(final int id) {
             this.id = id;
         }
 
