@@ -45,12 +45,15 @@ import java.util.UUID;
 public class WebhookAuthenticationProvider implements AuthenticationProvider {
     private final WebhookService webhookService;
     private final PasswordEncoder passwordEncoder;
-    protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+    private MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, authentication, () -> {
-            return this.messages.getMessage("WebhookAuthenticationProvider.onlySupports", "Only UsernamePasswordAuthenticationToken is supported");
+            return this.messages.getMessage(
+                    "WebhookAuthenticationProvider.onlySupports",
+                    "Only UsernamePasswordAuthenticationToken is supported"
+            );
         });
 
         Webhook webhook;
@@ -62,7 +65,10 @@ public class WebhookAuthenticationProvider implements AuthenticationProvider {
 
         if (!passwordEncoder.matches(authentication.getCredentials().toString(), webhook.getPassword())) {
             throw new BadCredentialsException(
-                    this.messages.getMessage("WebhookAuthenticationProvider.badCredentials", "Bad credentials")
+                    this.messages.getMessage(
+                            "WebhookAuthenticationProvider.badCredentials",
+                            "Bad credentials"
+                    )
             );
         }
 
@@ -70,11 +76,11 @@ public class WebhookAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public boolean supports(Class<?> authentication) {
+    public boolean supports(final Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    protected Authentication createSuccessAuthentication(User principal, Authentication authentication) {
+    protected Authentication createSuccessAuthentication(final User principal, final Authentication authentication) {
         UserAuthenticationToken result = new UserAuthenticationToken(principal);
         result.setDetails(authentication.getDetails());
 

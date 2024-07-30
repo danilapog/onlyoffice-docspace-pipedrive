@@ -37,24 +37,24 @@ public class WebhookServiceImpl implements WebhookService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Webhook findById(UUID id) {
+    public Webhook findById(final UUID id) {
         return webhookRepository.findById(id).
                 orElseThrow(() -> new WebhookNotFoundException(id));
     }
 
     @Override
-    public List<Webhook> findAllByUserId(Long userId) {
+    public List<Webhook> findAllByUserId(final Long userId) {
         return webhookRepository.findAllByUserId(userId);
     }
 
     @Override
-    public Webhook save(Webhook webhook) {
+    public Webhook save(final Webhook webhook) {
         webhook.setPassword(passwordEncoder.encode(webhook.getPassword()));
         return webhookRepository.save(webhook);
     }
 
     @Override
-    public void deleteById(UUID id) {
+    public void deleteById(final UUID id) {
         webhookRepository.deleteById(id);
     }
 }

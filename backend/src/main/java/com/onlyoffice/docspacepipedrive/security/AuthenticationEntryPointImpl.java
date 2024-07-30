@@ -36,8 +36,8 @@ import java.io.IOException;
 @Slf4j
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException, ServletException {
+    public void commence(final HttpServletRequest request, final HttpServletResponse response,
+                         final AuthenticationException authException) throws IOException, ServletException {
         log.info("Responding with unauthorized error. Message: {}", authException.getMessage());
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

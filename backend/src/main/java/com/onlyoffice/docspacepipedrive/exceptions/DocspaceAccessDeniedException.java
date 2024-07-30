@@ -24,7 +24,7 @@ import java.text.MessageFormat;
 
 
 public class DocspaceAccessDeniedException extends AccessDeniedException {
-    public DocspaceAccessDeniedException(String userName) {
+    public DocspaceAccessDeniedException(final String userName) {
         super(MessageFormat.format("DocSpace user ({0}) is not permitted to this operation.", userName));
     }
 }

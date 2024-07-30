@@ -22,7 +22,7 @@ import java.text.MessageFormat;
 
 
 public class SettingsNotFoundException extends RuntimeException {
-    public SettingsNotFoundException(Long clientId) {
+    public SettingsNotFoundException(final Long clientId) {
         super(MessageFormat.format("Settings for client with ID ({0}) not found.", clientId.toString()));
     }
 }

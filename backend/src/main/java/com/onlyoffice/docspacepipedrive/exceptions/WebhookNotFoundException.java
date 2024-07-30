@@ -23,7 +23,7 @@ import java.util.UUID;
 
 
 public class WebhookNotFoundException extends RuntimeException {
-    public WebhookNotFoundException(UUID id) {
+    public WebhookNotFoundException(final UUID id) {
         super(MessageFormat.format(
                 "Webhook with ID ({0}) not found.",
                 id.toString()

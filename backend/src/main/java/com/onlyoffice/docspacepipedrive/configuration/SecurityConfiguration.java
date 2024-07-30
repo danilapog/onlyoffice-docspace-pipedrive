@@ -59,10 +59,10 @@ public class SecurityConfiguration {
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   BasicAuthenticationFilter clientRegistrationAuthenticationFilter,
-                                                   BearerTokenAuthenticationFilter jwtAuthenticationFilter,
-                                                   BasicAuthenticationFilter webhookAuthenticationFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(final HttpSecurity http,
+                                                   final BasicAuthenticationFilter clientRegistrationAuthenticationFilter,
+                                                   final BearerTokenAuthenticationFilter jwtAuthenticationFilter,
+                                                   final BasicAuthenticationFilter webhookAuthenticationFilter) throws Exception {
         http
                 .authorizeHttpRequests(auth -> {
                     auth
@@ -111,9 +111,8 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    BasicAuthenticationFilter clientRegistrationAuthenticationFilter(HttpSecurity http,
-                                                                     ClientRegistrationAuthenticationProvider clientRegistrationAuthenticationProvider)
-            throws Exception {
+    BasicAuthenticationFilter clientRegistrationAuthenticationFilter(final HttpSecurity http,
+                                                                     final ClientRegistrationAuthenticationProvider clientRegistrationAuthenticationProvider) throws Exception {
         var authManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
 
         authManagerBuilder.authenticationProvider(clientRegistrationAuthenticationProvider);
@@ -121,7 +120,7 @@ public class SecurityConfiguration {
         AuthenticationManager authenticationManager = authManagerBuilder.build();
         return new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint) {
             @Override
-            protected boolean shouldNotFilter(HttpServletRequest request) {
+            protected boolean shouldNotFilter(final HttpServletRequest request) {
                 return new NegatedRequestMatcher(
                         new AntPathRequestMatcher("/login/oauth2/code/{registrationId}", "DELETE")
                 ).matches(request);
@@ -130,17 +129,18 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    BearerTokenAuthenticationFilter jwtAuthenticationFilter(HttpSecurity http,
-                                                            JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
+    BearerTokenAuthenticationFilter jwtAuthenticationFilter(final HttpSecurity http,
+                                                            final JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
         var authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
 
         authenticationManagerBuilder.authenticationProvider(jwtAuthenticationProvider);
 
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        BearerTokenAuthenticationFilter jwtAuthenticationFilter = new BearerTokenAuthenticationFilter(authenticationManager) {
+        BearerTokenAuthenticationFilter jwtAuthenticationFilter =
+                new BearerTokenAuthenticationFilter(authenticationManager) {
             @Override
-            protected boolean shouldNotFilter(HttpServletRequest request) {
+            protected boolean shouldNotFilter(final HttpServletRequest request) {
                 return new AntPathRequestMatcher("/api/v1/webhook/**").matches(request);
             }
         };
@@ -151,8 +151,8 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    BasicAuthenticationFilter webhookAuthenticationFilter(HttpSecurity http,
-                                                          WebhookAuthenticationProvider webhookAuthenticationProvider) throws Exception {
+    BasicAuthenticationFilter webhookAuthenticationFilter(final HttpSecurity http,
+                                                          final WebhookAuthenticationProvider webhookAuthenticationProvider) throws Exception {
         var authManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
 
         authManagerBuilder.authenticationProvider(webhookAuthenticationProvider);
@@ -161,7 +161,7 @@ public class SecurityConfiguration {
 
         return new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint) {
             @Override
-            protected boolean shouldNotFilter(HttpServletRequest request) {
+            protected boolean shouldNotFilter(final HttpServletRequest request) {
                 return new NegatedRequestMatcher(new AntPathRequestMatcher("/api/v1/webhook/**")).matches(request);
             }
         };

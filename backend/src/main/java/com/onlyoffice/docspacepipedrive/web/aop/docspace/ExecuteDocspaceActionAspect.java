@@ -32,11 +32,8 @@ import com.onlyoffice.docspacepipedrive.web.aop.Execution;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -53,7 +50,8 @@ public class ExecuteDocspaceActionAspect {
     private final UserService userService;
 
     @Around("@annotation(executeDocspaceAction)")
-    public Object before(ProceedingJoinPoint joinPoint, ExecuteDocspaceAction executeDocspaceAction) throws Throwable {
+    public Object before(final ProceedingJoinPoint joinPoint,
+                         final ExecuteDocspaceAction executeDocspaceAction) throws Throwable {
         if (executeDocspaceAction.execution().equals(Execution.BEFORE)) {
             execute(executeDocspaceAction.action(), joinPoint);
         }
@@ -67,10 +65,10 @@ public class ExecuteDocspaceActionAspect {
         return result;
     }
 
-    private void execute(DocspaceAction docspaceAction, JoinPoint joinPoint) {
+    private void execute(final DocspaceAction docspaceAction, final JoinPoint joinPoint) {
         User currentUser = SecurityUtils.getCurrentUser();
 
-        switch (docspaceAction){
+        switch (docspaceAction) {
             case INIT_SHARED_GROUP:
                 docspaceActionManager.initSharedGroup();
                 break;
@@ -89,8 +87,13 @@ public class ExecuteDocspaceActionAspect {
                 List<User> users = new ArrayList<>();
                 for (PipedriveDealFollower dealFollower : dealFollowers) {
                     try {
-                        users.add(userService.findByUserIdAndClientId(dealFollower.getUserId(), currentUser.getClient().getId()));
-                    } catch (UserNotFoundException e) {}
+                        users.add(
+                                userService.findByUserIdAndClientId(
+                                        dealFollower.getUserId(),
+                                        currentUser.getClient().getId()
+                                )
+                        );
+                    } catch (UserNotFoundException e) { }
                 }
 
                 List<DocspaceAccount> docspaceAccounts = users.stream()
@@ -99,6 +102,8 @@ public class ExecuteDocspaceActionAspect {
                         .toList();
 
                 docspaceActionManager.inviteListDocspaceAccountsToRoom(room.getRoomId(), docspaceAccounts);
+                break;
+            default:
                 break;
         }
     }

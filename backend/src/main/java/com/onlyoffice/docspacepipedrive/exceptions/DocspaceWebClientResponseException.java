@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 
 
 public class DocspaceWebClientResponseException extends WebClientResponseException {
-    public DocspaceWebClientResponseException(WebClientResponseException e) {
+    public DocspaceWebClientResponseException(final WebClientResponseException e) {
         super(
                 e.getMessage(),
                 e.getStatusCode(),

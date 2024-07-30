@@ -38,13 +38,13 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     private final DocspaceAccountRepository docspaceAccountRepository;
 
     @Override
-    public DocspaceAccount findById(Long id) {
+    public DocspaceAccount findById(final Long id) {
         return docspaceAccountRepository.findById(id)
                 .orElse(null);
     }
 
     @Override
-    public DocspaceAccount save(Long id, DocspaceAccount docspaceAccount) {
+    public DocspaceAccount save(final Long id, final DocspaceAccount docspaceAccount) {
         User user = userService.findById(id);
 
         docspaceAccount.setUser(user);
@@ -54,7 +54,7 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     }
 
     @Override
-    public DocspaceToken saveToken(Long id, String value) {
+    public DocspaceToken saveToken(final Long id, final String value) {
         DocspaceAccount docspaceAccount = findById(id);
 
         DocspaceToken docspaceToken = DocspaceToken.builder()
@@ -68,7 +68,7 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         User user = userService.findById(id);
 
         docspaceAccountRepository.deleteById(id);

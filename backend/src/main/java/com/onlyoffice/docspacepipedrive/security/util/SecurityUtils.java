@@ -29,6 +29,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public final class SecurityUtils {
+    private SecurityUtils() { };
+
     public static Client getCurrentClient() {
         User currentUser = getCurrentUser();
 
@@ -52,7 +54,7 @@ public final class SecurityUtils {
         return null;
     }
 
-    public static <R> R runAs(RunAsWork<R> runAsWork, User user) {
+    public static <R> R runAs(final RunAsWork<R> runAsWork, final User user) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication currentAuthentication = securityContext.getAuthentication();
 

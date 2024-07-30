@@ -45,7 +45,7 @@ import java.util.Map;
 @Slf4j
 public class JwtAuthenticationProvider implements AuthenticationProvider {
     private final UserService userService;
-    protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+    private MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
     @Value("${spring.security.oauth2.client.registration.pipedrive.client-secret}")
     private String secret;
@@ -56,12 +56,15 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         Assert.isInstanceOf(BearerTokenAuthenticationToken.class, authentication, () -> {
-            return this.messages.getMessage("JwtAuthenticationProvider.onlySupports", "Only BearerTokenAuthenticationToken is supported");
+            return this.messages.getMessage(
+                    "JwtAuthenticationProvider.onlySupports",
+                    "Only BearerTokenAuthenticationToken is supported"
+            );
         });
 
-        BearerTokenAuthenticationToken bearer = (BearerTokenAuthenticationToken)authentication;
+        BearerTokenAuthenticationToken bearer = (BearerTokenAuthenticationToken) authentication;
 
         Map<String, Object> body;
         try {
@@ -89,11 +92,11 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public boolean supports(Class<?> authentication) {
+    public boolean supports(final Class<?> authentication) {
         return BearerTokenAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    protected Authentication createSuccessAuthentication(User principal, Authentication authentication) {
+    protected Authentication createSuccessAuthentication(final User principal, final Authentication authentication) {
         UserAuthenticationToken result = new UserAuthenticationToken(principal);
         result.setDetails(authentication.getDetails());
 

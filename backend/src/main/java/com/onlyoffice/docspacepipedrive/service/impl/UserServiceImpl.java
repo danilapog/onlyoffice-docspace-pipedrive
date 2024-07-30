@@ -35,19 +35,19 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public User findById(Long id) {
+    public User findById(final Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
-    public User findByUserIdAndClientId(Long userId, Long clientId) {
+    public User findByUserIdAndClientId(final Long userId, final Long clientId) {
         return userRepository.findByUserIdAndClientId(userId, clientId)
                 .orElseThrow(() -> new UserNotFoundException(userId, clientId));
     }
 
     @Override
-    public User put(Long clientId, User user) {
+    public User put(final Long clientId, final User user) {
         try {
             User existedUser = findByUserIdAndClientId(user.getUserId(), clientId);
 
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteByUserIdAndClientId(Long userId, Long clientId) {
+    public void deleteByUserIdAndClientId(final Long userId, final Long clientId) {
         userRepository.delete(findByUserIdAndClientId(userId, clientId));
     }
 }

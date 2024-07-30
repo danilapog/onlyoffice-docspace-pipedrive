@@ -46,19 +46,21 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class PipedriveClient {
+    private static final int PAGINATION_LIMIT = 100;
+
     @Value("${pipedrive.base-api-url}")
     private String baseApiUrl;
 
     private final WebClient pipedriveWebClient;
 
-    public PipedriveDeal getDeal(Long id) {
+    public PipedriveDeal getDeal(final Long id) {
         return pipedriveWebClient.get()
                 .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
                         .path("/v1/deals/{id}")
                         .build(id)
                 )
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveDeal>>() {})
+                .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveDeal>>() { })
                 .map(PipedriveResponse<PipedriveDeal>::getData)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new PipedriveWebClientResponseException(e));
@@ -66,12 +68,12 @@ public class PipedriveClient {
                 .block();
     }
 
-    public List<PipedriveDealFollower> getDealFollowers(Long id) {
+    public List<PipedriveDealFollower> getDealFollowers(final Long id) {
         List<PipedriveDealFollower> dealFollowers = new ArrayList<>();
 
         boolean moreItemInCollection = true;
         Integer start = 0;
-        Integer limit = 100;
+        Integer limit = PAGINATION_LIMIT;
 
         while (moreItemInCollection) {
             PipedriveResponse<List<PipedriveDealFollower>> response = pipedriveWebClient.get()
@@ -82,7 +84,7 @@ public class PipedriveClient {
                             .build(id)
                     )
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<List<PipedriveDealFollower>>>() {})
+                    .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<List<PipedriveDealFollower>>>() { })
                     .onErrorResume(WebClientResponseException.class, e -> {
                         return Mono.error(new PipedriveWebClientResponseException(e));
                     })
@@ -99,12 +101,12 @@ public class PipedriveClient {
         return dealFollowers;
     }
 
-    public List<PipedriveDealFollowerEvent> getDealFollowersFlow(Long id) {
+    public List<PipedriveDealFollowerEvent> getDealFollowersFlow(final Long id) {
         List<PipedriveDealFollowerEvent> followers = new ArrayList<>();
 
         boolean moreItemInCollection = true;
         Integer start = 0;
-        Integer limit = 100;
+        Integer limit = PAGINATION_LIMIT;
 
         while (moreItemInCollection) {
             PipedriveResponse<List<PipedriveDealFollowerEvent>> response = pipedriveWebClient.get()
@@ -116,7 +118,9 @@ public class PipedriveClient {
                             .build(id)
                     )
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<List<PipedriveDealFollowerEvent>>>() {})
+                    .bodyToMono(
+                            new ParameterizedTypeReference<PipedriveResponse<List<PipedriveDealFollowerEvent>>>() { }
+                    )
                     .onErrorResume(WebClientResponseException.class, e -> {
                         return Mono.error(new PipedriveWebClientResponseException(e));
                     })
@@ -141,7 +145,7 @@ public class PipedriveClient {
                         .toUri()
                 )
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveUser>>() {})
+                .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveUser>>() { })
                 .map(PipedriveResponse<PipedriveUser>::getData)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new PipedriveWebClientResponseException(e));
@@ -152,7 +156,7 @@ public class PipedriveClient {
                 .block();
     }
 
-    public PipedriveWebhook createWebhook(PipedriveWebhook pipedriveWebhook) {
+    public PipedriveWebhook createWebhook(final PipedriveWebhook pipedriveWebhook) {
         return pipedriveWebClient.post()
                 .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
                         .path("/v1/webhooks")
@@ -161,7 +165,7 @@ public class PipedriveClient {
                 )
                 .bodyValue(pipedriveWebhook)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveWebhook>>() {})
+                .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveWebhook>>() { })
                 .map(PipedriveResponse<PipedriveWebhook>::getData)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new PipedriveWebClientResponseException(e));
@@ -172,14 +176,14 @@ public class PipedriveClient {
                 .block();
     }
 
-    public void deleteWebhook(Long id) {
+    public void deleteWebhook(final Long id) {
         pipedriveWebClient.delete()
                 .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
                         .path("/v1/webhooks/{id}")
                         .build(id)
                 )
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() { })
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new PipedriveWebClientResponseException(e));
                 })

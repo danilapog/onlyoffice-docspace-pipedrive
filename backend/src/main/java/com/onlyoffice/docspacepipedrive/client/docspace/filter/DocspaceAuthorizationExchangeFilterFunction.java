@@ -45,14 +45,14 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
     private final DocspaceAccountService docspaceAccountService;
     private final WebClient webClient;
 
-    public DocspaceAuthorizationExchangeFilterFunction(DocspaceAccountService docspaceAccountService) {
+    public DocspaceAuthorizationExchangeFilterFunction(final DocspaceAccountService docspaceAccountService) {
         this.docspaceAccountService = docspaceAccountService;
 
         this.webClient = WebClient.builder().build();
     }
 
     @Override
-    public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
+    public Mono<ClientResponse> filter(final ClientRequest request, final ExchangeFunction next) {
         return Mono.just(configureRequest(request))
                 .flatMap((configuredRequest) -> {
                     return authorize(configuredRequest)
@@ -71,7 +71,7 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
                 });
     }
 
-    private ClientRequest configureRequest(ClientRequest request) {
+    private ClientRequest configureRequest(final ClientRequest request) {
         User user = SecurityUtils.getCurrentUser();
 
         UriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(user.getClient().getSettings().getUrl());
@@ -89,7 +89,7 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
                 .build();
     }
 
-    private Mono<ClientRequest> authorize(ClientRequest request) {
+    private Mono<ClientRequest> authorize(final ClientRequest request) {
         User user = (User) request.attribute(User.class.getName()).get();
 
         return Mono.defer(() -> {
@@ -105,7 +105,7 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
         });
     }
 
-    private Mono<ClientRequest> reauthorize(ClientRequest request) {
+    private Mono<ClientRequest> reauthorize(final ClientRequest request) {
         User user = (User) request.attribute(User.class.getName()).get();
 
         return login(user).map(token -> {
@@ -125,7 +125,7 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
         });
     }
 
-    private Mono<String> login(User user) {
+    private Mono<String> login(final User user) {
         Map<String, String> map = new HashMap<>();
 
         map.put("userName", user.getDocspaceAccount().getEmail());
@@ -144,7 +144,7 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
                 });
     }
 
-    private ClientRequest setAuthorizationToRequest(ClientRequest request, DocspaceToken docspaceToken) {
+    private ClientRequest setAuthorizationToRequest(final ClientRequest request, final DocspaceToken docspaceToken) {
         return ClientRequest.from(request)
                 .cookie("asc_auth_key", docspaceToken.getValue())
                 .build();

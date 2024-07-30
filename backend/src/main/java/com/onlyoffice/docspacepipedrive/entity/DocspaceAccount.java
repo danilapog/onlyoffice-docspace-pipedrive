@@ -48,7 +48,11 @@ import java.util.UUID;
 public class DocspaceAccount {
     @Id
     @GeneratedValue(generator = "generator")
-    @GenericGenerator(name = "generator", strategy = "foreign", parameters = @Parameter(name = "property", value = "user"))
+    @GenericGenerator(
+            name = "generator",
+            strategy = "foreign",
+            parameters = @Parameter(name = "property", value = "user")
+    )
     private Long userId;
     @OneToOne
     @PrimaryKeyJoinColumn(name = "user_id")
@@ -58,8 +62,8 @@ public class DocspaceAccount {
     private String passwordHash;
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "value", column = @Column(name = "token_value")),
-            @AttributeOverride( name = "issuedAt", column = @Column(name = "token_issued_at")),
+            @AttributeOverride(name = "value", column = @Column(name = "token_value")),
+            @AttributeOverride(name = "issuedAt", column = @Column(name = "token_issued_at")),
     })
     private DocspaceToken docspaceToken;
 }

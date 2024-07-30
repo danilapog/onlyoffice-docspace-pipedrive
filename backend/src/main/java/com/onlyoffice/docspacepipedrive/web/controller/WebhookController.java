@@ -151,7 +151,7 @@ public class WebhookController {
         for (Long userId : userIdsAddedFollowers) {
             try {
                 addedFollowers.add(userService.findByUserIdAndClientId(userId, currentUser.getClient().getId()));
-            } catch (UserNotFoundException e) {}
+            } catch (UserNotFoundException e) { }
         }
 
         List<DocspaceAccount> docspaceAccounts = addedFollowers.stream()
@@ -177,7 +177,7 @@ public class WebhookController {
         for (Long userId : userIdsRemovedFollowers) {
             try {
                 removedFollowers.add(userService.findByUserIdAndClientId(userId, currentUser.getClient().getId()));
-            } catch (UserNotFoundException e) {}
+            } catch (UserNotFoundException e) { }
         }
 
         List<DocspaceAccount> docspaceAccounts = removedFollowers.stream()

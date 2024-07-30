@@ -33,24 +33,25 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
 
     @Override
-    public Client findById(Long id) {
+    public Client findById(final Long id) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException(id));
 
         return client;
     }
 
-    public boolean existById(Long id) {
+    @Override
+    public boolean existById(final Long id) {
         return clientRepository.existsById(id);
     }
 
     @Override
-    public Client create(Client client) {
+    public Client create(final Client client) {
         return clientRepository.save(client);
     }
 
     @Override
-    public Client update(Client client) {
+    public Client update(final Client client) {
         Client existedClient = findById(client.getId());
 
         if (StringUtils.hasText(client.getUrl())) {
@@ -65,7 +66,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void unsetSystemUser(Long clientId) {
+    public void unsetSystemUser(final Long clientId) {
         Client client = findById(clientId);
 
         client.setSystemUser(null);
@@ -74,7 +75,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
         clientRepository.deleteById(id);
     }
 }

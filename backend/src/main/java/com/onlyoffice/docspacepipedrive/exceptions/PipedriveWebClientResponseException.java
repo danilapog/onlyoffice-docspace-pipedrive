@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 
 
 public class PipedriveWebClientResponseException extends WebClientResponseException {
-    public PipedriveWebClientResponseException(WebClientResponseException e) {
+    public PipedriveWebClientResponseException(final WebClientResponseException e) {
         super(
                 e.getMessage(),
                 e.getStatusCode(),

@@ -105,7 +105,7 @@ public class DocspaceActionManager {
         } //ToDo: do something if shared group is null
     }
 
-    public void inviteSharedGroupToRoom(Long roomId) {
+    public void inviteSharedGroupToRoom(final Long roomId) {
         User currentUser = SecurityUtils.getCurrentUser();
 
         if (currentUser.getClient().getSettings().getSharedGroupId() != null) {
@@ -125,7 +125,7 @@ public class DocspaceActionManager {
         } //ToDo: do something if shared group is null
     }
 
-    public void removeSharedGroupFromRoom(Long roomId) {
+    public void removeSharedGroupFromRoom(final Long roomId) {
         User currentUser = SecurityUtils.getCurrentUser();
 
         if (currentUser.getClient().getSettings().getSharedGroupId() != null) {
@@ -144,7 +144,7 @@ public class DocspaceActionManager {
         } //ToDo: do something if shared group is null
     }
 
-    public void inviteListDocspaceAccountsToRoom(Long roomId, List<DocspaceAccount> docspaceAccounts) {
+    public void inviteListDocspaceAccountsToRoom(final Long roomId, final List<DocspaceAccount> docspaceAccounts) {
         List<UUID> docspaceUnpaidUsers = docspaceClient.findUsers(2) //employeeType 2 = User
                 .stream()
                 .map(docspaceUser -> {
@@ -177,7 +177,7 @@ public class DocspaceActionManager {
         }
     }
 
-    public void removeListDocspaceAccountsFromRoom(Long roomId, List<DocspaceAccount> docspaceAccounts) {
+    public void removeListDocspaceAccountsFromRoom(final Long roomId, final List<DocspaceAccount> docspaceAccounts) {
         List<DocspaceRoomInvitation> invitations = docspaceAccounts.stream()
                 .map(docspaceAccount -> new DocspaceRoomInvitation(
                         docspaceAccount.getUuid(),

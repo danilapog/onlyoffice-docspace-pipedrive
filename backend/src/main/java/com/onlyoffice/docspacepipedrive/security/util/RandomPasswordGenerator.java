@@ -25,12 +25,13 @@ import java.util.Random;
 
 @Component
 public final class RandomPasswordGenerator {
+    private RandomPasswordGenerator() { };
     public static final String UPPER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final String LOWER_CHARS = "abcdefghijklmnopqrstuvwxyz";
     public static final String NUMBERS = "1234567890";
     public static final String SPECIAL_CHARS = "!@#$%^&*()_+{}";
 
-    public static String generatePassword(int length) {
+    public static String generatePassword(final int length) {
         char[] password = new char[length];
         String charSet = "";
         Random random = new Random();

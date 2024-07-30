@@ -30,7 +30,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class ClientConfiguration {
     @Bean
-    WebClient docspaceWebClient(DocspaceAccountService docspaceAccountService) {
+    WebClient docspaceWebClient(final DocspaceAccountService docspaceAccountService) {
         DocspaceAuthorizationExchangeFilterFunction docspaceAuthorizationExchangeFilterFunction =
                 new DocspaceAuthorizationExchangeFilterFunction(docspaceAccountService);
 
@@ -40,7 +40,7 @@ public class ClientConfiguration {
     }
 
     @Bean
-    WebClient pipedriveWebClient(OAuth2AuthorizedClientManager authorizedClientManager) {
+    WebClient pipedriveWebClient(final OAuth2AuthorizedClientManager authorizedClientManager) {
         ServletOAuth2AuthorizedClientExchangeFilterFunction servletOAuth2AuthorizedClientExchangeFilterFunction =
                 new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
         servletOAuth2AuthorizedClientExchangeFilterFunction.setDefaultClientRegistrationId("pipedrive");

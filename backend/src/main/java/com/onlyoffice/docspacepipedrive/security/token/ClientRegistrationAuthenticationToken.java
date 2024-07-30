@@ -26,8 +26,8 @@ import java.util.Collection;
 public class ClientRegistrationAuthenticationToken extends AbstractAuthenticationToken {
     private final ClientRegistration principal;
 
-    public ClientRegistrationAuthenticationToken(ClientRegistration principal) {
-        super((Collection)null);
+    public ClientRegistrationAuthenticationToken(final ClientRegistration principal) {
+        super((Collection) null);
         this.principal = principal;
         this.setAuthenticated(true);
     }

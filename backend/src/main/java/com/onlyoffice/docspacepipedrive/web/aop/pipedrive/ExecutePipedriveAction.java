@@ -19,7 +19,6 @@
 package com.onlyoffice.docspacepipedrive.web.aop.pipedrive;
 
 import com.onlyoffice.docspacepipedrive.web.aop.Execution;
-import com.onlyoffice.docspacepipedrive.web.aop.docspace.DocspaceAction;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

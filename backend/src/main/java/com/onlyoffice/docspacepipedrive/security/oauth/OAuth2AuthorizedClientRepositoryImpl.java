@@ -44,9 +44,9 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Override
-    public <T extends OAuth2AuthorizedClient> T loadAuthorizedClient(String clientRegistrationId,
-                                                                     Authentication authentication,
-                                                                     HttpServletRequest request) {
+    public <T extends OAuth2AuthorizedClient> T loadAuthorizedClient(final String clientRegistrationId,
+                                                                     final Authentication authentication,
+                                                                     final HttpServletRequest request) {
         User user = (User) authentication.getPrincipal();
 
         OAuth2AccessToken accessToken = new OAuth2AccessToken(
@@ -72,8 +72,8 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
     }
 
     @Override
-    public void saveAuthorizedClient(OAuth2AuthorizedClient authorizedClient, Authentication authentication,
-                                     HttpServletRequest request, HttpServletResponse response) {
+    public void saveAuthorizedClient(final OAuth2AuthorizedClient authorizedClient, final Authentication authentication,
+                                     final HttpServletRequest request, final HttpServletResponse response) {
         AccessToken accessToken = AccessToken.builder()
                 .value(authorizedClient.getAccessToken().getTokenValue())
                 .issuedAt(authorizedClient.getAccessToken().getIssuedAt())
@@ -108,8 +108,8 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
     }
 
     @Override
-    public void removeAuthorizedClient(String clientRegistrationId, Authentication authentication,
-                                       HttpServletRequest request, HttpServletResponse response) {
+    public void removeAuthorizedClient(final String clientRegistrationId, final Authentication authentication,
+                                       final HttpServletRequest request, final HttpServletResponse response) {
         User user = (User) authentication.getPrincipal();
 
         userService.deleteByUserIdAndClientId(user.getUserId(), user.getClient().getId());

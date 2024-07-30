@@ -46,9 +46,10 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class DocspaceClient {
+    private static final int PAGINATION_COUNT = 100;
     private final WebClient docspaceWebClient;
 
-    public DocspaceAuthentication login(String userName, String passwordHash) {
+    public DocspaceAuthentication login(final String userName, final String passwordHash) {
         User user = SecurityUtils.getCurrentUser();
 
         Map<String, String> map = new HashMap<>();
@@ -60,7 +61,7 @@ public class DocspaceClient {
                 .uri(user.getClient().getSettings().getUrl() + "/api/2.0/authentication")
                 .bodyValue(map)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceAuthentication>>() {})
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceAuthentication>>() { })
                 .map(DocspaceResponse<DocspaceAuthentication>::getResponse)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new DocspaceWebClientResponseException(e));
@@ -68,7 +69,7 @@ public class DocspaceClient {
                 .block();
     }
 
-    public DocspaceUser getUser(String email) {
+    public DocspaceUser getUser(final String email) {
         return docspaceWebClient.get()
                 .uri(uriBuilder -> {
                     return uriBuilder.path("/api/2.0/people/email")
@@ -76,7 +77,7 @@ public class DocspaceClient {
                             .build();
                 })
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceUser>>() {})
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceUser>>() { })
                 .map(DocspaceResponse<DocspaceUser>::getResponse)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new DocspaceWebClientResponseException(e));
@@ -84,14 +85,14 @@ public class DocspaceClient {
                 .block();
     }
 
-    public DocspaceUser getUser(UUID id) {
+    public DocspaceUser getUser(final UUID id) {
         return docspaceWebClient.get()
                 .uri(uriBuilder -> {
                     return uriBuilder.path("/api/2.0/people/{id}")
                             .build(id);
                 })
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceUser>>() {})
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceUser>>() { })
                 .map(DocspaceResponse<DocspaceUser>::getResponse)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new DocspaceWebClientResponseException(e));
@@ -99,12 +100,12 @@ public class DocspaceClient {
                 .block();
     }
 
-    public List<DocspaceUser> findUsers(Integer employeeType) {
+    public List<DocspaceUser> findUsers(final Integer employeeType) {
         List<DocspaceUser> docspaceUsers = new ArrayList<>();
 
         boolean moreItemInCollection = true;
         Integer startIndex = 0;
-        Integer count = 100;
+        Integer count = PAGINATION_COUNT;
 
         while (moreItemInCollection) {
              DocspaceResponse<List<DocspaceUser>> response = docspaceWebClient.get()
@@ -135,17 +136,17 @@ public class DocspaceClient {
         return docspaceUsers;
     }
 
-    public DocspaceRoom createRoom(String title, Integer roomType) {
+    public DocspaceRoom createRoom(final String title, final Integer roomType) {
         Map<String, Object> map = new HashMap<>();
 
         map.put("title", title);
         map.put("roomType", roomType);
 
         return docspaceWebClient.post()
-                .uri( "/api/2.0/files/rooms")
+                .uri("/api/2.0/files/rooms")
                 .bodyValue(map)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceRoom>>() {})
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceRoom>>() { })
                 .map(DocspaceResponse<DocspaceRoom>::getResponse)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new DocspaceWebClientResponseException(e));
@@ -153,7 +154,8 @@ public class DocspaceClient {
                 .block();
     }
 
-    public DocspaceMembers shareRoom(Long roomId, DocspaceRoomInvitationRequest docspaceRoomInvitationRequest) {
+    public DocspaceMembers shareRoom(final Long roomId,
+                                     final DocspaceRoomInvitationRequest docspaceRoomInvitationRequest) {
         return docspaceWebClient.put()
                 .uri(uriBuilder -> {
                     return uriBuilder.path("api/2.0/files/rooms/{roomId}/share")
@@ -161,7 +163,7 @@ public class DocspaceClient {
                 })
                 .bodyValue(docspaceRoomInvitationRequest)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceMembers>>() {})
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceMembers>>() { })
                 .map(DocspaceResponse<DocspaceMembers>::getResponse)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new DocspaceWebClientResponseException(e));
@@ -169,7 +171,7 @@ public class DocspaceClient {
                 .block();
     }
 
-    public DocspaceGroup createGroup(String name, UUID owner, List<UUID> members) {
+    public DocspaceGroup createGroup(final String name, final UUID owner, final List<UUID> members) {
         Map<String, Object> map = new HashMap<>();
 
         map.put("groupName", name);
@@ -177,10 +179,10 @@ public class DocspaceClient {
         map.put("members", members);
 
         return docspaceWebClient.post()
-                .uri( "/api/2.0/group")
+                .uri("/api/2.0/group")
                 .bodyValue(map)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceGroup>>() {})
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceGroup>>() { })
                 .map(DocspaceResponse<DocspaceGroup>::getResponse)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new DocspaceWebClientResponseException(e));
@@ -188,8 +190,8 @@ public class DocspaceClient {
                 .block();
     }
 
-    public DocspaceGroup updateGroup(UUID groupId, String groupName, UUID groupManager, List<UUID> membersToAdd,
-                                     List<UUID> membersToRemove) {
+    public DocspaceGroup updateGroup(final UUID groupId, final String groupName, final UUID groupManager,
+                                     final List<UUID> membersToAdd, final List<UUID> membersToRemove) {
         Map<String, Object> map = new HashMap<>();
 
         if (groupId != null) {
@@ -206,13 +208,13 @@ public class DocspaceClient {
         }
 
         return docspaceWebClient.put()
-                .uri( uriBuilder -> {
+                .uri(uriBuilder -> {
                     return uriBuilder.path("/api/2.0/group/{groupId}")
                             .build(groupId);
                 })
                 .bodyValue(map)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceGroup>>() {})
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceGroup>>() { })
                 .map(DocspaceResponse<DocspaceGroup>::getResponse)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new DocspaceWebClientResponseException(e));

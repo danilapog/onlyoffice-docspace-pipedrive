@@ -22,14 +22,14 @@ import java.text.MessageFormat;
 
 public class UserNotFoundException extends RuntimeException {
 
-    public UserNotFoundException(Long id) {
+    public UserNotFoundException(final Long id) {
         super(MessageFormat.format(
                 "User with ID ({0}) not found.",
                 id.toString()
         ));
     }
 
-    public UserNotFoundException(Long userId, Long clientId) {
+    public UserNotFoundException(final Long userId, final Long clientId) {
         super(MessageFormat.format(
                 "User with USER_ID ({0}) and CLIENT_ID ({1}) not found.",
                 userId.toString(),

@@ -22,13 +22,13 @@ import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountResponse;
-import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
 
 
 public abstract class UserMapperDelegate implements UserMapper {
     @Override
-    public UserResponse userToUserResponse(User user, PipedriveUser pipedriveUser, DocspaceUser docspaceUser) {
+    public UserResponse userToUserResponse(final User user, final PipedriveUser pipedriveUser,
+                                           final DocspaceUser docspaceUser) {
         UserResponse userResponse = new UserResponse();
 
         userResponse.setId(user.getUserId());

@@ -36,6 +36,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class PipedriveActionManager {
+    private static final int WEBHOOK_PASSWORD_LENGTH = 32;
     private final PipedriveClient pipedriveClient;
     private final WebhookService webhookService;
 
@@ -60,13 +61,13 @@ public class PipedriveActionManager {
         }
     }
 
-    private void initWebhook(String eventObject, String eventAction) {
+    private void initWebhook(final String eventObject, final String eventAction) {
         User user = SecurityUtils.getCurrentUser();
 
         Webhook webhook = Webhook.builder()
                 .name(eventObject + "." + eventAction)
                 .user(user)
-                .password(RandomPasswordGenerator.generatePassword(32))
+                .password(RandomPasswordGenerator.generatePassword(WEBHOOK_PASSWORD_LENGTH))
                 .build();
 
         Webhook savedWebhook = webhookService.save(webhook);

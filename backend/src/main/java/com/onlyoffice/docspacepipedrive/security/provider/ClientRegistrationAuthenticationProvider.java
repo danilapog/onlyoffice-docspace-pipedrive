@@ -39,26 +39,35 @@ import org.springframework.util.Assert;
 @Slf4j
 public class ClientRegistrationAuthenticationProvider implements AuthenticationProvider {
     private final ClientRegistrationRepository clientRegistrationRepository;
-    protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+    private MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, authentication, () -> {
-            return this.messages.getMessage("OAuth2ClientCredentialsAuthenticationProvider.onlySupports", "Only UsernamePasswordAuthenticationToken is supported");
+            return this.messages.getMessage(
+                    "OAuth2ClientCredentialsAuthenticationProvider.onlySupports",
+                    "Only UsernamePasswordAuthenticationToken is supported"
+            );
         });
 
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("pipedrive");
 
         if (clientRegistration == null) {
             throw new BadCredentialsException(
-                    this.messages.getMessage("OAuth2ClientCredentialsAuthenticationProvider.badCredentials", "Bad credentials")
+                    this.messages.getMessage(
+                            "OAuth2ClientCredentialsAuthenticationProvider.badCredentials",
+                            "Bad credentials"
+                    )
             );
         }
 
         if (!clientRegistration.getClientId().equals(authentication.getPrincipal())
                 || !clientRegistration.getClientSecret().equals(authentication.getCredentials())) {
             throw new BadCredentialsException(
-                    this.messages.getMessage("OAuth2ClientCredentialsAuthenticationProvider.badCredentials", "Bad credentials")
+                    this.messages.getMessage(
+                            "OAuth2ClientCredentialsAuthenticationProvider.badCredentials",
+                            "Bad credentials"
+                    )
             );
         }
 
@@ -66,11 +75,12 @@ public class ClientRegistrationAuthenticationProvider implements AuthenticationP
     }
 
     @Override
-    public boolean supports(Class<?> authentication) {
+    public boolean supports(final Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    protected Authentication createSuccessAuthentication(ClientRegistration clientRegistration, Authentication authentication) {
+    protected Authentication createSuccessAuthentication(final ClientRegistration clientRegistration,
+                                                         final Authentication authentication) {
         ClientRegistrationAuthenticationToken result = new ClientRegistrationAuthenticationToken(clientRegistration);
         result.setDetails(authentication.getDetails());
 

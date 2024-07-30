@@ -35,13 +35,13 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
 
     @Override
-    public Room findByDealId(Long dealId) {
+    public Room findByDealId(final Long dealId) {
         return roomRepository.findByDealId(dealId)
                 .orElseThrow(() -> new RoomNotFoundException(dealId));
     }
 
     @Override
-    public Room create(Long clientId, Room room) {
+    public Room create(final Long clientId, final Room room) {
         Client client = clientService.findById(clientId);
 
         room.setClient(client);

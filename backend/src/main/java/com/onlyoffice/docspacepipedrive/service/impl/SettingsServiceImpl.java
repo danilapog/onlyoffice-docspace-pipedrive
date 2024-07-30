@@ -38,13 +38,13 @@ public class SettingsServiceImpl implements SettingsService {
     private final SettingsRepository settingsRepository;
 
     @Override
-    public Settings findByClientId(Long clientId) {
+    public Settings findByClientId(final Long clientId) {
         return settingsRepository.findByClientId(clientId)
                 .orElseThrow(() -> new SettingsNotFoundException(clientId));
     }
 
     @Override
-    public Settings put(Long clientId, Settings settings) {
+    public Settings put(final Long clientId, final Settings settings) {
         Client client = clientService.findById(clientId);
 
         try {
@@ -62,7 +62,7 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public Settings saveSharedGroup(Long clientId, UUID groupId) {
+    public Settings saveSharedGroup(final Long clientId, final UUID groupId) {
         Settings existedSetting = findByClientId(clientId);
 
         existedSetting.setSharedGroupId(groupId);

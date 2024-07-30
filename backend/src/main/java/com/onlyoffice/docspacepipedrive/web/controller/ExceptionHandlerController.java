@@ -71,7 +71,8 @@ public class ExceptionHandlerController {
     }
 
     @ExceptionHandler(PipedriveOAuth2AuthorizationException.class)
-    public ResponseEntity<ErrorResponse> pipedriveOAuth2AuthorizationException(PipedriveOAuth2AuthorizationException e) {
+    public ResponseEntity<ErrorResponse> pipedriveOAuth2AuthorizationException(
+            PipedriveOAuth2AuthorizationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(
                         new ErrorResponse(
