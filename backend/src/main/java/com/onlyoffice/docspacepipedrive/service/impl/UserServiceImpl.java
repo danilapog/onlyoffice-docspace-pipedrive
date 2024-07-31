@@ -27,6 +27,8 @@ import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +46,11 @@ public class UserServiceImpl implements UserService {
     public User findByUserIdAndClientId(final Long userId, final Long clientId) {
         return userRepository.findByUserIdAndClientId(userId, clientId)
                 .orElseThrow(() -> new UserNotFoundException(userId, clientId));
+    }
+
+    @Override
+    public List<User> findAllByClientId(Long clientId) {
+        return userRepository.findAllByClientId(clientId);
     }
 
     @Override

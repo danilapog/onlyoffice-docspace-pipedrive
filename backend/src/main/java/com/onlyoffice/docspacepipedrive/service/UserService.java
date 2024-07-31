@@ -20,10 +20,13 @@ package com.onlyoffice.docspacepipedrive.service;
 
 import com.onlyoffice.docspacepipedrive.entity.User;
 
+import java.util.List;
+
 
 public interface UserService {
     User findById(Long id);
     User findByUserIdAndClientId(Long userId, Long clientId);
+    List<User> findAllByClientId(Long clientId);
     User put(Long clientId, User user);
     void deleteByUserIdAndClientId(Long userId, Long clientId);
 }
