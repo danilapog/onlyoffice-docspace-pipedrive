@@ -83,7 +83,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@onlyoffice/docspace-react": "file:../../../../React-ONLYOFFICE/docspace-react/onlyoffice-docspace-react-0.0.10.tgz",
+    "@onlyoffice/docspace-react": "file:./onlyoffice-docspace-react-0.0.10.tgz",
     "@pipedrive/app-extensions-sdk": "^0.6.1",
     "axios": "^1.6.0",
     "axios-retry": "^3.4.0",
