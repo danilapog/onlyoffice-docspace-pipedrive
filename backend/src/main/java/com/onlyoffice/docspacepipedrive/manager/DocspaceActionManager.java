@@ -28,6 +28,7 @@ import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
@@ -38,6 +39,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class DocspaceActionManager {
     private final DocspaceClient docspaceClient;
     private final SettingsService settingsService;
@@ -88,7 +90,31 @@ public class DocspaceActionManager {
     public void removeCurrentUserFromSharedGroup() {
         User currentUser = SecurityUtils.getCurrentUser();
 
-        if (currentUser.getClient().getSettings().getSharedGroupId() != null) {
+        if (currentUser.getClient().getSettings().getSharedGroupId() == null) {
+            log.warn(
+                    MessageFormat.format(
+                            "Skipped remove a User({0}, {1}) from a shared group: {2}",
+                            currentUser.getClient().getId().toString(),
+                            currentUser.getUserId().toString(),
+                            "Not found shared group ID"
+                    )
+            );
+            return;
+        }
+
+        if (currentUser.getClient().getSystemUser() == null) {
+            log.warn(
+                    MessageFormat.format(
+                            "Skipped remove a User({0}, {1}) from a shared group: {2}",
+                            currentUser.getClient().getId().toString(),
+                            currentUser.getUserId().toString(),
+                            "Not found System User"
+                    )
+            );
+            return;
+        }
+
+        try {
             SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
                 public Void doWork() {
                     docspaceClient.updateGroup(
@@ -102,7 +128,16 @@ public class DocspaceActionManager {
                     return null;
                 }
             }, currentUser.getClient().getSystemUser());
-        } //ToDo: do something if shared group is null
+        } catch (Exception e) {
+            log.warn(
+                    MessageFormat.format(
+                            "An attempt to remove a User({0}, {1}) from a shared group failed with the error: {2}",
+                            currentUser.getClient().getId().toString(),
+                            currentUser.getUserId().toString(),
+                            e.getMessage()
+                    )
+            );
+        }
     }
 
     public void inviteSharedGroupToRoom(final Long roomId) {
