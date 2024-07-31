@@ -18,6 +18,7 @@
 
 package com.onlyoffice.docspacepipedrive.entity;
 
+import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +32,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -50,4 +52,14 @@ public class Settings {
     @JoinColumn(name = "client_id")
     @ToString.Exclude
     private Client client;
+
+    public UUID getSharedGroupId() {
+        return Optional.of(sharedGroupId).orElseThrow(
+                () -> new SharedGroupIdNotFoundException()
+        );
+    }
+
+    public Boolean existSharedGroupId() {
+        return sharedGroupId != null;
+    }
 }

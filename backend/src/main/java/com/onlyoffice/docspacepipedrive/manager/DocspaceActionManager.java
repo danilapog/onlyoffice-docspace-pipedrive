@@ -25,6 +25,7 @@ import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAccess;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SystemUserNotFoundException;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
@@ -48,7 +49,7 @@ public class DocspaceActionManager {
     public void initSharedGroup() {
         User currentUser = SecurityUtils.getCurrentUser();
 
-        if (currentUser.getClient().getSettings().getSharedGroupId() == null) {
+        if (!currentUser.getClient().getSettings().existSharedGroupId()) {
             DocspaceGroup docspaceGroup = docspaceClient.createGroup(
                     MessageFormat.format("Pipedrive Users ({0})", currentUser.getClient().getUrl()),
                     currentUser.getDocspaceAccount().getUuid(),
@@ -70,7 +71,7 @@ public class DocspaceActionManager {
     public void inviteCurrentUserToSharedGroup() {
         User currentUser = SecurityUtils.getCurrentUser();
 
-        if (currentUser.getClient().getSettings().getSharedGroupId() != null) {
+        if (currentUser.getClient().getSettings().existSharedGroupId()) {
             SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
                 public Void doWork() {
                     docspaceClient.updateGroup(
@@ -91,18 +92,6 @@ public class DocspaceActionManager {
     public void removeCurrentUserFromSharedGroup() {
         User currentUser = SecurityUtils.getCurrentUser();
 
-        if (currentUser.getClient().getSettings().getSharedGroupId() == null) {
-            log.warn(
-                    MessageFormat.format(
-                            "Skipped remove a User({0}, {1}) from a shared group: {2}",
-                            currentUser.getClient().getId().toString(),
-                            currentUser.getUserId().toString(),
-                            "Not found shared group ID"
-                    )
-            );
-            return;
-        }
-
         try {
             SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
                 public Void doWork() {
@@ -117,7 +106,7 @@ public class DocspaceActionManager {
                     return null;
                 }
             }, currentUser.getClient().getSystemUser());
-        } catch (SystemUserNotFoundException e) {
+        } catch (SystemUserNotFoundException | SharedGroupIdNotFoundException e) {
             log.warn(
                     MessageFormat.format(
                             "An attempt to remove a User({0}, {1}) from a shared group failed with the error: {2}",
@@ -132,7 +121,7 @@ public class DocspaceActionManager {
     public void inviteSharedGroupToRoom(final Long roomId) {
         User currentUser = SecurityUtils.getCurrentUser();
 
-        if (currentUser.getClient().getSettings().getSharedGroupId() != null) {
+        if (currentUser.getClient().getSettings().existSharedGroupId()) {
             DocspaceRoomInvitation docspaceRoomInvitation =
                     new DocspaceRoomInvitation(
                             currentUser.getClient().getSettings().getSharedGroupId(),
@@ -152,7 +141,7 @@ public class DocspaceActionManager {
     public void removeSharedGroupFromRoom(final Long roomId) {
         User currentUser = SecurityUtils.getCurrentUser();
 
-        if (currentUser.getClient().getSettings().getSharedGroupId() != null) {
+        if (currentUser.getClient().getSettings().existSharedGroupId()) {
             DocspaceRoomInvitation docspaceRoomInvitation =
                     new DocspaceRoomInvitation(
                             currentUser.getClient().getSettings().getSharedGroupId(),
