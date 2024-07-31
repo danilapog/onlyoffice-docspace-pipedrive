@@ -16,22 +16,34 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.client.pipedrive.request;
+package com.onlyoffice.docspacepipedrive.client.pipedrive.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.Builder;
 import lombok.Data;
 
 
-@Builder
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class PipedriveWebhook {
+public class PipedriveDeal {
     private Long id;
-    private String subscriptionUrl;
-    private String eventAction;
-    private String eventObject;
-    private String httpAuthUser;
-    private String httpAuthPassword;
+    private String title;
+    private Integer visibleTo;
+    private Integer followersCount;
+    private String updateTime;
+
+    public enum VisibleTo {
+        EVERYONE(3),
+        EVERYONE_ADVANCED_PERMISSIONS(7);
+
+        private final int id;
+
+        VisibleTo(final int id) {
+            this.id = id;
+        }
+
+        public int integer() {
+            return id;
+        }
+    }
 }

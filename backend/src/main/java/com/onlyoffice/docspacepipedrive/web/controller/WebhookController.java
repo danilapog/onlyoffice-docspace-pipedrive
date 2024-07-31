@@ -20,10 +20,10 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollowerEvent;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUserSettings;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollowerEvent;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;

@@ -16,25 +16,22 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.client.pipedrive.response;
+package com.onlyoffice.docspacepipedrive.client.pipedrive.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.Builder;
 import lombok.Data;
 
 
+@Builder
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class PipedriveDealFollowerEvent {
-    private String timestamp;
-    private Data data;
-
-    @lombok.Data
-    @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-    public static class Data {
-        private Integer id;
-        private String action;
-        private Long followerUserId;
-        private String logTime;
-    }
+public class PipedriveWebhook {
+    private Long id;
+    private String subscriptionUrl;
+    private String eventAction;
+    private String eventObject;
+    private String httpAuthUser;
+    private String httpAuthPassword;
 }

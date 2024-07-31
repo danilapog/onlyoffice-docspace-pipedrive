@@ -18,7 +18,7 @@
 
 package com.onlyoffice.docspacepipedrive.web.dto.user;
 
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;

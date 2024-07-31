@@ -19,7 +19,7 @@
 package com.onlyoffice.docspacepipedrive.web.aop.docspace;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollower;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollower;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;

@@ -16,7 +16,7 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.client.pipedrive.response;
+package com.onlyoffice.docspacepipedrive.client.pipedrive.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

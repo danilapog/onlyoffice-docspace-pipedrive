@@ -19,7 +19,7 @@
 package com.onlyoffice.docspacepipedrive.manager;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.request.PipedriveWebhook;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveWebhook;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
 import com.onlyoffice.docspacepipedrive.security.util.RandomPasswordGenerator;

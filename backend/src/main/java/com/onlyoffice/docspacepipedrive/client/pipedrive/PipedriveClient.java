@@ -18,13 +18,13 @@
 
 package com.onlyoffice.docspacepipedrive.client.pipedrive;
 
-import com.onlyoffice.docspacepipedrive.client.pipedrive.request.PipedriveWebhook;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDeal;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollower;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveDealFollowerEvent;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveResponse;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUserSettings;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveWebhook;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollower;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollowerEvent;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveResponse;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
