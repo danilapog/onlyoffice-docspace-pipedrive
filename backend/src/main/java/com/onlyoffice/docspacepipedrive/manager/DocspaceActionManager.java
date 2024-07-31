@@ -92,30 +92,19 @@ public class DocspaceActionManager {
     public void removeCurrentUserFromSharedGroup() {
         User currentUser = SecurityUtils.getCurrentUser();
 
-        try {
-            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-                public Void doWork() {
-                    docspaceClient.updateGroup(
-                            currentUser.getClient().getSettings().getSharedGroupId(),
-                            null,
-                            null,
-                            null,
-                            Collections.singletonList(currentUser.getDocspaceAccount().getUuid())
-                    );
+        SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
+            public Void doWork() {
+                docspaceClient.updateGroup(
+                        currentUser.getClient().getSettings().getSharedGroupId(),
+                        null,
+                        null,
+                        null,
+                        Collections.singletonList(currentUser.getDocspaceAccount().getUuid())
+                );
 
-                    return null;
-                }
-            }, currentUser.getClient().getSystemUser());
-        } catch (SystemUserNotFoundException | SharedGroupIdNotFoundException e) {
-            log.warn(
-                    MessageFormat.format(
-                            "An attempt to remove a User({0}, {1}) from a shared group failed with the error: {2}",
-                            currentUser.getClient().getId().toString(),
-                            currentUser.getUserId().toString(),
-                            e.getMessage()
-                    )
-            );
-        }
+                return null;
+            }
+        }, currentUser.getClient().getSystemUser());
     }
 
     public void inviteSharedGroupToRoom(final Long roomId) {
