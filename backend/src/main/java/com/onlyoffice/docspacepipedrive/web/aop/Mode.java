@@ -16,21 +16,10 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.web.aop.docspace;
-
-import com.onlyoffice.docspacepipedrive.web.aop.Execution;
-import com.onlyoffice.docspacepipedrive.web.aop.Mode;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.onlyoffice.docspacepipedrive.web.aop;
 
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ExecuteDocspaceAction {
-    DocspaceAction action();
-    Execution execution() default Execution.BEFORE;
-    Mode mode() default Mode.STRICT;
+public enum Mode {
+    STRICT,
+    ATTEMPT
 }

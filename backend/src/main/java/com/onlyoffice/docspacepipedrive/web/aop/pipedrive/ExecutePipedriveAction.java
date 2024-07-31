@@ -19,6 +19,7 @@
 package com.onlyoffice.docspacepipedrive.web.aop.pipedrive;
 
 import com.onlyoffice.docspacepipedrive.web.aop.Execution;
+import com.onlyoffice.docspacepipedrive.web.aop.Mode;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -31,4 +32,5 @@ import java.lang.annotation.Target;
 public @interface ExecutePipedriveAction {
     PipedriveAction action();
     Execution execution() default Execution.BEFORE;
+    Mode mode() default Mode.STRICT;
 }
