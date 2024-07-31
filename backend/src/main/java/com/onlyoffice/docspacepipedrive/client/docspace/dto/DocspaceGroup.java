@@ -16,20 +16,13 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.client.docspace.request;
+package com.onlyoffice.docspacepipedrive.client.docspace.dto;
 
-import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceAccess;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-
-@AllArgsConstructor
 @Data
-@NoArgsConstructor
-public class DocspaceRoomInvitation {
+public class DocspaceGroup {
     private UUID id;
-    private DocspaceAccess access;
 }

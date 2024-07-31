@@ -16,18 +16,27 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.client.docspace.request;
+package com.onlyoffice.docspacepipedrive.client.docspace.dto;
 
-import lombok.Builder;
-import lombok.Data;
-
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@Builder
-@Data
-public class DocspaceRoomInvitationRequest {
-    private List<DocspaceRoomInvitation> invitations;
-    private boolean notify;
-    private String message;
+public enum DocspaceAccess {
+    NONE,
+    READ_WRITE,
+    READ,
+    RESTRICT,
+    VARIES,
+    REVIEW,
+    COMMENT,
+    FILL_FORMS,
+    CUSTOM_FILTER,
+    ROOM_ADMIN,
+    EDITING,
+    COLLABORATOR;
+
+    @JsonValue
+    public int toValue() {
+        return ordinal();
+    }
 }

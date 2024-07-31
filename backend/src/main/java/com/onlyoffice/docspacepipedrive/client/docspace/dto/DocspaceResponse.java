@@ -16,11 +16,16 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.client.docspace.response;
+package com.onlyoffice.docspacepipedrive.client.docspace.dto;
 
 import lombok.Data;
 
+
 @Data
-public class DocspaceAuthentication {
-    private String token;
+public class DocspaceResponse<T> {
+    private Integer status;
+    private Integer statusCode;
+    private Integer count;
+    private Integer total;
+    private T response;
 }

@@ -19,10 +19,10 @@
 package com.onlyoffice.docspacepipedrive.manager;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
-import com.onlyoffice.docspacepipedrive.client.docspace.request.DocspaceRoomInvitation;
-import com.onlyoffice.docspacepipedrive.client.docspace.request.DocspaceRoomInvitationRequest;
-import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceAccess;
-import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceGroup;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitation;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitationRequest;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAccess;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;

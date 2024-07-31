@@ -16,27 +16,14 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.client.docspace.response;
+package com.onlyoffice.docspacepipedrive.client.docspace.dto;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Data;
+
+import java.util.List;
 
 
-public enum DocspaceAccess {
-    NONE,
-    READ_WRITE,
-    READ,
-    RESTRICT,
-    VARIES,
-    REVIEW,
-    COMMENT,
-    FILL_FORMS,
-    CUSTOM_FILTER,
-    ROOM_ADMIN,
-    EDITING,
-    COLLABORATOR;
-
-    @JsonValue
-    public int toValue() {
-        return ordinal();
-    }
+@Data
+public class DocspaceMembers {
+    private List<Object> members;
 }

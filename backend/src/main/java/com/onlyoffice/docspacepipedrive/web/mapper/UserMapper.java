@@ -18,7 +18,7 @@
 
 package com.onlyoffice.docspacepipedrive.web.mapper;
 
-import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceUser;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;

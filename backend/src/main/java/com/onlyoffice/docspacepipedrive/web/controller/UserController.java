@@ -19,8 +19,8 @@
 package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
-import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceAuthentication;
-import com.onlyoffice.docspacepipedrive.client.docspace.response.DocspaceUser;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAuthentication;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.response.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.Client;

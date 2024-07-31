@@ -16,16 +16,19 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.client.docspace.response;
+package com.onlyoffice.docspacepipedrive.client.docspace.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 
+@AllArgsConstructor
 @Data
-public class DocspaceResponse<T> {
-    private Integer status;
-    private Integer statusCode;
-    private Integer count;
-    private Integer total;
-    private T response;
+@NoArgsConstructor
+public class DocspaceRoomInvitation {
+    private UUID id;
+    private DocspaceAccess access;
 }

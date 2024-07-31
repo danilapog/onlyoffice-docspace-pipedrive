@@ -16,14 +16,18 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.client.docspace.response;
+package com.onlyoffice.docspacepipedrive.client.docspace.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 
+@Builder
 @Data
-public class DocspaceMembers {
-    private List<Object> members;
+public class DocspaceRoomInvitationRequest {
+    private List<DocspaceRoomInvitation> invitations;
+    private boolean notify;
+    private String message;
 }
