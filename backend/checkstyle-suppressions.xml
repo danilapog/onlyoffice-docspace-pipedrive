@@ -11,8 +11,9 @@
 
     <suppress files="Configuration.java" checks="LineLength"/>
     <suppress files="Configuration.java" checks="MagicNumber"/>
-
     <suppress files="Controller.java" checks="FinalParameters"/>
-
     <suppress files="DocspacePipedriveApplication.java" checks="HideUtilityClassConstructor"/>
+
+    <suppress files="src[\\/]main[\\/]java[\\/]com[\\/]onlyoffice[\\/]docspacepipedrive[\\/]entity[\\/].*" checks="MagicNumber"/>
+    <suppress files="src[\\/]main[\\/]java[\\/]com[\\/]onlyoffice[\\/]docspacepipedrive[\\/]client[\\/]pipedrive[\\/].*" checks="HiddenField"/>
 </suppressions>
