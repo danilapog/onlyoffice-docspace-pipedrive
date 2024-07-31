@@ -21,6 +21,7 @@ package com.onlyoffice.docspacepipedrive.security.util;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
+import io.jsonwebtoken.lang.Assert;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,6 +56,7 @@ public final class SecurityUtils {
     }
 
     public static <R> R runAs(final RunAsWork<R> runAsWork, final User user) {
+        Assert.notNull(user, "User must not be null!");
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication currentAuthentication = securityContext.getAuthentication();
 
