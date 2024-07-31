@@ -23,12 +23,14 @@ import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitati
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitationRequest;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAccess;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SystemUserNotFoundException;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
+import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -45,27 +47,42 @@ import java.util.UUID;
 public class DocspaceActionManager {
     private final DocspaceClient docspaceClient;
     private final SettingsService settingsService;
+    private final UserService userService;
 
     public void initSharedGroup() {
-        User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
 
-        if (!currentUser.getClient().getSettings().existSharedGroupId()) {
-            DocspaceGroup docspaceGroup = docspaceClient.createGroup(
-                    MessageFormat.format("Pipedrive Users ({0})", currentUser.getClient().getUrl()),
-                    currentUser.getDocspaceAccount().getUuid(),
-                    null
-            );
+        User systemUser = currentClient.getSystemUser();
 
-            settingsService.saveSharedGroup(currentUser.getClient().getId(), docspaceGroup.getId());
-        } else {
-            docspaceClient.updateGroup(
-                    currentUser.getClient().getSettings().getSharedGroupId(),
-                    null,
-                    currentUser.getDocspaceAccount().getUuid(),
-                    null,
-                    null
-            );
-        }
+        List<User> users = userService.findAllByClientId(currentClient.getId());
+        List<UUID> members = users.stream()
+                .filter(user -> user.getDocspaceAccount() != null)
+                .map(user -> user.getDocspaceAccount().getUuid())
+                .toList();
+
+        SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
+            public Void doWork() {
+                if (!currentClient.getSettings().existSharedGroupId()) {
+                    DocspaceGroup docspaceGroup = docspaceClient.createGroup(
+                            MessageFormat.format("Pipedrive Users ({0})", currentClient.getUrl()),
+                            systemUser.getDocspaceAccount().getUuid(),
+                            members
+                    );
+
+                    settingsService.saveSharedGroup(currentClient.getId(), docspaceGroup.getId());
+                } else {
+                    docspaceClient.updateGroup(
+                            currentClient.getSettings().getSharedGroupId(),
+                            null,
+                            systemUser.getDocspaceAccount().getUuid(),
+                            members,
+                            null
+                    );
+                }
+
+                return null;
+            }
+        }, systemUser);
     }
 
     public void inviteCurrentUserToSharedGroup() {
