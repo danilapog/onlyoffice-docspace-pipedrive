@@ -18,6 +18,7 @@
 
 package com.onlyoffice.docspacepipedrive.entity;
 
+import com.onlyoffice.docspacepipedrive.exceptions.SystemUserNotFoundException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -35,6 +36,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @AllArgsConstructor
@@ -63,4 +65,14 @@ public class Client {
     @OneToOne
     @JoinColumn(name = "system_user_id")
     private User systemUser;
+
+    public User getSystemUser() {
+        return Optional.of(systemUser).orElseThrow(
+                () -> new SystemUserNotFoundException()
+        );
+    }
+
+    public Boolean existSystemUser() {
+        return systemUser != null;
+    }
 }

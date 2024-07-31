@@ -58,7 +58,7 @@ public class ClientServiceImpl implements ClientService {
             existedClient.setUrl(client.getUrl());
         }
 
-        if (client.getSystemUser() != null) {
+        if (client.existSystemUser()) {
             existedClient.setSystemUser(client.getSystemUser());
         }
 

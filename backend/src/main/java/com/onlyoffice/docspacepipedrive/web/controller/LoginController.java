@@ -19,6 +19,7 @@
 package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.entity.Client;
+import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.login.UninstallRequest;
@@ -74,9 +75,9 @@ public class LoginController {
     @DeleteMapping("oauth2/code/pipedrive")
     @Transactional
     public void uninstall(@RequestBody UninstallRequest request) {
-        Client client = clientService.findById(request.getCompanyId());
+        User user = userService.findByUserIdAndClientId(request.getUserId(), request.getCompanyId());
 
-        if (client.getSystemUser() != null) {
+        if (user.isSystemUser()) {
             clientService.unsetSystemUser(request.getCompanyId());
         }
 

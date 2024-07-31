@@ -25,6 +25,7 @@ import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAccess;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.exceptions.SystemUserNotFoundException;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import lombok.RequiredArgsConstructor;
@@ -102,18 +103,6 @@ public class DocspaceActionManager {
             return;
         }
 
-        if (currentUser.getClient().getSystemUser() == null) {
-            log.warn(
-                    MessageFormat.format(
-                            "Skipped remove a User({0}, {1}) from a shared group: {2}",
-                            currentUser.getClient().getId().toString(),
-                            currentUser.getUserId().toString(),
-                            "Not found System User"
-                    )
-            );
-            return;
-        }
-
         try {
             SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
                 public Void doWork() {
@@ -128,7 +117,7 @@ public class DocspaceActionManager {
                     return null;
                 }
             }, currentUser.getClient().getSystemUser());
-        } catch (Exception e) {
+        } catch (SystemUserNotFoundException e) {
             log.warn(
                     MessageFormat.format(
                             "An attempt to remove a User({0}, {1}) from a shared group failed with the error: {2}",

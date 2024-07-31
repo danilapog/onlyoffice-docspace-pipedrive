@@ -63,7 +63,7 @@ public class SettingsController {
         return ResponseEntity.ok(
                 settingsMapper.settingsToSettingsResponse(
                         settings,
-                        currentClient.getSystemUser() != null
+                        currentClient.existSystemUser()
                 )
         );
     }
@@ -86,7 +86,7 @@ public class SettingsController {
         return ResponseEntity.ok(
                 settingsMapper.settingsToSettingsResponse(
                         savedSettings,
-                        currentUser.getClient().getSystemUser() != null
+                        currentUser.getClient().existSystemUser()
                 )
         );
     }
