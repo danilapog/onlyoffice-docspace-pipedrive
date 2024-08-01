@@ -27,4 +27,5 @@ public interface SettingsService {
     Settings findByClientId(Long clientId);
     Settings put(Long clientId, Settings settings);
     Settings saveSharedGroup(Long clientId, UUID groupId);
+    void deleteById(Long id);
 }

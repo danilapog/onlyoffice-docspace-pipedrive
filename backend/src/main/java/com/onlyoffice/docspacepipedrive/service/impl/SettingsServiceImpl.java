@@ -69,4 +69,9 @@ public class SettingsServiceImpl implements SettingsService {
 
         return settingsRepository.save(existedSetting);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        settingsRepository.deleteById(id);
+    }
 }
