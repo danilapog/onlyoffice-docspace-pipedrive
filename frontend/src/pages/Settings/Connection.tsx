@@ -122,19 +122,9 @@ export const ConnectionSettings: React.FC= () => {
       <div className="flex flex-col items-start pl-5 pr-5 pt-5 pb-3">
         <div className="pb-2">
           <OnlyofficeTitle
-            text={t("settings.connection.title", "Configure ONLYOFFICE DocSpace app settings")}
+            text={t("settings.connection.title", "Configure connection settings of the ONLYOFFICE DocSpace app")}
           />
         </div>
-        <p className="text-slate-800 font-normal text-base text-left">
-          {t(
-            "settings.connection.description",
-            `
-            This plugin allows multiple users to collaborate in real time,
-            save back those changes to Pipedrive and enables the users to edit
-            office documents from Pipedrive using ONLYOFFICE DocSpace Server.
-            `
-          )}
-        </p>
         <OnlyofficeHint>
           <div>
             <p className="font-semibold">{t("settings.connection.hint.csp.title", "Check the CSP settings")}</p>
@@ -155,7 +145,7 @@ export const ConnectionSettings: React.FC= () => {
       <div className="max-w-[320px]">
         <div className="pl-5 pr-5 pb-2">
           <OnlyofficeInput
-            text={t("settings.connection.inputs.address", "DocSpace Service Address")}
+            text={t("settings.connection.inputs.address", "ONLYOFFICE DocSpace address")}
             valid={showValidationMessage ? !!address : true}
             disabled={saving}
             value={address}
