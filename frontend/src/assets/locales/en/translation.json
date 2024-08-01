@@ -38,7 +38,7 @@
   "settings.connection.saving.error": "Could not save ONLYOFFICE DocSpace settings",
   "settings.connection.saving.error.forbidden": "The specified user is not a ONLYOFFICE DocSpace administrator",
   "settings.connection.hint.csp.title": "Check the CSP settings",
-  "settings.connection.hint.csp.message": "Before connecting the app, please go to the {{path}} and add the following credentials to the allow list",
+  "settings.connection.hint.csp.message": "Before connecting the app, please go to the <semibold>{{path}}</semibold> and add the following credentials to the allow list",
   "settings.connection.hint.csp.path": "DocSpace Settings - Developer tools - JavaScript SDK",
   "settings.connection.hint.csp.pipedrive-adress": "Pipedrive portal address",
   "settings.connection.hint.csp.docspace-adress": "ONLYOFFICE DocSpace app",
