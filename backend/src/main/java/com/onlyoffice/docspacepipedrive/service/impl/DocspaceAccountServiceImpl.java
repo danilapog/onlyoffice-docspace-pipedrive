@@ -29,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -76,5 +78,10 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
         if (user.isSystemUser()) {
             clientService.unsetSystemUser(user.getClient().getId());
         }
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(final List<Long> ids) {
+        docspaceAccountRepository.deleteAllByIdInBatch(ids);
     }
 }
