@@ -48,4 +48,9 @@ public class RoomServiceImpl implements RoomService {
 
         return roomRepository.save(room);
     }
+
+    @Override
+    public void deleteAllByClientId(Long clientId) {
+        roomRepository.deleteAllByClientId(clientId);
+    }
 }
