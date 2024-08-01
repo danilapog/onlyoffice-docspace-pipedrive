@@ -20,7 +20,6 @@ package com.onlyoffice.docspacepipedrive.manager;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveWebhook;
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
 import com.onlyoffice.docspacepipedrive.security.util.RandomPasswordGenerator;
@@ -52,20 +51,14 @@ public class PipedriveActionManager {
 
     @Transactional
     public void removeWebhooks() {
-        Client client = SecurityUtils.getCurrentClient();
+        User user = SecurityUtils.getCurrentUser();
 
-        List<Webhook> webhooks = webhookService.findAllByUserId(client.getSystemUser().getId());
+        List<Webhook> webhooks = webhookService.findAllByUserId(user.getId());
 
-        SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-            public Void doWork() {
-                for (Webhook webhook : webhooks) {
-                    pipedriveClient.deleteWebhook(webhook.getWebhookId());
-                    webhookService.deleteById(webhook.getId());
-                }
-
-                return null;
-            }
-        }, client.getSystemUser());
+        for (Webhook webhook : webhooks) {
+            pipedriveClient.deleteWebhook(webhook.getWebhookId());
+            webhookService.deleteById(webhook.getId());
+        }
     }
 
     private void initWebhook(final String eventObject, final String eventAction) {
