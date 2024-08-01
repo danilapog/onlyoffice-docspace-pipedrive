@@ -25,19 +25,34 @@ import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
+import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.service.ClientService;
+import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
+import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
+import com.onlyoffice.docspacepipedrive.service.UserService;
+import com.onlyoffice.docspacepipedrive.web.aop.Execution;
+import com.onlyoffice.docspacepipedrive.web.aop.Mode;
+import com.onlyoffice.docspacepipedrive.web.aop.pipedrive.ExecutePipedriveAction;
+import com.onlyoffice.docspacepipedrive.web.aop.pipedrive.PipedriveAction;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.SettingsMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -46,8 +61,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class SettingsController {
     private final SettingsService settingsService;
+    private final ClientService clientService;
+    private final RoomService roomService;
+    private final UserService userService;
+    private final DocspaceAccountService docspaceAccountService;
     private final SettingsMapper settingsMapper;
     private final PipedriveClient pipedriveClient;
+    private final PipedriveActionManager pipedriveActionManager;
 
     @GetMapping
     public ResponseEntity<SettingsResponse> get() {
@@ -89,5 +109,53 @@ public class SettingsController {
                         currentUser.getClient().existSystemUser()
                 )
         );
+    }
+
+    @DeleteMapping
+    @Transactional
+    public ResponseEntity<Void> delete() {
+        User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
+
+        PipedriveUser pipedriveUser = pipedriveClient.getUser();
+
+        if (!pipedriveUser.isSalesAdmin()) {
+            throw new PipedriveAccessDeniedException(currentUser.getUserId());
+        }
+
+        settingsService.deleteById(currentClient.getSettings().getId());
+        roomService.deleteAllByClientId(currentClient.getId());
+
+        List<User> users = userService.findAllByClientId(currentClient.getId());
+
+        List<Long> docspaceAccountIds = users.stream()
+                .filter(user -> user.getDocspaceAccount() != null)
+                .map(user -> user.getId())
+                .collect(Collectors.toList());
+
+        docspaceAccountService.deleteAllByIdInBatch(docspaceAccountIds);
+
+        if (currentClient.existSystemUser()) {
+            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
+                public Void doWork() {
+                    try {
+                        pipedriveActionManager.removeWebhooks();
+                    } catch (Exception e) {
+                        log.warn(
+                                MessageFormat.format(
+                                        "An attempt execute action REMOVE_WEBHOOKS failed with the error: {1}",
+                                        e.getMessage()
+                                )
+                        );
+                    }
+
+                    return null;
+                }
+            }, currentClient.getSystemUser());
+
+            clientService.unsetSystemUser(currentClient.getId());
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }
