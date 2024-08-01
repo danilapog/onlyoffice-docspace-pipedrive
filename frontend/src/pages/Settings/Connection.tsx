@@ -163,22 +163,24 @@ export const ConnectionSettings: React.FC= () => {
             text={t("settings.connection.title", "Configure connection settings of the ONLYOFFICE DocSpace app")}
           />
         </div>
-        <OnlyofficeHint>
-          <div>
-            <p className="font-semibold">{t("settings.connection.hint.csp.title", "Check the CSP settings")}</p>
-            <p>
-              <Trans
-                i18nKey="settings.connection.hint.csp.message"
-                defaults="Before connecting the app, please go to the <semibold>{{path}}</semibold> and add the following credentials to the allow list"
-                values={{ path: t("settings.connection.hint.csp.path", "DocSpace Settings - Developer tools - JavaScript SDK") }}
-                components={{ semibold: <span className="font-semibold" /> }}  
-              />:
-            </p>
-            <br/>
-            <p className="font-semibold">{t("settings.connection.hint.csp.pipedrive-adress", "Pipedrive portal address")}: <span className="text-green-700">{stripTrailingSlash(url)}</span></p>
-            <p className="font-semibold">{t("settings.connection.hint.csp.docspace-adress", "ONLYOFFICE DocSpace app")}: <span className="text-green-700">{process.env.BACKEND_URL}</span></p>
-          </div>
-        </OnlyofficeHint>
+        {!settings?.url && (
+          <OnlyofficeHint>
+            <div>
+              <p className="font-semibold">{t("settings.connection.hint.csp.title", "Check the CSP settings")}</p>
+              <p>
+                <Trans
+                  i18nKey="settings.connection.hint.csp.message"
+                  defaults="Before connecting the app, please go to the <semibold>{{path}}</semibold> and add the following credentials to the allow list"
+                  values={{ path: t("settings.connection.hint.csp.path", "DocSpace Settings - Developer tools - JavaScript SDK") }}
+                  components={{ semibold: <span className="font-semibold" /> }}  
+                />:
+              </p>
+              <br/>
+              <p className="font-semibold">{t("settings.connection.hint.csp.pipedrive-adress", "Pipedrive portal address")}: <span className="text-green-700">{stripTrailingSlash(url)}</span></p>
+              <p className="font-semibold">{t("settings.connection.hint.csp.docspace-adress", "ONLYOFFICE DocSpace app")}: <span className="text-green-700">{process.env.BACKEND_URL}</span></p>
+            </div>
+          </OnlyofficeHint>
+        )}
       </div>
       <div className="max-w-[320px]">
         <div className="pl-5 pr-5 pb-2">
