@@ -45,7 +45,7 @@ export interface IAppContext {
   user: UserResponse | undefined;
   setUser: (value: UserResponse) => void;
   settings: SettingsResponse | undefined;
-  setSettings: (value: SettingsResponse) => void;
+  setSettings: (value: SettingsResponse | undefined) => void;
   error: AxiosError | undefined;
   setError: (value: AxiosError) => void;
 }

@@ -27,7 +27,7 @@ import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
 import { OnlyofficeHint } from "@components/hint";
 
-import { postSettings } from "@services/settings";
+import { deleteSettings, postSettings } from "@services/settings";
 
 import { getCurrentURL } from "@utils/url";
 
@@ -41,15 +41,53 @@ export const ConnectionSettings: React.FC= () => {
   const { settings, setSettings, sdk } = useContext(AppContext);
   const { url } = getCurrentURL();
 
-  const [saving, setSaving] = useState(false);
+  const [connecting, setConnecting] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
+  disconnecting
   const [showValidationMessage, setShowValidationMessage] = useState(false);
   const [address, setAddress] = useState<string | undefined>(settings?.url);
 
   const handleSettings = async () => {
     if (address) {
-      setSaving(true);
+      setConnecting(true);
     } else {
       setShowValidationMessage(true);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    setDisconnecting(true);
+
+    const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
+      title: t("button.disconnect", "Disconnect"),
+      description: t(
+        "settings.connection.disconnection.description",
+        `Are you sure you want to disconnect ONLYOFFICE DocSpace? This will 
+        result in all connections between Deals and DocSpace rooms being lost. 
+        And also all user authorization data will be deleted.`
+      ) || ""
+    });
+
+    if (confirmed) {
+      deleteSettings(sdk).then(async () => {
+        await sdk.execute(Command.SHOW_SNACKBAR, {
+          message: t(
+            "settings.connection.disconnection.ok",
+            "ONLYOFFICE DocSpace succesfuly disconnected"
+          ),
+        });
+        setSettings(undefined);
+        setAddress("");
+      }).catch(async() => {
+        await sdk.execute(Command.SHOW_SNACKBAR, {
+          message: t(
+            "settings.connection.disconnection.error",
+            "Could not disconnect ONLYOFFICE DocSpace"
+          ),
+        });
+      }).finally(() => {setDisconnecting(false);})
+    } else {
+      setDisconnecting(false);
     }
   };
 
@@ -72,7 +110,7 @@ export const ConnectionSettings: React.FC= () => {
           ),
         });
       })
-      .finally(() => {setSaving(false)});
+      .finally(() => {setConnecting(false)});
     }
   }
 
@@ -98,7 +136,7 @@ export const ConnectionSettings: React.FC= () => {
     }
 
     delete window.DocSpace;
-    setSaving(false);
+    setConnecting(false);
   }
 
   const onLoadComponentError = async () => {
@@ -108,7 +146,7 @@ export const ConnectionSettings: React.FC= () => {
         "ONLYOFFICE DocSpace cannot be reached"
       ),
     });
-    setSaving(false);
+    setConnecting(false);
   };
 
   const stripTrailingSlash = (url: string) => {
@@ -147,21 +185,31 @@ export const ConnectionSettings: React.FC= () => {
           <OnlyofficeInput
             text={t("settings.connection.inputs.address", "ONLYOFFICE DocSpace address")}
             valid={showValidationMessage ? !!address : true}
-            disabled={saving}
+            disabled={connecting || !!settings?.url}
             value={address}
             onChange={(e) => setAddress(stripTrailingSlash(e.target.value.trim()))}
           />
         </div>
         <div className="flex justify-start items-center mt-4 ml-5">
-          <OnlyofficeButton
-            text={t("button.save", "Save")}
-            primary
-            disabled={saving}
-            onClick={handleSettings}
-          />
+          {!settings?.url && (
+            <OnlyofficeButton
+              text={t("button.connect", "Connect")}
+              primary
+              disabled={connecting}
+              onClick={handleSettings}
+            />
+          )}
+          {!!settings?.url && (
+            <OnlyofficeButton
+              text={t("button.disconnect", "Disconnect")}
+              primary
+              disabled={disconnecting}
+              onClick={handleDisconnect}
+            />
+          )}
         </div>
       </div>
-      {saving && address && (
+      {connecting && address && (
         <div style={{ display: "none" }}>
           <DocSpace
             url={address ?? ""}

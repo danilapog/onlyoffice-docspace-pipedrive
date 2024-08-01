@@ -72,3 +72,26 @@ export const postSettings = async (
 
   return response.data;
 };
+
+export const deleteSettings = async (
+  sdk: AppExtensionsSDK,
+) => {
+  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+  const client = axios.create({ baseURL: process.env.BACKEND_URL });
+  axiosRetry(client, {
+    retries: 1,
+    retryCondition: (error) => error.status === 429,
+  });
+
+  const response = await client({
+    method: "DELETE",
+    url: `/api/v1/settings`,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + pctx.token,
+    },
+    timeout: 10000,
+  });
+
+  return response.data;
+};
