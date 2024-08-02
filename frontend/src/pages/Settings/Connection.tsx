@@ -16,7 +16,7 @@
  *
  */
 
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Trans } from 'react-i18next';
 import { Command } from "@pipedrive/app-extensions-sdk";
@@ -43,7 +43,7 @@ export const ConnectionSettings: React.FC= () => {
 
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
-  disconnecting
+  const [changing, setChanging] = useState(false);
   const [showValidationMessage, setShowValidationMessage] = useState(false);
   const [address, setAddress] = useState<string | undefined>(settings?.url);
 
@@ -93,7 +93,7 @@ export const ConnectionSettings: React.FC= () => {
 
   const onAppReady = async () => {
     if (address) {
-      postSettings(sdk, address).then(async (response: SettingsResponse) => {
+      postSettings(sdk, stripTrailingSlash(address)).then(async (response: SettingsResponse) => {
         setSettings(response);
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
@@ -110,7 +110,10 @@ export const ConnectionSettings: React.FC= () => {
           ),
         });
       })
-      .finally(() => {setConnecting(false)});
+      .finally(() => {
+        setConnecting(false);
+        setChanging(false);
+      });
     }
   }
 
@@ -163,7 +166,7 @@ export const ConnectionSettings: React.FC= () => {
             text={t("settings.connection.title", "Configure connection settings of the ONLYOFFICE DocSpace app")}
           />
         </div>
-        {!settings?.url && (
+        {(!settings?.url || changing) && (
           <OnlyofficeHint>
             <div>
               <p className="font-semibold">{t("settings.connection.hint.csp.title", "Check the CSP settings")}</p>
@@ -186,13 +189,14 @@ export const ConnectionSettings: React.FC= () => {
         <div className="pl-5 pr-5 pb-2">
           <OnlyofficeInput
             text={t("settings.connection.inputs.address", "ONLYOFFICE DocSpace address")}
+            placeholder="https://"
             valid={showValidationMessage ? !!address : true}
-            disabled={connecting || !!settings?.url}
+            disabled={(connecting || !!settings?.url) && !changing}
             value={address}
-            onChange={(e) => setAddress(stripTrailingSlash(e.target.value.trim()))}
+            onChange={(e) => setAddress(e.target.value.trim())}
           />
         </div>
-        <div className="flex justify-start items-center mt-4 ml-5">
+        <div className="flex justify-start items-center mt-4 ml-5 gap-2">
           {!settings?.url && (
             <OnlyofficeButton
               text={t("button.connect", "Connect")}
@@ -201,13 +205,42 @@ export const ConnectionSettings: React.FC= () => {
               onClick={handleSettings}
             />
           )}
-          {!!settings?.url && (
-            <OnlyofficeButton
-              text={t("button.disconnect", "Disconnect")}
-              primary
-              disabled={disconnecting}
-              onClick={handleDisconnect}
-            />
+          {!!settings?.url && !changing && (
+            <>
+              <OnlyofficeButton
+                text={t("button.change", "Change")}
+                primary
+                disabled={disconnecting}
+                onClick={()=> {setChanging(true)}}
+              />
+              <OnlyofficeButton
+                text={t("button.disconnect", "Disconnect")}
+                primary
+                disabled={disconnecting}
+                onClick={handleDisconnect}
+              />
+            </>
+          )}
+          {changing && (
+            <>
+              <OnlyofficeButton
+                text={t("button.cancel", "Cancel")}
+                primary
+                disabled={connecting}
+                onClick={
+                  ()=> {
+                    setChanging(false)
+                    setAddress(settings?.url)
+                  }
+              }
+              />
+              <OnlyofficeButton
+                text={t("button.save", "Save")}
+                primary
+                disabled={connecting}
+                onClick={handleSettings}
+              />
+            </>
           )}
         </div>
       </div>
