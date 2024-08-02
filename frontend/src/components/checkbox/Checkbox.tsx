@@ -36,22 +36,40 @@ export const OnlyofficeCheckbox: React.FC<CheckboxProps> = ({
   onChange,
 }) => {
   const istyle = cx({
-    "select-auto": true,
-    "bg-slate-200": disabled,
+    "relative w-8 h-4 shrink-0 rounded-full": true,
+    "peer peer-checked:after:translate-x-4": true,
+    "rtl:peer-checked:after:-translate-x-full": true,
+    "after:absolute after:top-[2px] after:start-[2px]": true,
+    "after:rounded-full after:h-3 after:w-3 after:transition-all": true,
+    "bg-zinc-300": !disabled,
+    "bg-zinc-300/50": disabled,
+    "after:bg-white": !disabled,
+    "after:bg-white/50": disabled,
+    "peer-checked:bg-green-700": !disabled,
+    "peer-checked:bg-green-700/50": disabled,
+    "cursor-not-allowed": disabled,
   });
 
   return (
-    <div>
-      <input
-        checked={checked}
-        className={istyle}
-        type="checkbox"
-        onChange={onChange}
-        disabled={disabled}
-      />
-      <label className={`font-semibold text-${labelSize} text-gray-700 py-2 ml-1`}>
-        {text}
+    <>
+      <label className={`inline-flex items-center ${disabled ? "cursor-not-allowed": "cursor-pointer"} `}>
+        <input
+          type="checkbox"
+          className="sr-only peer"
+          checked={checked}
+          onChange={onChange}
+          disabled={disabled}
+        />
+        <div
+          className={istyle}
+        >
+        </div>
+        <span
+          className={`font-semibold text-${labelSize} text-gray-700 py-2 ml-2`}
+        >
+          {text}
+        </span>
       </label>
-    </div>
+    </>
   );
 };
