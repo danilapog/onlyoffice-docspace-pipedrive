@@ -116,14 +116,14 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
           }
         />
       )}
-      {!loading && (!user?.isAdmin && (!settings?.url || !settings.existSystemUser)) && !error && (
+      {!loading && (!user?.isAdmin && (!settings?.url || !settings.existSystemUser) && !user?.docspaceAccount) && !error && (
         <OnlyofficeBackgroundError
           Icon={<CommonError className="mb-5" />}
           title={t("background.error.subtitle.plugin.not-active.message", "ONLYOFFICE DocSpace App is not yet available")}
           subtitle={t("background.error.subtitle.plugin.not-active.help", "Please wait until a Pipedrive Administrator configures the app settings")}
         />
       )}
-      {!loading && (user?.isAdmin || (settings?.url && settings.existSystemUser)) && !error && sdk &&(
+      {!loading && (user?.isAdmin || (settings?.url && settings.existSystemUser) || user?.docspaceAccount) && !error && sdk &&(
         <AppContext.Provider value={{sdk, user, setUser, settings, setSettings, error, setError}}>{children}</AppContext.Provider>
       )}
     </>
