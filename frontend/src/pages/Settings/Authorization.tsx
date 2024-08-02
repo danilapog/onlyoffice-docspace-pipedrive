@@ -142,10 +142,9 @@ export const AuthorizationSetting: React.FC = () => {
       {!settings?.url && (
         <OnlyofficeBackgroundError
           Icon={<CommonError />}
-          title={t("background.error.title", "Error")}
+          title={t("background.error.subtitle.docspace-connection", "You are not connected to ONLYOFFICE DocSpace")}
           subtitle={
-              `${t("background.error.subtitle.docspace-connection", "You are not connected to ONLYOFFICE DocSpace.")} 
-                ${user?.isAdmin
+              `${user?.isAdmin
                   ? t("background.error.hint.admin.docspace-connection", "Please go to the Connection tab to configure the DocSpace app settings.")
                   : t("background.error.hint.docspace-connection", "Please contact the administrator.")
                 }`

@@ -23,9 +23,6 @@ import { AppContext } from "@context/AppContext";
 
 import { AuthorizationSetting } from "./Authorization";
 import { ConnectionSettings } from "./Connection";
-import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
-
-import CommonError from "@assets/common-error.svg";
 
 type Section = {
   id: string,
@@ -52,45 +49,36 @@ export const SettingsPage: React.FC = () => {
 
   return (
     <>
-      {(!user?.isAdmin && (!settings?.url || !settings.existSystemUser)) && (
-        <OnlyofficeBackgroundError
-          Icon={<CommonError className="mb-5" />}
-          title={t("background.error.title.common",  "Error")}
-          subtitle={t("background.error.subtitle.plugin.not-active", "ONLYOFFICE DocSpace App is not yet available. Please wait until a Pipedrive Administrator configures the app settings.")}
-        />
-      )}
-      {(user?.isAdmin || (settings?.url && settings.existSystemUser)) && (
-        <div className="w-screen h-screen">
-          <div className="flex flex-row">
-            <div className="basis-1/5 border-r-2 p-1">
-              {sections.filter(section => section.available).map(section => (
-                <div
-                  key={section.id}
-                  id={section.id}
-                  tabIndex={0}
-                  className={`text-left font border-spacing-7 px-10 py-2 m-1 rounded-lg cursor-pointer ${
-                    section.id === selectedSection
-                    ? "text-blue-600 font-medium bg-sky-100"
-                    : "hover:bg-stone-200"
-                  }`}
-                  onClick={() => setSelectedSection(section.id)}
-                  onKeyDown={() => setSelectedSection(section.id)}
-                >
-                  {section.title}
-                </div>
-              ))}
-            </div>
-            <div className="basis-4/5 custom-scroll w-screen h-screen overflow-y-scroll overflow-x-hidden p-2">
-              {selectedSection === "conntection" &&
-                <ConnectionSettings />
-              }
-              {selectedSection === "authorization" &&
-                <AuthorizationSetting />
-              }
-            </div>
+      <div className="w-screen h-screen">
+        <div className="flex flex-row">
+          <div className="basis-1/5 border-r-2 p-1">
+            {sections.filter(section => section.available).map(section => (
+              <div
+                key={section.id}
+                id={section.id}
+                tabIndex={0}
+                className={`text-left font border-spacing-7 px-10 py-2 m-1 rounded-lg cursor-pointer ${
+                  section.id === selectedSection
+                  ? "text-blue-600 font-medium bg-sky-100"
+                  : "hover:bg-stone-200"
+                }`}
+                onClick={() => setSelectedSection(section.id)}
+                onKeyDown={() => setSelectedSection(section.id)}
+              >
+                {section.title}
+              </div>
+            ))}
+          </div>
+          <div className="basis-4/5 custom-scroll w-screen h-screen overflow-y-scroll overflow-x-hidden p-2">
+            {selectedSection === "conntection" &&
+              <ConnectionSettings />
+            }
+            {selectedSection === "authorization" &&
+              <AuthorizationSetting />
+            }
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 };

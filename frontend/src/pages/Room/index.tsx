@@ -83,9 +83,8 @@ export const RoomPage: React.FC = () => {
     if(!settings?.url) {
       setIError({
         Icon: <CommonError />,
-        title: t("background.error.title", "Error"),
-        message: `${t("background.error.subtitle.docspace-connection", "You are not connected to ONLYOFFICE DocSpace portal.")} 
-                  ${user?.isAdmin
+        title: t("background.error.subtitle.docspace-connection", "You are not connected to ONLYOFFICE DocSpace"),
+        message: `${user?.isAdmin
                     ? t("background.error.hint.admin.docspace-connection", "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.")
                     : t("background.error.hint.docspace-connection", "Please contact the administrator.")
                   }`,
@@ -101,8 +100,8 @@ export const RoomPage: React.FC = () => {
     if (!user?.docspaceAccount) {
       setIError({
         Icon: <CommonError />,
-        title: t("background.error.title", "Error"),
-        message: t("background.error.subtitle.docspace-authorization", "Can not get authorize in ONLYOFFICE DocSpace. Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings."),
+        title: t("background.error.subtitle.docspace-authorization.message", "Can not get authorize in ONLYOFFICE DocSpace"),
+        message: t("background.error.subtitle.docspace-authorization.help", "Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings"),
         button: t("button.settings", "Settings") || "Settings",
         onClick: async () => await sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS})
       });
@@ -179,8 +178,8 @@ export const RoomPage: React.FC = () => {
   const onUnSuccessLogin = () => {
     setIError({
       Icon: <CommonError />,
-      title: t("background.error.title", "Error"),
-      message: t("background.error.subtitle.docspace-authorization", "Can not get authorize in ONLYOFFICE DocSpace. Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings."),
+      title: t("background.error.subtitle.docspace-authorization.message", "Can not get authorize in ONLYOFFICE DocSpace"),
+      message: t("background.error.subtitle.docspace-authorization.help", "Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings"),
       button: t("button.settings", "Settings") || "Settings",
       onClick: async () => await sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS})
     });
