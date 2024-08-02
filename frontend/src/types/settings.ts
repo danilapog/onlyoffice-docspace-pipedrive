@@ -18,5 +18,5 @@
 
 export type SettingsResponse = {
   url: string;
-  existSystemUser: string;
+  existSystemUser: boolean;
 };

@@ -20,7 +20,7 @@ const DOCSPACE_SYSTEM_FRAME_ID="docspace-system-frame"
 
 export const AuthorizationSetting: React.FC = () => {
   const { t } = useTranslation();
-  const { user, settings, setUser, sdk } = useContext(AppContext);
+  const { user, settings, setUser, setSettings, sdk } = useContext(AppContext);
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -42,9 +42,12 @@ export const AuthorizationSetting: React.FC = () => {
     deleteDocspaceAccount(sdk).then(async () => {
       setEmail("");
       setPassword("");
-      setIsSystem(!!user?.isSystem);
+      setIsSystem(!!user?.isSystem || !settings?.existSystemUser);
       setShowValidationMessage(false);
-      if (user) {
+      if (user && settings) {
+        if (!!user?.isSystem) {
+          setSettings({...settings, existSystemUser: false});
+        }
         setUser({...user, docspaceAccount: null, isSystem: false});
       }
       await sdk.execute(Command.SHOW_SNACKBAR, {
