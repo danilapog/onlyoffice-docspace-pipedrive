@@ -105,12 +105,13 @@ public class DocspaceActionManager {
 
     public void inviteCurrentUserToSharedGroup() {
         User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
 
-        if (currentUser.getClient().getSettings().existSharedGroupId()) {
+        try {
             SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
                 public Void doWork() {
                     docspaceClient.updateGroup(
-                            currentUser.getClient().getSettings().getSharedGroupId(),
+                            currentClient.getSettings().getSharedGroupId(),
                             null,
                             null,
                             Collections.singletonList(currentUser.getDocspaceAccount().getUuid()),
@@ -119,8 +120,24 @@ public class DocspaceActionManager {
 
                     return null;
                 }
-            }, currentUser.getClient().getSystemUser());
-        } //ToDo: do something if shared group is null
+            }, currentClient.getSystemUser());
+        } catch (WebClientResponseException | SharedGroupIdNotFoundException e) {
+            if (e instanceof SharedGroupIdNotFoundException) {
+                initSharedGroup();
+                return;
+            }
+
+            if (e instanceof WebClientResponseException
+                    && ((WebClientResponseException) e).getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                Settings savedSetting = settingsService.saveSharedGroup(
+                        currentClient.getId(),
+                        null
+                );
+                currentClient.setSettings(savedSetting);
+
+                initSharedGroup();
+            }
+        }
     }
 
 
