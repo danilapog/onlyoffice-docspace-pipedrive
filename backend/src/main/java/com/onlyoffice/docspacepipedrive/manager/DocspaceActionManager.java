@@ -64,7 +64,7 @@ public class DocspaceActionManager {
             public Void doWork() {
                 if (!currentClient.getSettings().existSharedGroupId()) {
                     DocspaceGroup docspaceGroup = docspaceClient.createGroup(
-                            MessageFormat.format("Pipedrive Users ({0})", currentClient.getUrl()),
+                            MessageFormat.format("Pipedrive Users ({0})", currentClient.getCompanyName()),
                             systemUser.getDocspaceAccount().getUuid(),
                             members
                     );
