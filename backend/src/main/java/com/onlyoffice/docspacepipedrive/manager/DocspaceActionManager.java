@@ -25,6 +25,7 @@ import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAccess;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
+import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SystemUserNotFoundException;
@@ -33,7 +34,9 @@ import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -71,13 +74,28 @@ public class DocspaceActionManager {
 
                     settingsService.saveSharedGroup(currentClient.getId(), docspaceGroup.getId());
                 } else {
-                    docspaceClient.updateGroup(
-                            currentClient.getSettings().getSharedGroupId(),
-                            null,
-                            systemUser.getDocspaceAccount().getUuid(),
-                            members,
-                            null
-                    );
+                    try {
+                        docspaceClient.updateGroup(
+                                currentClient.getSettings().getSharedGroupId(),
+                                null,
+                                systemUser.getDocspaceAccount().getUuid(),
+                                members,
+                                null
+                        );
+                    } catch (WebClientResponseException e) {
+                        if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                            Settings savedSetting = settingsService.saveSharedGroup(
+                                    currentClient.getId(),
+                                    null
+                            );
+                            currentClient.setSettings(savedSetting);
+
+                            initSharedGroup();
+                            return null;
+                        }
+
+                        throw e;
+                    }
                 }
 
                 return null;
