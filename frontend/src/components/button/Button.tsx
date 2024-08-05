@@ -19,10 +19,16 @@
 import React from "react";
 import cx from "classnames";
 
+export enum ButtonType {
+  Normal,
+  Primary,
+  Danger
+};
+
 type ButtonProps = {
   text: string;
   disabled?: boolean;
-  primary?: boolean;
+  type?: ButtonType;
   fullWidth?: boolean;
   Icon?: React.ReactElement;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -31,15 +37,16 @@ type ButtonProps = {
 export const OnlyofficeButton: React.FC<ButtonProps> = ({
   text,
   disabled = false,
-  primary = false,
+  type = ButtonType.Normal,
   fullWidth = false,
   Icon,
   onClick,
 }) => {
   const classes = cx({
     "hover:shadow-lg duration-200": !disabled,
-    "bg-green-700 text-white": primary,
-    "bg-white text-black border-2 border-slate-300 border-solid": !primary,
+    "bg-green-700 text-white": type === ButtonType.Primary,
+    "bg-red-600 text-white": type === ButtonType.Danger,
+    "bg-white text-black border-2 border-slate-300 border-solid": type === ButtonType.Normal,
     "min-w-[62px] h-[32px]": true,
     "w-full": fullWidth,
     "bg-opacity-50 cursor-not-allowed": disabled,

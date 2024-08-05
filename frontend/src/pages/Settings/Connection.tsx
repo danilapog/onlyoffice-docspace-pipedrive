@@ -22,7 +22,7 @@ import { Trans } from 'react-i18next';
 import { Command } from "@pipedrive/app-extensions-sdk";
 import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
 
-import { OnlyofficeButton } from "@components/button";
+import { ButtonType, OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
 import { OnlyofficeHint } from "@components/hint";
@@ -200,7 +200,7 @@ export const ConnectionSettings: React.FC= () => {
           {!settings?.url && (
             <OnlyofficeButton
               text={t("button.connect", "Connect")}
-              primary
+              type={ButtonType.Primary}
               disabled={connecting}
               onClick={handleSettings}
             />
@@ -209,13 +209,13 @@ export const ConnectionSettings: React.FC= () => {
             <>
               <OnlyofficeButton
                 text={t("button.change", "Change")}
-                primary
+                type={ButtonType.Primary}
                 disabled={disconnecting}
                 onClick={()=> {setChanging(true)}}
               />
               <OnlyofficeButton
                 text={t("button.disconnect", "Disconnect")}
-                primary
+                type={ButtonType.Danger}
                 disabled={disconnecting}
                 onClick={handleDisconnect}
               />
@@ -225,7 +225,6 @@ export const ConnectionSettings: React.FC= () => {
             <>
               <OnlyofficeButton
                 text={t("button.cancel", "Cancel")}
-                primary
                 disabled={connecting}
                 onClick={
                   ()=> {
@@ -236,7 +235,7 @@ export const ConnectionSettings: React.FC= () => {
               />
               <OnlyofficeButton
                 text={t("button.save", "Save")}
-                primary
+                type={ButtonType.Primary}
                 disabled={connecting}
                 onClick={handleSettings}
               />

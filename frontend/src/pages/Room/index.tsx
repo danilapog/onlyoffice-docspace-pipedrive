@@ -27,7 +27,7 @@ import { AppContext } from "@context/AppContext";
 import { createRoom, getRoom } from "@services/room";
 import { getCurrentURL } from "@utils/url";
 
-import { OnlyofficeButton } from "@components/button";
+import { ButtonType, OnlyofficeButton } from "@components/button";
 import { OnlyofficeSpinner } from "@components/spinner";
 import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 
@@ -224,7 +224,7 @@ export const RoomPage: React.FC = () => {
             </div>
             <OnlyofficeButton
               text={t("button.create.room", "Create room")}
-              primary
+              type={ButtonType.Primary}
               onClick={handleCreateRoom}
             />
           </div>

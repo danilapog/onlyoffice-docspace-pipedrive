@@ -16,4 +16,4 @@
  *
  */
 
-export { OnlyofficeButton } from "./Button";
+export { OnlyofficeButton, ButtonType } from "./Button";
