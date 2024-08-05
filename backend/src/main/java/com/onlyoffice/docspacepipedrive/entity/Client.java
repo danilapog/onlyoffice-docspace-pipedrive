@@ -49,6 +49,7 @@ public class Client {
     @Id
     private Long id;
     private String url;
+    private String companyName;
     @CreationTimestamp
     private Instant installationDate;
     @OneToOne(mappedBy = "client", cascade = CascadeType.REMOVE)

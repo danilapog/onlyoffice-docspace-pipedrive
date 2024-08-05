@@ -36,6 +36,7 @@ public class PipedriveUser {
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<Access> access;
     private String companyDomain;
+    private String companyName;
 
     @Data
     @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)

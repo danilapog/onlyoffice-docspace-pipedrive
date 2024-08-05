@@ -76,8 +76,18 @@ public class UserController {
                 .host(pipedriveUser.getCompanyDomain() + ".pipedrive.com")
                 .build();
 
-        if (!currentUser.getClient().getUrl().equals(clientUri.toUriString())) {
+        boolean updateClient = false;
+        if (!clientUri.toUriString().equals(currentClient.getUrl())) {
             currentClient.setUrl(clientUri.toUriString());
+            updateClient = true;
+        }
+
+        if (!pipedriveUser.getCompanyName().equals(currentClient.getCompanyName())) {
+            currentClient.setCompanyName(pipedriveUser.getCompanyName());
+            updateClient = true;
+        }
+
+        if (updateClient) {
             Client updatedClient = clientService.update(currentClient);
             currentUser.setClient(updatedClient);
         }

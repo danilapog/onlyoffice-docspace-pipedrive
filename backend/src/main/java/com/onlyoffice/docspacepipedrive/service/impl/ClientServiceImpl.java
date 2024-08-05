@@ -58,6 +58,10 @@ public class ClientServiceImpl implements ClientService {
             existedClient.setUrl(client.getUrl());
         }
 
+        if (StringUtils.hasText(client.getCompanyName())) {
+            existedClient.setCompanyName(client.getCompanyName());
+        }
+
         if (client.existSystemUser()) {
             existedClient.setSystemUser(client.getSystemUser());
         }
