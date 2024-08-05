@@ -68,7 +68,7 @@ public class Client {
     private User systemUser;
 
     public User getSystemUser() {
-        return Optional.of(systemUser).orElseThrow(
+        return Optional.ofNullable(systemUser).orElseThrow(
                 () -> new SystemUserNotFoundException()
         );
     }
