@@ -25,9 +25,8 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Room;
-import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.web.aop.Execution;
 import com.onlyoffice.docspacepipedrive.web.aop.docspace.DocspaceAction;
@@ -35,6 +34,7 @@ import com.onlyoffice.docspacepipedrive.web.aop.docspace.ExecuteDocspaceAction;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.RoomMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +50,7 @@ import java.text.MessageFormat;
 @RestController
 @RequestMapping("/api/v1/room")
 @RequiredArgsConstructor
+@Slf4j
 public class RoomController {
     private final RoomService roomService;
     private final RoomMapper roomMapper;
@@ -91,7 +92,25 @@ public class RoomController {
         }
 
         if (pipedriveDeal.getVisibleTo().equals(visibleToEveryone)) {
-            docspaceActionManager.inviteSharedGroupToRoom(docspaceRoom.getId());
+            try {
+                 boolean success = docspaceActionManager.inviteSharedGroupToRoom(docspaceRoom.getId());
+                 if (!success) {
+                     docspaceActionManager.initSharedGroup();
+                     success = docspaceActionManager.inviteSharedGroupToRoom(docspaceRoom.getId());
+                 }
+
+                 if (!success) {
+                     log.warn(
+                             MessageFormat.format(
+                             "Inviting the Shared Group to the room with ID ({}) did not complete successfully",
+                                     docspaceRoom.getId()
+                             )
+                     );
+                 }
+            } catch (SharedGroupIdNotFoundException e) {
+                docspaceActionManager.initSharedGroup();
+                docspaceActionManager.inviteSharedGroupToRoom(docspaceRoom.getId());
+            }
         }
 
         Room room = Room.builder()

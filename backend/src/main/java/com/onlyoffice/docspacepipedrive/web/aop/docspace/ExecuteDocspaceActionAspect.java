@@ -85,7 +85,7 @@ public class ExecuteDocspaceActionAspect {
                     docspaceActionManager.removeCurrentUserFromSharedGroup();
                     break;
                 case INVITE_DEAL_FOLLOWERS_TO_ROOM:
-                    Long dealId = (Long) joinPoint.getArgs()[0];
+                    Long dealId = (Long) joinPoint.getArgs()[1];
 
                     Room room = roomService.findByClientIdAndDealId(currentClient.getId(), dealId);
                     List<PipedriveDealFollower> dealFollowers = pipedriveClient.getDealFollowers(dealId);

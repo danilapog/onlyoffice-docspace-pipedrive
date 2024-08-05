@@ -18,7 +18,6 @@
 
 package com.onlyoffice.docspacepipedrive.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollowerEvent;
@@ -30,6 +29,7 @@ import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
+import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +94,25 @@ public class WebhookController {
             }
 
             if (currentDeal.getVisibleTo().equals(visibleToEveryone)) {
-                docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
+                try {
+                    boolean success = docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
+                    if (!success) {
+                        docspaceActionManager.initSharedGroup();
+                        success = docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
+                    }
+
+                    if (!success) {
+                        log.warn(
+                                MessageFormat.format(
+                                        "Inviting the Shared Group to the room with ID ({}) did not complete successfully",
+                                        room.getRoomId()
+                                )
+                        );
+                    }
+                } catch (SharedGroupIdNotFoundException e) {
+                    docspaceActionManager.initSharedGroup();
+                    docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
+                }
             }
 
             if (previousDeal.getVisibleTo().equals(visibleToEveryone)) {
