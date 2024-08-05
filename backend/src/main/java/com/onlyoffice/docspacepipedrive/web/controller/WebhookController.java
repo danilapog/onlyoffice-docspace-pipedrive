@@ -164,7 +164,7 @@ public class WebhookController {
         List<User> addedFollowers = new ArrayList<>();
         for (Long userId : userIdsAddedFollowers) {
             try {
-                addedFollowers.add(userService.findByUserIdAndClientId(userId, currentClient.getId()));
+                addedFollowers.add(userService.findByClientIdAndUserId(currentClient.getId(), userId));
             } catch (UserNotFoundException e) { }
         }
 
@@ -190,7 +190,7 @@ public class WebhookController {
         List<User> removedFollowers = new ArrayList<>();
         for (Long userId : userIdsRemovedFollowers) {
             try {
-                removedFollowers.add(userService.findByUserIdAndClientId(userId, currentClient.getId()));
+                removedFollowers.add(userService.findByClientIdAndUserId(currentClient.getId(), userId));
             } catch (UserNotFoundException e) { }
         }
 

@@ -75,7 +75,7 @@ public class LoginController {
     @DeleteMapping("oauth2/code/pipedrive")
     @Transactional
     public void uninstall(@RequestBody UninstallRequest request) {
-        User user = userService.findByUserIdAndClientId(request.getUserId(), request.getCompanyId());
+        User user = userService.findByClientIdAndUserId(request.getCompanyId(), request.getUserId());
 
         if (user.isSystemUser()) {
             clientService.unsetSystemUser(request.getCompanyId());

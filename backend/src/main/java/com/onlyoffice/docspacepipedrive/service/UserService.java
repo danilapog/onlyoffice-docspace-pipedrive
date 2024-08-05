@@ -25,7 +25,7 @@ import java.util.List;
 
 public interface UserService {
     User findById(Long id);
-    User findByUserIdAndClientId(Long userId, Long clientId);
+    User findByClientIdAndUserId(Long clientId, Long userId);
     List<User> findAllByClientId(Long clientId);
     User put(Long clientId, User user);
     void deleteByUserIdAndClientId(Long userId, Long clientId);

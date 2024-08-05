@@ -28,6 +28,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUserIdAndClientId(Long userId, Long clientId);
+    Optional<User> findByClientIdAndUserId(Long clientId, Long userId);
     List<User> findAllByClientId(Long clientId);
 }

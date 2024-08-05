@@ -94,9 +94,9 @@ public class ExecuteDocspaceActionAspect {
                     for (PipedriveDealFollower dealFollower : dealFollowers) {
                         try {
                             users.add(
-                                    userService.findByUserIdAndClientId(
-                                            dealFollower.getUserId(),
-                                            currentClient.getId()
+                                    userService.findByClientIdAndUserId(
+                                            currentClient.getId(),
+                                            dealFollower.getUserId()
                                     )
                             );
                         } catch (UserNotFoundException e) {

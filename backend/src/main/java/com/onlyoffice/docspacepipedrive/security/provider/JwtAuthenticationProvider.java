@@ -82,7 +82,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
         User user;
         try {
-            user = userService.findByUserIdAndClientId(userId, clientId);
+            user = userService.findByClientIdAndUserId(clientId, userId);
         } catch (UserNotFoundException e) {
             log.debug(MessageFormat.format("Failed to authenticate: {0}", e.getMessage()));
             throw new InvalidBearerTokenException(e.getMessage(), e);

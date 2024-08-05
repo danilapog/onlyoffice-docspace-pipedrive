@@ -43,9 +43,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUserIdAndClientId(final Long userId, final Long clientId) {
-        return userRepository.findByUserIdAndClientId(userId, clientId)
-                .orElseThrow(() -> new UserNotFoundException(userId, clientId));
+    public User findByClientIdAndUserId(final Long clientId, final Long userId) {
+        return userRepository.findByClientIdAndUserId(clientId, userId)
+                .orElseThrow(() -> new UserNotFoundException(clientId, userId));
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User put(final Long clientId, final User user) {
         try {
-            User existedUser = findByUserIdAndClientId(user.getUserId(), clientId);
+            User existedUser = findByClientIdAndUserId(clientId, user.getUserId());
 
             if (user.getAccessToken() != null) {
                 existedUser.setAccessToken(user.getAccessToken());
@@ -78,6 +78,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteByUserIdAndClientId(final Long userId, final Long clientId) {
-        userRepository.delete(findByUserIdAndClientId(userId, clientId));
+        userRepository.delete(findByClientIdAndUserId(clientId, userId));
     }
 }

@@ -29,11 +29,11 @@ public class UserNotFoundException extends RuntimeException {
         ));
     }
 
-    public UserNotFoundException(final Long userId, final Long clientId) {
+    public UserNotFoundException(final Long clientId, final Long userId) {
         super(MessageFormat.format(
-                "User with USER_ID ({0}) and CLIENT_ID ({1}) not found.",
-                userId.toString(),
-                clientId.toString()
+                "User with CLIENT_ID ({0}) and USER_ID ({1}) not found.",
+                clientId.toString(),
+                userId.toString()
         ));
     }
 }
