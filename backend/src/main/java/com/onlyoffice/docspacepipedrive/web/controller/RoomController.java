@@ -23,6 +23,7 @@ import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
@@ -41,6 +42,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.text.MessageFormat;
 
 
 @RestController
@@ -64,12 +67,19 @@ public class RoomController {
     @Transactional
     @ExecuteDocspaceAction(action = DocspaceAction.INVITE_DEAL_FOLLOWERS_TO_ROOM, execution = Execution.AFTER)
     public ResponseEntity<RoomResponse> create(@PathVariable Long dealId) {
-        User user = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
         PipedriveUserSettings pipedriveUserSettings = pipedriveClient.getUserSettings();
 
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
 
-        DocspaceRoom docspaceRoom = docspaceClient.createRoom(pipedriveDeal.getTitle(), 2);
+        DocspaceRoom docspaceRoom = docspaceClient.createRoom(
+                MessageFormat.format(
+                        "Pipedrive - {0} - {1}",
+                        currentClient.getCompanyName(),
+                        pipedriveDeal.getTitle()
+                ),
+                2
+        );
 
         int visibleToEveryone = PipedriveDeal.VisibleTo.EVERYONE.integer();
         if (pipedriveUserSettings.getAdvancedPermissions()) {
@@ -85,7 +95,7 @@ public class RoomController {
                 .dealId(pipedriveDeal.getId())
                 .build();
 
-        Room createdRoom = roomService.create(user.getClient().getId(), room);
+        Room createdRoom = roomService.create(currentClient.getId(), room);
 
         return ResponseEntity.ok(roomMapper.roomToRoomResponse(createdRoom));
     }
