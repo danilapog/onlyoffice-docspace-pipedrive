@@ -27,6 +27,6 @@ import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
-    Optional<Room> findByDealId(Long dealId);
+    Optional<Room> findByClientIdAndDealId(Long clientId, Long dealId);
     void deleteAllByClientId(Long clientId);
 }

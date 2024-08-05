@@ -35,9 +35,9 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
 
     @Override
-    public Room findByDealId(final Long dealId) {
-        return roomRepository.findByDealId(dealId)
-                .orElseThrow(() -> new RoomNotFoundException(dealId));
+    public Room findByClientIdAndDealId(final Long clientId, final Long dealId) {
+        return roomRepository.findByClientIdAndDealId(clientId, dealId)
+                .orElseThrow(() -> new RoomNotFoundException(clientId, dealId));
     }
 
     @Override

@@ -24,6 +24,7 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollowerEvent;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
@@ -39,6 +40,7 @@ import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.webhook.WebhookRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,11 +63,12 @@ public class WebhookController {
     private final PipedriveActionManager pipedriveActionManager;
 
     @PostMapping("/deal")
-    public void updatedDeal(@RequestBody WebhookRequest<PipedriveDeal> request) {
+    public void updatedDeal(@AuthenticationPrincipal User currentUser,
+                            @AuthenticationPrincipal(expression = "client") Client currentClient,
+                            @RequestBody WebhookRequest<PipedriveDeal> request) {
         PipedriveDeal currentDeal = request.getCurrent();
         PipedriveDeal previousDeal = request.getPrevious();
 
-        User currentUser = SecurityUtils.getCurrentUser();
         if (!currentUser.isSystemUser()) {
             pipedriveActionManager.removeWebhooks();
             throw new PipedriveAccessDeniedException(currentUser.getUserId());
@@ -73,7 +76,7 @@ public class WebhookController {
 
         Room room;
         try {
-            room = roomService.findByDealId(currentDeal.getId());
+            room = roomService.findByClientIdAndDealId(currentClient.getId(), currentDeal.getId());
         } catch (RoomNotFoundException e) {
             // Ignore it if there is no DocSpace room for the Pipedrive deal
             return;

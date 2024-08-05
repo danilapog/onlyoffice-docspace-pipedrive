@@ -36,6 +36,7 @@ import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.RoomMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,9 +58,12 @@ public class RoomController {
     private final DocspaceActionManager docspaceActionManager;
 
     @GetMapping("/{dealId}")
-    public ResponseEntity<RoomResponse> findByDealId(@PathVariable Long dealId) {
+    public ResponseEntity<RoomResponse> findByDealId(
+            @AuthenticationPrincipal(expression = "client") Client currentClient,
+            @PathVariable Long dealId
+    ) {
         return ResponseEntity.ok(
-                roomMapper.roomToRoomResponse(roomService.findByDealId(dealId))
+                roomMapper.roomToRoomResponse(roomService.findByClientIdAndDealId(currentClient.getId(), dealId))
         );
     }
 

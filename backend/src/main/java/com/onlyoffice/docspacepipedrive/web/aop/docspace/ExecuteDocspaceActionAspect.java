@@ -20,6 +20,7 @@ package com.onlyoffice.docspacepipedrive.web.aop.docspace;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollower;
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
@@ -70,7 +71,7 @@ public class ExecuteDocspaceActionAspect {
     }
 
     private void execute(final DocspaceAction docspaceAction, final Mode mode, final JoinPoint joinPoint) {
-        User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
 
         try {
             switch (docspaceAction) {
@@ -86,7 +87,7 @@ public class ExecuteDocspaceActionAspect {
                 case INVITE_DEAL_FOLLOWERS_TO_ROOM:
                     Long dealId = (Long) joinPoint.getArgs()[0];
 
-                    Room room = roomService.findByDealId(dealId);
+                    Room room = roomService.findByClientIdAndDealId(currentClient.getId(), dealId);
                     List<PipedriveDealFollower> dealFollowers = pipedriveClient.getDealFollowers(dealId);
 
                     List<User> users = new ArrayList<>();
@@ -95,7 +96,7 @@ public class ExecuteDocspaceActionAspect {
                             users.add(
                                     userService.findByUserIdAndClientId(
                                             dealFollower.getUserId(),
-                                            currentUser.getClient().getId()
+                                            currentClient.getId()
                                     )
                             );
                         } catch (UserNotFoundException e) {

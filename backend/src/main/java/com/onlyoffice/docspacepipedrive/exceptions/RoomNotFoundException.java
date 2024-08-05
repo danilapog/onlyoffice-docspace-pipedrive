@@ -22,7 +22,11 @@ import java.text.MessageFormat;
 
 
 public class RoomNotFoundException extends RuntimeException {
-    public RoomNotFoundException(final Long dealId) {
-        super(MessageFormat.format("Room for deal with ID ({0}) not found.", dealId.toString()));
+    public RoomNotFoundException(final Long clientId, final Long dealId) {
+        super(MessageFormat.format(
+                "Room for Client with ID ({0}) and Deal with ID ({1}) not found.",
+                clientId.toString(),
+                dealId.toString()
+        ));
     }
 }
