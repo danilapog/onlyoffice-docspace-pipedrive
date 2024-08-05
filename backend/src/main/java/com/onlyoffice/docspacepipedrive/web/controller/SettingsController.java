@@ -42,6 +42,7 @@ import com.onlyoffice.docspacepipedrive.web.mapper.SettingsMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,9 +71,7 @@ public class SettingsController {
     private final PipedriveActionManager pipedriveActionManager;
 
     @GetMapping
-    public ResponseEntity<SettingsResponse> get() {
-        Client currentClient = SecurityUtils.getCurrentClient();
-
+    public ResponseEntity<SettingsResponse> get(@AuthenticationPrincipal(expression = "client") Client currentClient) {
         Settings settings;
         try {
             settings = settingsService.findByClientId(currentClient.getId());
@@ -89,9 +88,9 @@ public class SettingsController {
     }
 
     @PostMapping
-    public ResponseEntity<SettingsResponse> save(@RequestBody SettingsRequest request) {
-        User currentUser = SecurityUtils.getCurrentUser();
-
+    public ResponseEntity<SettingsResponse> save(@AuthenticationPrincipal User currentUser,
+                                                 @AuthenticationPrincipal(expression = "client") Client currentClient,
+                                                 @RequestBody SettingsRequest request) {
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
 
         if (!pipedriveUser.isSalesAdmin()) {
@@ -99,24 +98,22 @@ public class SettingsController {
         }
 
         Settings savedSettings = settingsService.put(
-                currentUser.getClient().getId(),
+                currentClient.getId(),
                 settingsMapper.settingsRequestToSettings(request)
         );
 
         return ResponseEntity.ok(
                 settingsMapper.settingsToSettingsResponse(
                         savedSettings,
-                        currentUser.getClient().existSystemUser()
+                        currentClient.existSystemUser()
                 )
         );
     }
 
     @DeleteMapping
     @Transactional
-    public ResponseEntity<Void> delete() {
-        User currentUser = SecurityUtils.getCurrentUser();
-        Client currentClient = SecurityUtils.getCurrentClient();
-
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal User currentUser,
+                                       @AuthenticationPrincipal(expression = "client") Client currentClient) {
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
 
         if (!pipedriveUser.isSalesAdmin()) {

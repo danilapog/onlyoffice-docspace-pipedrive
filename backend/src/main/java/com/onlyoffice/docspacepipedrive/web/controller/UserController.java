@@ -43,6 +43,7 @@ import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,10 +66,8 @@ public class UserController {
     private final DocspaceClient docspaceClient;
 
     @GetMapping
-    public ResponseEntity<UserResponse> getUser() {
-        User currentUser = SecurityUtils.getCurrentUser();
-        Client currentClient = SecurityUtils.getCurrentUser().getClient();
-
+    public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal User currentUser,
+                                                @AuthenticationPrincipal(expression = "client") Client currentClient) {
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
 
         UriComponents clientUri = UriComponentsBuilder.newInstance()
@@ -112,14 +111,14 @@ public class UserController {
     @PutMapping(path = "/docspace-account", params = "system=false")
     @Transactional
     @ExecuteDocspaceAction(action = DocspaceAction.INVITE_CURRENT_USER_TO_SHARED_GROUP, execution = Execution.AFTER)
-    public ResponseEntity<Void> putDocspaceAccount(@RequestBody DocspaceAccountRequest request) {
-        User currentUser = SecurityUtils.getCurrentUser();
-
+    public ResponseEntity<Void> putDocspaceAccount(@AuthenticationPrincipal User currentUser,
+                                                   @AuthenticationPrincipal(expression = "client") Client currentClient,
+                                                   @RequestBody DocspaceAccountRequest request) {
         DocspaceUser docspaceUser = SecurityUtils.runAs(new SecurityUtils.RunAsWork<DocspaceUser>() {
             public DocspaceUser doWork() {
                 return docspaceClient.getUser(request.getUserName());
             }
-        }, currentUser.getClient().getSystemUser());
+        }, currentClient.getSystemUser());
 
         DocspaceAccount docspaceAccount = DocspaceAccount.builder()
                 .uuid(docspaceUser.getId())
@@ -138,9 +137,9 @@ public class UserController {
     @Transactional
     @ExecuteDocspaceAction(action = DocspaceAction.INIT_SHARED_GROUP, execution = Execution.AFTER)
     @ExecutePipedriveAction(action = PipedriveAction.INIT_WEBHOOKS, execution = Execution.AFTER)
-    public ResponseEntity<Void> putSystemDocspaceAccount(@RequestBody DocspaceAccountRequest request) {
-        User currentUser = SecurityUtils.getCurrentUser();
-
+    public ResponseEntity<Void> putSystemDocspaceAccount(@AuthenticationPrincipal User currentUser,
+                                                         @AuthenticationPrincipal(expression = "client") Client currentClient,
+                                                         @RequestBody DocspaceAccountRequest request) {
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
         if (!pipedriveUser.isSalesAdmin()) {
             throw new PipedriveAccessDeniedException(currentUser.getUserId());
@@ -173,9 +172,8 @@ public class UserController {
 
         DocspaceAccount savedDocspaceAccount = docspaceAccountService.save(currentUser.getId(), docspaceAccount);
 
-        Client client = currentUser.getClient();
-        client.setSystemUser(currentUser);
-        Client updatedClient = clientService.update(client);
+        currentClient.setSystemUser(currentUser);
+        Client updatedClient = clientService.update(currentClient);
 
         currentUser.setDocspaceAccount(savedDocspaceAccount);
         currentUser.setClient(updatedClient);
@@ -191,9 +189,7 @@ public class UserController {
             mode = Mode.ATTEMPT
     )
     @ExecutePipedriveAction(action = PipedriveAction.REMOVE_WEBHOOKS, execution = Execution.AFTER)
-    public ResponseEntity<Void> deleteDocspaceAccount() {
-        User currentUser = SecurityUtils.getCurrentUser();
-
+    public ResponseEntity<Void> deleteDocspaceAccount(@AuthenticationPrincipal User currentUser) {
         docspaceAccountService.deleteById(currentUser.getId());
 
         return ResponseEntity.noContent().build();

@@ -70,8 +70,8 @@ public class RoomController {
     @PostMapping("/{dealId}")
     @Transactional
     @ExecuteDocspaceAction(action = DocspaceAction.INVITE_DEAL_FOLLOWERS_TO_ROOM, execution = Execution.AFTER)
-    public ResponseEntity<RoomResponse> create(@PathVariable Long dealId) {
-        Client currentClient = SecurityUtils.getCurrentClient();
+    public ResponseEntity<RoomResponse> create(@AuthenticationPrincipal(expression = "client") Client currentClient,
+                                               @PathVariable Long dealId) {
         PipedriveUserSettings pipedriveUserSettings = pipedriveClient.getUserSettings();
 
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);

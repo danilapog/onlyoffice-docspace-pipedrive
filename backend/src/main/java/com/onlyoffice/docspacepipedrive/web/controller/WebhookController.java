@@ -116,11 +116,12 @@ public class WebhookController {
     }
 
     @PostMapping("/user")
-    public void updatedUser(@RequestBody WebhookRequest<List<PipedriveUser>> request) throws JsonProcessingException {
+    public void updatedUser(@AuthenticationPrincipal User currentUser,
+                            @AuthenticationPrincipal(expression = "client") Client currentClient,
+                            @RequestBody WebhookRequest<List<PipedriveUser>> request) {
         List<PipedriveUser> currentUsers = request.getCurrent();
         List<PipedriveUser> previousUsers = request.getPrevious();
 
-        User currentUser = SecurityUtils.getCurrentUser();
         if (!currentUser.isSystemUser()) {
             pipedriveActionManager.removeWebhooks();
             throw new PipedriveAccessDeniedException(currentUser.getUserId());
@@ -144,13 +145,13 @@ public class WebhookController {
                 .orElse(null) != null;
 
         if (unsetSystemUser) {
-            clientService.unsetSystemUser(currentUser.getClient().getId());
+            clientService.unsetSystemUser(currentClient.getId());
             pipedriveActionManager.removeWebhooks();
         }
     }
 
     private void handleEventAddDealFollowers(PipedriveDeal deal, Room room) {
-        User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
 
         List<PipedriveDealFollowerEvent> dealFollowerEvents = pipedriveClient.getDealFollowersFlow(deal.getId());
 
@@ -163,7 +164,7 @@ public class WebhookController {
         List<User> addedFollowers = new ArrayList<>();
         for (Long userId : userIdsAddedFollowers) {
             try {
-                addedFollowers.add(userService.findByUserIdAndClientId(userId, currentUser.getClient().getId()));
+                addedFollowers.add(userService.findByUserIdAndClientId(userId, currentClient.getId()));
             } catch (UserNotFoundException e) { }
         }
 
@@ -176,7 +177,7 @@ public class WebhookController {
     }
 
     private void handleEventRemoveDealFollowers(PipedriveDeal deal, Room room) {
-        User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
 
         List<PipedriveDealFollowerEvent> dealFollowerEvents = pipedriveClient.getDealFollowersFlow(deal.getId());
 
@@ -189,7 +190,7 @@ public class WebhookController {
         List<User> removedFollowers = new ArrayList<>();
         for (Long userId : userIdsRemovedFollowers) {
             try {
-                removedFollowers.add(userService.findByUserIdAndClientId(userId, currentUser.getClient().getId()));
+                removedFollowers.add(userService.findByUserIdAndClientId(userId, currentClient.getId()));
             } catch (UserNotFoundException e) { }
         }
 
