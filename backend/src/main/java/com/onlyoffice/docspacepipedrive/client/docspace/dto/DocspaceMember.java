@@ -16,14 +16,14 @@
  *
  */
 
+
 package com.onlyoffice.docspacepipedrive.client.docspace.dto;
+
 
 import lombok.Data;
 
-import java.util.List;
-
-
 @Data
-public class DocspaceMembers {
-    private List<DocspaceMember> members;
+public class DocspaceMember {
+    private DocspaceAccess access;
+    private DocspaceUser sharedTo;
 }
