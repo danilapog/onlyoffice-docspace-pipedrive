@@ -19,6 +19,7 @@
 package com.onlyoffice.docspacepipedrive.manager;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceMembers;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitation;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitationRequest;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAccess;
@@ -28,7 +29,6 @@ import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
-import com.onlyoffice.docspacepipedrive.exceptions.SystemUserNotFoundException;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
@@ -72,7 +72,11 @@ public class DocspaceActionManager {
                             members
                     );
 
-                    settingsService.saveSharedGroup(currentClient.getId(), docspaceGroup.getId());
+                    Settings savedSetting = settingsService.saveSharedGroup(
+                            currentClient.getId(),
+                            docspaceGroup.getId()
+                    );
+                    currentClient.setSettings(savedSetting);
                 } else {
                     try {
                         docspaceClient.updateGroup(
@@ -159,24 +163,30 @@ public class DocspaceActionManager {
         }, currentUser.getClient().getSystemUser());
     }
 
-    public void inviteSharedGroupToRoom(final Long roomId) {
-        User currentUser = SecurityUtils.getCurrentUser();
+    public boolean inviteSharedGroupToRoom(final Long roomId) {
+        Client currentClient = SecurityUtils.getCurrentClient();
 
-        if (currentUser.getClient().getSettings().existSharedGroupId()) {
-            DocspaceRoomInvitation docspaceRoomInvitation =
-                    new DocspaceRoomInvitation(
-                            currentUser.getClient().getSettings().getSharedGroupId(),
-                            DocspaceAccess.EDITING
+        DocspaceRoomInvitation docspaceRoomInvitation =
+                new DocspaceRoomInvitation(
+                        currentClient.getSettings().getSharedGroupId(),
+                        DocspaceAccess.EDITING
+                );
+
+        DocspaceRoomInvitationRequest docspaceRoomInvitationRequest = DocspaceRoomInvitationRequest.builder()
+                .invitations(Collections.singletonList(docspaceRoomInvitation))
+                .message("Invitation message")
+                .notify(true)
+                .build();
+
+        DocspaceMembers docspaceMembers = docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+        return docspaceMembers.getMembers().stream()
+                .filter(docspaceMember -> {
+                    return docspaceMember.getSharedTo().getId().equals(
+                            currentClient.getSettings().getSharedGroupId()
                     );
-
-            DocspaceRoomInvitationRequest docspaceRoomInvitationRequest = DocspaceRoomInvitationRequest.builder()
-                    .invitations(Collections.singletonList(docspaceRoomInvitation))
-                    .message("Invitation message")
-                    .notify(true)
-                    .build();
-
-            docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
-        } //ToDo: do something if shared group is null
+                })
+                .findFirst()
+                .isPresent();
     }
 
     public void removeSharedGroupFromRoom(final Long roomId) {
