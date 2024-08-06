@@ -34,6 +34,7 @@
   "settings.authorization.deleting.ok": "ONLYOFFICE DocSpace authorization has been successfully deleted",
   "settings.authorization.status.authorized": "You have successfully logged in to your ONLYOFFICE DocSpace account",
   "settings.authorization.status.system": "Current user is System Admin",
+  "settings.authorization.deleting.system.confirm": "Are you sure you want to log out? You are a System User and this action will result in the ONLYOFFICE DocSpace functionality being limited.",
   "settings.connection.menu-item": "Connection",
   "settings.connection.title": "Configure connection settings of the ONLYOFFICE DocSpace app",
   "settings.connection.inputs.address": "ONLYOFFICE DocSpace address",

@@ -39,34 +39,49 @@ export const AuthorizationSetting: React.FC = () => {
   };
 
   const handleLogout = async () => {
+    var executelogout = true;
+    if (user.isSystem) {
+      const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
+        title: t("button.logout", "Log out"),
+        description: t(
+          "settings.authorization.deleting.system.confirm",
+          `Are you sure you want to log out? You are a System User and this action will
+          result in the ONLYOFFICE DocSpace functionality being limited.`
+        ) || ""
+      });
+      executelogout = confirmed;
+    }
+
+    if (executelogout) {
     setDeleting(true);
-    deleteDocspaceAccount(sdk).then(async () => {
-      setEmail("");
-      setPassword("");
-      setIsSystem(!!user?.isSystem || !settings?.existSystemUser);
-      setShowValidationMessage(false);
-      if (user && settings) {
-        if (!!user?.isSystem) {
-          setSettings({...settings, existSystemUser: false});
+      deleteDocspaceAccount(sdk).then(async () => {
+        setEmail("");
+        setPassword("");
+        setIsSystem(!!user?.isSystem || !settings?.existSystemUser);
+        setShowValidationMessage(false);
+        if (user && settings) {
+          if (!!user?.isSystem) {
+            setSettings({...settings, existSystemUser: false});
+          }
+          setUser({...user, docspaceAccount: null, isSystem: false});
         }
-        setUser({...user, docspaceAccount: null, isSystem: false});
-      }
-      await sdk.execute(Command.SHOW_SNACKBAR, {
-        message: t(
-          "settings.authorization.deleting.ok",
-          "ONLYOFFICE DocSpace authorization has been successfully deleted"
-        ),
-      });
-    })
-    .catch(async (e) => {
-      await sdk.execute(Command.SHOW_SNACKBAR, {
-        message: t(
-          "background.error.subtitle.common",
-          "Something went wrong. Please reload the app."
-        ),
-      });
-    })
-    .finally(() => setDeleting(false));
+        await sdk.execute(Command.SHOW_SNACKBAR, {
+          message: t(
+            "settings.authorization.deleting.ok",
+            "ONLYOFFICE DocSpace authorization has been successfully deleted"
+          ),
+        });
+      })
+      .catch(async (e) => {
+        await sdk.execute(Command.SHOW_SNACKBAR, {
+          message: t(
+            "background.error.subtitle.common",
+            "Something went wrong. Please reload the app."
+          ),
+        });
+      })
+      .finally(() => setDeleting(false));
+    }
   };
 
   const onAppReady = async () => {
