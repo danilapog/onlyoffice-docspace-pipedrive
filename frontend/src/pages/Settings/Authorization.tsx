@@ -184,7 +184,7 @@ export const AuthorizationSetting: React.FC = () => {
               </div>
               <div className="flex justify-start items-center mt-4 ml-5">
                 <OnlyofficeButton
-                  text={t("button.logout", "Logout")}
+                  text={t("button.logout", "Log out")}
                   type={ButtonType.Primary}
                   disabled={deleting}
                   onClick={handleLogout}
@@ -222,8 +222,10 @@ export const AuthorizationSetting: React.FC = () => {
                       disabled={!settings?.existSystemUser}
                       onChange={(e) => setIsSystem(!isSystem)}
                     />
-                    <OnlyofficeTooltip text="If you click on this switch, the plugin will perform actions from your DocSpace account " />
-                    </div>
+                    <OnlyofficeTooltip
+                      text={t("settings.authorization.inputs.system.help", "If you click on this switch, the plugin will perform actions from your DocSpace account")}
+                    />
+                  </div>
                 </div>
               )}
               <div className="flex justify-start items-center mt-4 ml-5">

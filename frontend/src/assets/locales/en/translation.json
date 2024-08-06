@@ -13,7 +13,7 @@
   "background.error.hint.admin.docspace-connection": "Please go to the Connection tab to configure the DocSpace app settings.",
   "background.error.hint.docspace-connection": "Please contact the administrator.",
   "button.login": "Login",
-  "button.logout": "Logout",
+  "button.logout": "Log out",
   "button.reauthorize": "Re-authorize",
   "button.save": "Save",
   "button.change": "Change",
