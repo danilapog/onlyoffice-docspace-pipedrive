@@ -180,7 +180,7 @@ export const ConnectionSettings: React.FC= () => {
               </p>
               <br/>
               <p className="font-semibold">{t("settings.connection.hint.csp.pipedrive-adress", "Pipedrive portal address")}: <span className="text-green-700">{stripTrailingSlash(url)}</span></p>
-              <p className="font-semibold">{t("settings.connection.hint.csp.docspace-adress", "ONLYOFFICE DocSpace app")}: <span className="text-green-700">{process.env.BACKEND_URL}</span></p>
+              <p className="font-semibold">{t("settings.connection.hint.csp.docspace-adress", "ONLYOFFICE DocSpace app")}: <span className="text-green-700">{new URL(document.location.href).origin}</span></p>
             </div>
           </OnlyofficeHint>
         )}
