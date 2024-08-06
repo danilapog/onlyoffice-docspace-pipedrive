@@ -27,7 +27,7 @@
   "settings.authorization.title": "Login to ONLYOFFICE DocSpace account",
   "settings.authorization.inputs.email": "Email",
   "settings.authorization.inputs.password": "Password",
-  "settings.authorization.inputs.system": "System User (DocSpace administrator role required)",
+  "settings.authorization.inputs.system": "Use this account with System user (DocSpace Admin role required)",
   "settings.authorization.saving.ok": "ONLYOFFICE DocSpace authorization has been successfully saved",
   "settings.authorization.saving.error": "Could not save ONLYOFFICE DocSpace authorization",
   "settings.authorization.deleting.ok": "ONLYOFFICE DocSpace authorization has been successfully deleted",
