@@ -15,6 +15,7 @@ import { putDocspaceAccount, deleteDocspaceAccount } from "@services/user";
 import Authorized from "@assets/authorized.svg"
 import CommonError from "@assets/common-error.svg";
 import { OnlyofficeCheckbox } from "@components/checkbox";
+import { OnlyofficeTooltip } from "@components/tooltip";
 
 const DOCSPACE_SYSTEM_FRAME_ID="docspace-system-frame"
 
@@ -214,12 +215,15 @@ export const AuthorizationSetting: React.FC = () => {
               </div>
               {user?.isAdmin && (
                 <div className="pl-5 pr-5">
-                  <OnlyofficeCheckbox
-                    checked={isSystem}
-                    text={t("settings.authorization.inputs.system", "System User (DocSpace administrator role required)")}
-                    disabled={!settings?.existSystemUser}
-                    onChange={(e) => setIsSystem(!isSystem)}
-                  />
+                  <div className="flex">
+                    <OnlyofficeCheckbox
+                      checked={isSystem}
+                      text={t("settings.authorization.inputs.system", "Use this account with System user (DocSpace Admin role required)")}
+                      disabled={!settings?.existSystemUser}
+                      onChange={(e) => setIsSystem(!isSystem)}
+                    />
+                    <OnlyofficeTooltip text="If you click on this switch, the plugin will perform actions from your DocSpace account " />
+                    </div>
                 </div>
               )}
               <div className="flex justify-start items-center mt-4 ml-5">
