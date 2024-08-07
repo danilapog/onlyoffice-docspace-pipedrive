@@ -21,6 +21,7 @@ package com.onlyoffice.docspacepipedrive.events;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollower;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollowerEvent;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
@@ -160,5 +161,88 @@ public class DealEventListener {
         }
 
         docspaceActionManager.removeSharedGroupFromRoom(room.getRoomId());
+    }
+
+    @EventListener
+    public void listen(final AddFollowersToPipedriveDealEvent event) {
+        PipedriveDeal pipedriveDeal = event.getPipedriveDeal();
+        Client currentClient = SecurityUtils.getCurrentClient();
+
+        Room room;
+        try {
+            room = roomService.findByClientIdAndDealId(currentClient.getId(), pipedriveDeal.getId());
+        } catch (RoomNotFoundException e) {
+            // Ignore it if there is no DocSpace room for the Pipedrive deal
+            return;
+        }
+
+        List<PipedriveDealFollowerEvent> dealFollowerEvents = pipedriveClient.getDealFollowersFlow(pipedriveDeal.getId());
+
+        List<Long> userIdsAddedFollowers = findUserIdsInDealFollowersEvents(
+                dealFollowerEvents,
+                "added",
+                pipedriveDeal.getUpdateTime()
+        );
+
+        List<User> addedFollowers = new ArrayList<>();
+        for (Long userId : userIdsAddedFollowers) {
+            try {
+                addedFollowers.add(userService.findByClientIdAndUserId(currentClient.getId(), userId));
+            } catch (UserNotFoundException e) { }
+        }
+
+        List<DocspaceAccount> docspaceAccounts = addedFollowers.stream()
+                .filter(user -> user.getDocspaceAccount() != null)
+                .map(user -> user.getDocspaceAccount())
+                .toList();
+
+        docspaceActionManager.inviteListDocspaceAccountsToRoom(room.getRoomId(), docspaceAccounts);
+    }
+
+    @EventListener
+    public void listen(final RemoveFollowersFromPipedriveDealEvent event) {
+        PipedriveDeal pipedriveDeal = event.getPipedriveDeal();
+        Client currentClient = SecurityUtils.getCurrentClient();
+
+        Room room;
+        try {
+            room = roomService.findByClientIdAndDealId(currentClient.getId(), pipedriveDeal.getId());
+        } catch (RoomNotFoundException e) {
+            // Ignore it if there is no DocSpace room for the Pipedrive deal
+            return;
+        }
+
+        List<PipedriveDealFollowerEvent> dealFollowerEvents = pipedriveClient.getDealFollowersFlow(pipedriveDeal.getId());
+
+        List<Long> userIdsRemovedFollowers = findUserIdsInDealFollowersEvents(
+                dealFollowerEvents,
+                "removed",
+                pipedriveDeal.getUpdateTime()
+        );
+
+        List<User> removedFollowers = new ArrayList<>();
+        for (Long userId : userIdsRemovedFollowers) {
+            try {
+                removedFollowers.add(userService.findByClientIdAndUserId(currentClient.getId(), userId));
+            } catch (UserNotFoundException e) { }
+        }
+
+        List<DocspaceAccount> docspaceAccounts = removedFollowers.stream()
+                .filter(user -> user.getDocspaceAccount() != null)
+                .map(user -> user.getDocspaceAccount())
+                .toList();
+
+        docspaceActionManager.removeListDocspaceAccountsFromRoom(room.getRoomId(), docspaceAccounts);
+    }
+
+    private List<Long> findUserIdsInDealFollowersEvents(List<PipedriveDealFollowerEvent> dealFollowerEvents,
+                                                        String action, String time) {
+        return dealFollowerEvents.stream()
+                .filter(followerEvent -> {
+                    return followerEvent.getData().getAction().equals(action)
+                            && followerEvent.getData().getLogTime().equals(time);
+                })
+                .map(follower -> follower.getData().getFollowerUserId())
+                .toList();
     }
 }
