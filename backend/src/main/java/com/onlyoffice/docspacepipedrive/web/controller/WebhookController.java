@@ -27,9 +27,10 @@ import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.events.AddVisibleEveryoneForPipedriveDealEvent;
+import com.onlyoffice.docspacepipedrive.events.RemoveVisibleEveryoneForPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
-import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
@@ -40,13 +41,13 @@ import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.webhook.WebhookRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class WebhookController {
     private final ClientService clientService;
     private final DocspaceActionManager docspaceActionManager;
     private final PipedriveActionManager pipedriveActionManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     @PostMapping("/deal")
     public void updatedDeal(@AuthenticationPrincipal User currentUser,
@@ -94,29 +96,11 @@ public class WebhookController {
             }
 
             if (currentDeal.getVisibleTo().equals(visibleToEveryone)) {
-                try {
-                    boolean success = docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
-                    if (!success) {
-                        docspaceActionManager.initSharedGroup();
-                        success = docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
-                    }
-
-                    if (!success) {
-                        log.warn(
-                                MessageFormat.format(
-                                        "Inviting the Shared Group to the room with ID ({}) did not complete successfully",
-                                        room.getRoomId()
-                                )
-                        );
-                    }
-                } catch (SharedGroupIdNotFoundException e) {
-                    docspaceActionManager.initSharedGroup();
-                    docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
-                }
+                eventPublisher.publishEvent(new AddVisibleEveryoneForPipedriveDealEvent(this, currentDeal));
             }
 
             if (previousDeal.getVisibleTo().equals(visibleToEveryone)) {
-                docspaceActionManager.removeSharedGroupFromRoom(room.getRoomId());
+                eventPublisher.publishEvent(new RemoveVisibleEveryoneForPipedriveDealEvent(this, currentDeal));
             }
         }
 

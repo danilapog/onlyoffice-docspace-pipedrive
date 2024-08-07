@@ -22,22 +22,17 @@ import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Room;
-import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
-import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
+import com.onlyoffice.docspacepipedrive.events.AddRoomToPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
-import com.onlyoffice.docspacepipedrive.web.aop.Execution;
-import com.onlyoffice.docspacepipedrive.web.aop.docspace.DocspaceAction;
-import com.onlyoffice.docspacepipedrive.web.aop.docspace.ExecuteDocspaceAction;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.RoomMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,7 +51,7 @@ public class RoomController {
     private final RoomMapper roomMapper;
     private final PipedriveClient pipedriveClient;
     private final DocspaceClient docspaceClient;
-    private final DocspaceActionManager docspaceActionManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/{dealId}")
     public ResponseEntity<RoomResponse> findByDealId(
@@ -69,12 +64,8 @@ public class RoomController {
     }
 
     @PostMapping("/{dealId}")
-    @Transactional
-    @ExecuteDocspaceAction(action = DocspaceAction.INVITE_DEAL_FOLLOWERS_TO_ROOM, execution = Execution.AFTER)
     public ResponseEntity<RoomResponse> create(@AuthenticationPrincipal(expression = "client") Client currentClient,
                                                @PathVariable Long dealId) {
-        PipedriveUserSettings pipedriveUserSettings = pipedriveClient.getUserSettings();
-
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
 
         DocspaceRoom docspaceRoom = docspaceClient.createRoom(
@@ -86,39 +77,20 @@ public class RoomController {
                 2
         );
 
-        int visibleToEveryone = PipedriveDeal.VisibleTo.EVERYONE.integer();
-        if (pipedriveUserSettings.getAdvancedPermissions()) {
-            visibleToEveryone = PipedriveDeal.VisibleTo.EVERYONE_ADVANCED_PERMISSIONS.integer();
-        }
-
-        if (pipedriveDeal.getVisibleTo().equals(visibleToEveryone)) {
-            try {
-                 boolean success = docspaceActionManager.inviteSharedGroupToRoom(docspaceRoom.getId());
-                 if (!success) {
-                     docspaceActionManager.initSharedGroup();
-                     success = docspaceActionManager.inviteSharedGroupToRoom(docspaceRoom.getId());
-                 }
-
-                 if (!success) {
-                     log.warn(
-                             MessageFormat.format(
-                             "Inviting the Shared Group to the room with ID ({}) did not complete successfully",
-                                     docspaceRoom.getId()
-                             )
-                     );
-                 }
-            } catch (SharedGroupIdNotFoundException e) {
-                docspaceActionManager.initSharedGroup();
-                docspaceActionManager.inviteSharedGroupToRoom(docspaceRoom.getId());
-            }
-        }
-
         Room room = Room.builder()
                 .roomId(docspaceRoom.getId())
                 .dealId(pipedriveDeal.getId())
                 .build();
 
         Room createdRoom = roomService.create(currentClient.getId(), room);
+
+        try {
+            eventPublisher.publishEvent(
+                    new AddRoomToPipedriveDealEvent(this, pipedriveDeal, createdRoom.getRoomId())
+            );
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
 
         return ResponseEntity.ok(roomMapper.roomToRoomResponse(createdRoom));
     }

@@ -29,6 +29,7 @@ import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
+import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIsNotPresentInResponse;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
@@ -163,12 +164,13 @@ public class DocspaceActionManager {
         }, currentUser.getClient().getSystemUser());
     }
 
-    public boolean inviteSharedGroupToRoom(final Long roomId) {
+    public void inviteSharedGroupToRoom(final Long roomId) {
         Client currentClient = SecurityUtils.getCurrentClient();
+        UUID sharedGroupId = currentClient.getSettings().getSharedGroupId();
 
         DocspaceRoomInvitation docspaceRoomInvitation =
                 new DocspaceRoomInvitation(
-                        currentClient.getSettings().getSharedGroupId(),
+                        sharedGroupId,
                         DocspaceAccess.EDITING
                 );
 
@@ -179,14 +181,14 @@ public class DocspaceActionManager {
                 .build();
 
         DocspaceMembers docspaceMembers = docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
-        return docspaceMembers.getMembers().stream()
-                .filter(docspaceMember -> {
-                    return docspaceMember.getSharedTo().getId().equals(
-                            currentClient.getSettings().getSharedGroupId()
-                    );
-                })
+        boolean sharedGroupIsPresentInResponse = docspaceMembers.getMembers().stream()
+                .filter(docspaceMember -> docspaceMember.getSharedTo().getId().equals(sharedGroupId))
                 .findFirst()
                 .isPresent();
+
+        if (!sharedGroupIsPresentInResponse) {
+            throw new SharedGroupIsNotPresentInResponse(sharedGroupId, roomId);
+        }
     }
 
     public void removeSharedGroupFromRoom(final Long roomId) {
