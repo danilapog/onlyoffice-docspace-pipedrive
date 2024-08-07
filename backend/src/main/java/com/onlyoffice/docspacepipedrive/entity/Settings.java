@@ -55,7 +55,7 @@ public class Settings {
 
     public UUID getSharedGroupId() {
         return Optional.ofNullable(sharedGroupId).orElseThrow(
-                () -> new SharedGroupIdNotFoundException()
+                () -> new SharedGroupIdNotFoundException(this.client.getId())
         );
     }
 

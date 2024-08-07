@@ -18,8 +18,14 @@
 
 package com.onlyoffice.docspacepipedrive.exceptions;
 
+import java.text.MessageFormat;
+
+
 public class SharedGroupIdNotFoundException extends RuntimeException {
-    public SharedGroupIdNotFoundException() {
-        super("Shared Group ID not found.");
+    public SharedGroupIdNotFoundException(final Long clientId) {
+        super(MessageFormat.format(
+                "SharedGroupID not found for Client ID({0}).",
+                clientId.toString()
+        ));
     }
 }
