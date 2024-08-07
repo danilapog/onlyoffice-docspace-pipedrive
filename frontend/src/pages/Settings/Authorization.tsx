@@ -40,7 +40,7 @@ export const AuthorizationSetting: React.FC = () => {
 
   const handleLogout = async () => {
     var executelogout = true;
-    if (user.isSystem) {
+    if (user?.isSystem) {
       const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
         title: t("button.logout", "Log out"),
         description: t(

@@ -125,7 +125,7 @@ export const ConnectionSettings: React.FC= () => {
           "The current domain is not set in the Content Security Policy (CSP) settings. Please add it via the Developer Tools section."
         ),
         link: {
-          url: `${stripTrailingSlash(address)}/portal-settings/developer-tools/javascript-sdk`,
+          url: `${stripTrailingSlash(address||"")}/portal-settings/developer-tools/javascript-sdk`,
           label: t(
             "docspace.link.developer-tools",
             "Developer Tools section"
