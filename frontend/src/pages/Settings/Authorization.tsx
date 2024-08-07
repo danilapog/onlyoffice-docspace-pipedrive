@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
 import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
 
@@ -32,6 +32,19 @@ export const AuthorizationSetting: React.FC = () => {
 
   const handleLogin = async () => {
     if (email && password) {
+      if (isSystem) {
+        const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
+          title: t("button.logout", "Log out"),
+          description: t(
+            "settings.authorization.login.system.confirm",
+            "Do you agree to connect your DocSpace account? The app will use it to perform actions."
+          ) || ""
+        });
+        if (!confirmed) {
+          return;
+        }
+      }
+
       setSaving(true);
     } else {
       setShowValidationMessage(true);
@@ -192,7 +205,11 @@ export const AuthorizationSetting: React.FC = () => {
                   {user.isSystem && (
                     <>
                       <br/>
-                      {t("settings.authorization.status.system", "Current user is System Admin")}
+                      <Trans
+                        i18nKey="settings.authorization.status.system"
+                        defaults="Current user is <semibold>System Admin</semibold>"
+                        components={{ semibold: <span className="font-semibold" /> }}
+                      />
                     </>
                   )}
                 </span>
