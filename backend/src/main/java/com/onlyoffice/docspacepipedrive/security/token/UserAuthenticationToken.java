@@ -34,6 +34,11 @@ public class UserAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     @Override
+    public String getName() {
+        return this.principal.getId().toString();
+    }
+
+    @Override
     public Object getCredentials() {
         return null;
     }
