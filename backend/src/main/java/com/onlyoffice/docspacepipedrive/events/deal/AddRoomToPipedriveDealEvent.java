@@ -16,9 +16,21 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.web.aop;
+package com.onlyoffice.docspacepipedrive.events.deal;
 
-public enum Execution {
-    AFTER,
-    BEFORE
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
+import lombok.Getter;
+import org.springframework.context.ApplicationEvent;
+
+
+@Getter
+public class AddRoomToPipedriveDealEvent extends ApplicationEvent {
+    private final PipedriveDeal pipedriveDeal;
+    private final Long roomId;
+
+    public AddRoomToPipedriveDealEvent(final Object source, final PipedriveDeal pipedriveDeal, final Long roomId) {
+        super(source);
+        this.pipedriveDeal = pipedriveDeal;
+        this.roomId = roomId;
+    }
 }

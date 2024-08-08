@@ -16,9 +16,19 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.web.aop.pipedrive;
+package com.onlyoffice.docspacepipedrive.events.deal;
 
-public enum PipedriveAction {
-    INIT_WEBHOOKS,
-    REMOVE_WEBHOOKS
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
+import lombok.Getter;
+import org.springframework.context.ApplicationEvent;
+
+
+@Getter
+public class AddVisibleEveryoneForPipedriveDealEvent extends ApplicationEvent {
+    private final PipedriveDeal pipedriveDeal;
+
+    public AddVisibleEveryoneForPipedriveDealEvent(final Object source, final PipedriveDeal pipedriveDeal) {
+        super(source);
+        this.pipedriveDeal = pipedriveDeal;
+    }
 }

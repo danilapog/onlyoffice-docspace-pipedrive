@@ -16,10 +16,19 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.web.aop;
+package com.onlyoffice.docspacepipedrive.events.deal;
+
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
+import lombok.Getter;
+import org.springframework.context.ApplicationEvent;
 
 
-public enum Mode {
-    STRICT,
-    ATTEMPT
+@Getter
+public class AddFollowersToPipedriveDealEvent extends ApplicationEvent {
+    private final PipedriveDeal pipedriveDeal;
+
+    public AddFollowersToPipedriveDealEvent(final Object source, final PipedriveDeal pipedriveDeal) {
+        super(source);
+        this.pipedriveDeal = pipedriveDeal;
+    }
 }

@@ -26,6 +26,7 @@ import com.onlyoffice.docspacepipedrive.security.util.RandomPasswordGenerator;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.WebhookService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class PipedriveActionManager {
     private static final int WEBHOOK_PASSWORD_LENGTH = 32;
     private final PipedriveClient pipedriveClient;
@@ -51,13 +53,18 @@ public class PipedriveActionManager {
 
     @Transactional
     public void removeWebhooks() {
-        User user = SecurityUtils.getCurrentUser();
+        User currentUser = SecurityUtils.getCurrentUser();
 
-        List<Webhook> webhooks = webhookService.findAllByUserId(user.getId());
+        List<Webhook> webhooks = webhookService.findAllByUserId(currentUser.getId());
 
         for (Webhook webhook : webhooks) {
             pipedriveClient.deleteWebhook(webhook.getWebhookId());
-            webhookService.deleteById(webhook.getId());
+
+            try {
+                webhookService.deleteById(webhook.getId());
+            } catch (Exception e) {
+                log.warn(e.getMessage(), e);
+            }
         }
     }
 

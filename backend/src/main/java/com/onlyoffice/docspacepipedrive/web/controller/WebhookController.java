@@ -20,34 +20,29 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollowerEvent;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.entity.Client;
-import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
-import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.events.deal.AddFollowersToPipedriveDealEvent;
+import com.onlyoffice.docspacepipedrive.events.deal.AddVisibleEveryoneForPipedriveDealEvent;
+import com.onlyoffice.docspacepipedrive.events.deal.RemoveFollowersFromPipedriveDealEvent;
+import com.onlyoffice.docspacepipedrive.events.deal.RemoveVisibleEveryoneForPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
-import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
-import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
-import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
-import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.webhook.WebhookRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -58,10 +53,9 @@ import java.util.List;
 public class WebhookController {
     private final PipedriveClient pipedriveClient;
     private final RoomService roomService;
-    private final UserService userService;
     private final ClientService clientService;
-    private final DocspaceActionManager docspaceActionManager;
     private final PipedriveActionManager pipedriveActionManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     @PostMapping("/deal")
     public void updatedDeal(@AuthenticationPrincipal User currentUser,
@@ -75,9 +69,8 @@ public class WebhookController {
             throw new PipedriveAccessDeniedException(currentUser.getUserId());
         }
 
-        Room room;
         try {
-            room = roomService.findByClientIdAndDealId(currentClient.getId(), currentDeal.getId());
+            roomService.findByClientIdAndDealId(currentClient.getId(), currentDeal.getId());
         } catch (RoomNotFoundException e) {
             // Ignore it if there is no DocSpace room for the Pipedrive deal
             return;
@@ -94,29 +87,11 @@ public class WebhookController {
             }
 
             if (currentDeal.getVisibleTo().equals(visibleToEveryone)) {
-                try {
-                    boolean success = docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
-                    if (!success) {
-                        docspaceActionManager.initSharedGroup();
-                        success = docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
-                    }
-
-                    if (!success) {
-                        log.warn(
-                                MessageFormat.format(
-                                        "Inviting the Shared Group to the room with ID ({}) did not complete successfully",
-                                        room.getRoomId()
-                                )
-                        );
-                    }
-                } catch (SharedGroupIdNotFoundException e) {
-                    docspaceActionManager.initSharedGroup();
-                    docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
-                }
+                eventPublisher.publishEvent(new AddVisibleEveryoneForPipedriveDealEvent(this, currentDeal));
             }
 
             if (previousDeal.getVisibleTo().equals(visibleToEveryone)) {
-                docspaceActionManager.removeSharedGroupFromRoom(room.getRoomId());
+                eventPublisher.publishEvent(new RemoveVisibleEveryoneForPipedriveDealEvent(this, currentDeal));
             }
         }
 
@@ -124,12 +99,12 @@ public class WebhookController {
         if (!currentDeal.getFollowersCount().equals(previousDeal.getFollowersCount())) {
             // If added follower
             if (currentDeal.getFollowersCount() > previousDeal.getFollowersCount()) {
-                handleEventAddDealFollowers(currentDeal, room);
+                eventPublisher.publishEvent(new AddFollowersToPipedriveDealEvent(this, currentDeal));
             }
 
             // If removed follower
             if (currentDeal.getFollowersCount() < previousDeal.getFollowersCount()) {
-                handleEventRemoveDealFollowers(currentDeal, room);
+                eventPublisher.publishEvent(new RemoveFollowersFromPipedriveDealEvent(this, currentDeal));
             }
         }
     }
@@ -167,68 +142,5 @@ public class WebhookController {
             clientService.unsetSystemUser(currentClient.getId());
             pipedriveActionManager.removeWebhooks();
         }
-    }
-
-    private void handleEventAddDealFollowers(PipedriveDeal deal, Room room) {
-        Client currentClient = SecurityUtils.getCurrentClient();
-
-        List<PipedriveDealFollowerEvent> dealFollowerEvents = pipedriveClient.getDealFollowersFlow(deal.getId());
-
-        List<Long> userIdsAddedFollowers = findUserIdsInDealFollowersEvents(
-                dealFollowerEvents,
-                "added",
-                deal.getUpdateTime()
-        );
-
-        List<User> addedFollowers = new ArrayList<>();
-        for (Long userId : userIdsAddedFollowers) {
-            try {
-                addedFollowers.add(userService.findByClientIdAndUserId(currentClient.getId(), userId));
-            } catch (UserNotFoundException e) { }
-        }
-
-        List<DocspaceAccount> docspaceAccounts = addedFollowers.stream()
-                .filter(user -> user.getDocspaceAccount() != null)
-                .map(user -> user.getDocspaceAccount())
-                .toList();
-
-        docspaceActionManager.inviteListDocspaceAccountsToRoom(room.getRoomId(), docspaceAccounts);
-    }
-
-    private void handleEventRemoveDealFollowers(PipedriveDeal deal, Room room) {
-        Client currentClient = SecurityUtils.getCurrentClient();
-
-        List<PipedriveDealFollowerEvent> dealFollowerEvents = pipedriveClient.getDealFollowersFlow(deal.getId());
-
-        List<Long> userIdsRemovedFollowers = findUserIdsInDealFollowersEvents(
-                dealFollowerEvents,
-                "removed",
-                deal.getUpdateTime()
-        );
-
-        List<User> removedFollowers = new ArrayList<>();
-        for (Long userId : userIdsRemovedFollowers) {
-            try {
-                removedFollowers.add(userService.findByClientIdAndUserId(currentClient.getId(), userId));
-            } catch (UserNotFoundException e) { }
-        }
-
-        List<DocspaceAccount> docspaceAccounts = removedFollowers.stream()
-                .filter(user -> user.getDocspaceAccount() != null)
-                .map(user -> user.getDocspaceAccount())
-                .toList();
-
-        docspaceActionManager.removeListDocspaceAccountsFromRoom(room.getRoomId(), docspaceAccounts);
-    }
-
-    private List<Long> findUserIdsInDealFollowersEvents(List<PipedriveDealFollowerEvent> dealFollowerEvents,
-                                                        String action, String time) {
-        return dealFollowerEvents.stream()
-                .filter(followerEvent -> {
-                    return followerEvent.getData().getAction().equals(action)
-                            && followerEvent.getData().getLogTime().equals(time);
-                })
-                .map(follower -> follower.getData().getFollowerUserId())
-                .toList();
     }
 }

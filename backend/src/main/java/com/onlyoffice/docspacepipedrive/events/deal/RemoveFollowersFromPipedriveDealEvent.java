@@ -16,12 +16,19 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.web.aop.docspace;
+package com.onlyoffice.docspacepipedrive.events.deal;
+
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
+import lombok.Getter;
+import org.springframework.context.ApplicationEvent;
 
 
-public enum DocspaceAction {
-    INIT_SHARED_GROUP,
-    INVITE_CURRENT_USER_TO_SHARED_GROUP,
-    REMOVE_CURRENT_USER_FROM_SHARED_GROUP,
-    INVITE_DEAL_FOLLOWERS_TO_ROOM
+@Getter
+public class RemoveFollowersFromPipedriveDealEvent extends ApplicationEvent {
+    private final PipedriveDeal pipedriveDeal;
+
+    public RemoveFollowersFromPipedriveDealEvent(final Object source, final PipedriveDeal pipedriveDeal) {
+        super(source);
+        this.pipedriveDeal = pipedriveDeal;
+    }
 }

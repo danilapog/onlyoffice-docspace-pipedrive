@@ -16,21 +16,19 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.web.aop.docspace;
+package com.onlyoffice.docspacepipedrive.events.user;
 
-import com.onlyoffice.docspacepipedrive.web.aop.Execution;
-import com.onlyoffice.docspacepipedrive.web.aop.Mode;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
+import lombok.Getter;
+import org.springframework.context.ApplicationEvent;
 
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ExecuteDocspaceAction {
-    DocspaceAction action();
-    Execution execution() default Execution.BEFORE;
-    Mode mode() default Mode.STRICT;
+@Getter
+public class DocspaceLoginUserEvent extends ApplicationEvent {
+    private final DocspaceAccount docspaceAccount;
+
+    public DocspaceLoginUserEvent(final Object source, final DocspaceAccount docspaceAccount) {
+        super(source);
+        this.docspaceAccount = docspaceAccount;
+    }
 }
