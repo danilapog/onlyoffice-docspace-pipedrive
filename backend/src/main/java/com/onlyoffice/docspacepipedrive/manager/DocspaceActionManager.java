@@ -178,22 +178,21 @@ public class DocspaceActionManager {
     }
 
     public void removeSharedGroupFromRoom(final Long roomId) {
-        User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
+        UUID sharedGroupId = currentClient.getSettings().getSharedGroupId();
 
-        if (currentUser.getClient().getSettings().existSharedGroupId()) {
-            DocspaceRoomInvitation docspaceRoomInvitation =
-                    new DocspaceRoomInvitation(
-                            currentUser.getClient().getSettings().getSharedGroupId(),
-                            DocspaceAccess.NONE
-                    );
+        DocspaceRoomInvitation docspaceRoomInvitation =
+                new DocspaceRoomInvitation(
+                        sharedGroupId,
+                        DocspaceAccess.NONE
+                );
 
-            DocspaceRoomInvitationRequest docspaceRoomInvitationRequest = DocspaceRoomInvitationRequest.builder()
-                    .invitations(Collections.singletonList(docspaceRoomInvitation))
-                    .notify(false)
-                    .build();
+        DocspaceRoomInvitationRequest docspaceRoomInvitationRequest = DocspaceRoomInvitationRequest.builder()
+                .invitations(Collections.singletonList(docspaceRoomInvitation))
+                .notify(false)
+                .build();
 
-            docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
-        } //ToDo: do something if shared group is null
+        docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
     }
 
     public void inviteListDocspaceAccountsToRoom(final Long roomId, final List<DocspaceAccount> docspaceAccounts) {
