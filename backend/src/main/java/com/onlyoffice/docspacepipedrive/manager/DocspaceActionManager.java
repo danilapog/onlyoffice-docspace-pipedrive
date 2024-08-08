@@ -108,62 +108,6 @@ public class DocspaceActionManager {
         }, systemUser);
     }
 
-    public void inviteCurrentUserToSharedGroup() {
-        User currentUser = SecurityUtils.getCurrentUser();
-        Client currentClient = SecurityUtils.getCurrentClient();
-
-        try {
-            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-                public Void doWork() {
-                    docspaceClient.updateGroup(
-                            currentClient.getSettings().getSharedGroupId(),
-                            null,
-                            null,
-                            Collections.singletonList(currentUser.getDocspaceAccount().getUuid()),
-                            null
-                    );
-
-                    return null;
-                }
-            }, currentClient.getSystemUser());
-        } catch (WebClientResponseException | SharedGroupIdNotFoundException e) {
-            if (e instanceof SharedGroupIdNotFoundException) {
-                initSharedGroup();
-                return;
-            }
-
-            if (e instanceof WebClientResponseException
-                    && ((WebClientResponseException) e).getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                Settings savedSetting = settingsService.saveSharedGroup(
-                        currentClient.getId(),
-                        null
-                );
-                currentClient.setSettings(savedSetting);
-
-                initSharedGroup();
-            }
-        }
-    }
-
-
-    public void removeCurrentUserFromSharedGroup() {
-        User currentUser = SecurityUtils.getCurrentUser();
-
-        SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-            public Void doWork() {
-                docspaceClient.updateGroup(
-                        currentUser.getClient().getSettings().getSharedGroupId(),
-                        null,
-                        null,
-                        null,
-                        Collections.singletonList(currentUser.getDocspaceAccount().getUuid())
-                );
-
-                return null;
-            }
-        }, currentUser.getClient().getSystemUser());
-    }
-
     public void inviteDocspaceAccountToSharedGroup(UUID docspaceAccountId) {
         Client currentClient = SecurityUtils.getCurrentClient();
 
