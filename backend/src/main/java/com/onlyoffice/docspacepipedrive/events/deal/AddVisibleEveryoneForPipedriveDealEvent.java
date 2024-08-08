@@ -16,7 +16,7 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.events;
+package com.onlyoffice.docspacepipedrive.events.deal;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import lombok.Getter;
@@ -24,13 +24,11 @@ import org.springframework.context.ApplicationEvent;
 
 
 @Getter
-public class AddRoomToPipedriveDealEvent extends ApplicationEvent {
+public class AddVisibleEveryoneForPipedriveDealEvent extends ApplicationEvent {
     private final PipedriveDeal pipedriveDeal;
-    private final Long roomId;
 
-    public AddRoomToPipedriveDealEvent(final Object source, final PipedriveDeal pipedriveDeal, final Long roomId) {
+    public AddVisibleEveryoneForPipedriveDealEvent(final Object source, final PipedriveDeal pipedriveDeal) {
         super(source);
         this.pipedriveDeal = pipedriveDeal;
-        this.roomId = roomId;
     }
 }

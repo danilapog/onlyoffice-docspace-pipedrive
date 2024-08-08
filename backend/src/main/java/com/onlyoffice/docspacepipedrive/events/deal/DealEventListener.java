@@ -16,7 +16,7 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.events;
+package com.onlyoffice.docspacepipedrive.events.deal;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;

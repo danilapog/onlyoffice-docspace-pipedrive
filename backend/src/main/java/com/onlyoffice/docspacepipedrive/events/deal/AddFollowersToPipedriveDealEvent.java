@@ -16,7 +16,7 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.events;
+package com.onlyoffice.docspacepipedrive.events.deal;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import lombok.Getter;
@@ -24,10 +24,10 @@ import org.springframework.context.ApplicationEvent;
 
 
 @Getter
-public class RemoveFollowersFromPipedriveDealEvent extends ApplicationEvent {
+public class AddFollowersToPipedriveDealEvent extends ApplicationEvent {
     private final PipedriveDeal pipedriveDeal;
 
-    public RemoveFollowersFromPipedriveDealEvent(final Object source, final PipedriveDeal pipedriveDeal) {
+    public AddFollowersToPipedriveDealEvent(final Object source, final PipedriveDeal pipedriveDeal) {
         super(source);
         this.pipedriveDeal = pipedriveDeal;
     }
