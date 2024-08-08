@@ -1,13 +1,15 @@
-version: '3'
+version: '3.8'
 
 services:
   backend:
     build:
-      context: ./backend
+      context: .
+      target: backend
+    image: onlyoffice/pipedrive-docspace-backend:${PRODUCT_VERSION}
     depends_on:
       - postgres
     environment:
-      - BASE_URL=${BASE_URL}
+      - BASE_URL=${BACKEND_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/${POSTGRES_DB}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
@@ -19,10 +21,12 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: .
+      target: frontend
+    image: onlyoffice/pipedrive-docspace-frontend:${PRODUCT_VERSION}
     stdin_open: true
     ports:
-      - "3000:80"
+      - "80:3000"
 
   postgres:
     image: postgres:16.2
