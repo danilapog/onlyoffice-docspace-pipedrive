@@ -18,6 +18,8 @@
 
 package com.onlyoffice.docspacepipedrive.entity;
 
+import com.onlyoffice.docspacepipedrive.encryption.EncryptionAttributeConverter;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,6 +47,7 @@ public class Webhook {
     private UUID id;
     private Long webhookId;
     private String name;
+    @Convert(converter = EncryptionAttributeConverter.class)
     private String password;
     @ManyToOne
     @JoinColumn(name = "user_id")

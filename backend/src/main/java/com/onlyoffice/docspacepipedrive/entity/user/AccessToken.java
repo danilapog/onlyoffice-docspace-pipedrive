@@ -18,6 +18,8 @@
 
 package com.onlyoffice.docspacepipedrive.entity.user;
 
+import com.onlyoffice.docspacepipedrive.encryption.EncryptionAttributeConverter;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +35,7 @@ import java.time.Instant;
 @Embeddable
 @NoArgsConstructor
 public class AccessToken {
+    @Convert(converter = EncryptionAttributeConverter.class)
     private String value;
     private Instant issuedAt;
     private Instant expiresAt;

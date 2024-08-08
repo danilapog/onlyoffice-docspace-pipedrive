@@ -26,6 +26,7 @@ import com.onlyoffice.docspacepipedrive.security.provider.JwtAuthenticationProvi
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -36,6 +37,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
@@ -57,6 +60,11 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
+
+    @Value("${spring.security.oauth2.client.registration.pipedrive.client-id}")
+    private String encryptPassword;
+    @Value("${spring.security.oauth2.client.registration.pipedrive.client-secret}")
+    private String encryptSalt;
 
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http,
@@ -170,5 +178,10 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
+    }
+
+    @Bean
+    public TextEncryptor textEncryptor() {
+        return Encryptors.text(encryptPassword, encryptSalt);
     }
 }

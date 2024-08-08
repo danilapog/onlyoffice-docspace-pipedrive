@@ -18,12 +18,14 @@
 
 package com.onlyoffice.docspacepipedrive.entity.docspaceaccount;
 
+import com.onlyoffice.docspacepipedrive.encryption.EncryptionAttributeConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -34,6 +36,7 @@ import java.time.Instant;
 @Embeddable
 @NoArgsConstructor
 public class DocspaceToken {
+    @Convert(converter = EncryptionAttributeConverter.class)
     private String value;
     private Instant issuedAt;
 }

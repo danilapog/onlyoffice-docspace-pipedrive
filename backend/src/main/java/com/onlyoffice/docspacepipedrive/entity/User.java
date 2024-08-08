@@ -61,14 +61,14 @@ public class User {
     private Long userId;
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "access_token_value", length = 1024)),
+            @AttributeOverride(name = "value", column = @Column(name = "access_token_value", length = 2048)),
             @AttributeOverride(name = "issuedAt", column = @Column(name = "access_token_issued_at")),
             @AttributeOverride(name = "expiresAt", column = @Column(name = "access_token_expires_at"))
     })
     private AccessToken accessToken;
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "refresh_token_value")),
+            @AttributeOverride(name = "value", column = @Column(name = "refresh_token_value", length = 512)),
             @AttributeOverride(name = "issuedAt", column = @Column(name = "refresh_token_issued_at")),
     })
     private RefreshToken refreshToken;
