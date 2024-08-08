@@ -51,6 +51,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.Instant;
+
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -149,6 +151,7 @@ public class UserController {
 
         DocspaceToken docspaceToken = DocspaceToken.builder()
                 .value(docspaceAuthentication.getToken())
+                .issuedAt(Instant.now())
                 .build();
 
         DocspaceAccount docspaceAccount = DocspaceAccount.builder()

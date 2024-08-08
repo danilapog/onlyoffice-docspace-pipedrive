@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 
@@ -61,6 +62,7 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
 
         DocspaceToken docspaceToken = DocspaceToken.builder()
                 .value(value)
+                .issuedAt(Instant.now())
                 .build();
 
         docspaceAccount.setDocspaceToken(docspaceToken);

@@ -35,6 +35,5 @@ import java.time.Instant;
 @NoArgsConstructor
 public class DocspaceToken {
     private String value;
-    @CreationTimestamp
     private Instant issuedAt;
 }
