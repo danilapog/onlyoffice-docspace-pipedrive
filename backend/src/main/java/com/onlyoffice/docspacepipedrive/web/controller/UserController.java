@@ -27,6 +27,8 @@ import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
+import com.onlyoffice.docspacepipedrive.events.user.DocspaceLoginUserEvent;
+import com.onlyoffice.docspacepipedrive.events.user.DocspaceLogoutUserEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
@@ -42,6 +44,7 @@ import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountR
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +67,7 @@ public class UserController {
     private final UserMapper userMapper;
     private final PipedriveClient pipedriveClient;
     private final DocspaceClient docspaceClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
     public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal User currentUser,
@@ -110,7 +114,6 @@ public class UserController {
 
     @PutMapping(path = "/docspace-account", params = "system=false")
     @Transactional
-    @ExecuteDocspaceAction(action = DocspaceAction.INVITE_CURRENT_USER_TO_SHARED_GROUP, execution = Execution.AFTER)
     public ResponseEntity<Void> putDocspaceAccount(@AuthenticationPrincipal User currentUser,
                                                    @AuthenticationPrincipal(expression = "client") Client currentClient,
                                                    @RequestBody DocspaceAccountRequest request) {
@@ -129,14 +132,14 @@ public class UserController {
         DocspaceAccount savedDocspaceAccount = docspaceAccountService.save(currentUser.getId(), docspaceAccount);
         currentUser.setDocspaceAccount(savedDocspaceAccount);
 
+        eventPublisher.publishEvent(new DocspaceLoginUserEvent(this, currentUser));
+
         return ResponseEntity.ok(null);
     }
 
 
     @PutMapping(path = "/docspace-account", params = "system=true")
     @Transactional
-    @ExecuteDocspaceAction(action = DocspaceAction.INIT_SHARED_GROUP, execution = Execution.AFTER)
-    @ExecutePipedriveAction(action = PipedriveAction.INIT_WEBHOOKS, execution = Execution.AFTER)
     public ResponseEntity<Void> putSystemDocspaceAccount(@AuthenticationPrincipal User currentUser,
                                                          @AuthenticationPrincipal(expression = "client") Client currentClient,
                                                          @RequestBody DocspaceAccountRequest request) {
@@ -178,18 +181,16 @@ public class UserController {
         currentUser.setDocspaceAccount(savedDocspaceAccount);
         currentUser.setClient(updatedClient);
 
+        eventPublisher.publishEvent(new DocspaceLoginUserEvent(this, currentUser));
+
         return ResponseEntity.ok(null);
     }
 
     @DeleteMapping("/docspace-account")
-    @Transactional
-    @ExecuteDocspaceAction(
-            action = DocspaceAction.REMOVE_CURRENT_USER_FROM_SHARED_GROUP,
-            execution = Execution.BEFORE,
-            mode = Mode.ATTEMPT
-    )
-    @ExecutePipedriveAction(action = PipedriveAction.REMOVE_WEBHOOKS, execution = Execution.AFTER)
     public ResponseEntity<Void> deleteDocspaceAccount(@AuthenticationPrincipal User currentUser) {
+
+        eventPublisher.publishEvent(new DocspaceLogoutUserEvent(this, currentUser));
+
         docspaceAccountService.deleteById(currentUser.getId());
 
         return ResponseEntity.noContent().build();
