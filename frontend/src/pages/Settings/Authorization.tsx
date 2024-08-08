@@ -34,7 +34,7 @@ export const AuthorizationSetting: React.FC = () => {
     if (email && password) {
       if (isSystem) {
         const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
-          title: t("button.logout", "Log out"),
+          title: t("button.login", "Login"),
           description: t(
             "settings.authorization.login.system.confirm",
             "Do you agree to connect your DocSpace account? The app will use it to perform actions."
