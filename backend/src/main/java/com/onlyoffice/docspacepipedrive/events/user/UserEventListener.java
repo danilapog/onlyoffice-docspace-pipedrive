@@ -18,18 +18,15 @@
 
 package com.onlyoffice.docspacepipedrive.events.user;
 
-import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.entity.Webhook;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
-import com.onlyoffice.docspacepipedrive.service.WebhookService;
+import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 
 @Component
@@ -38,33 +35,52 @@ import java.util.List;
 public class UserEventListener {
     private final DocspaceActionManager docspaceActionManager;
     private final PipedriveActionManager pipedriveActionManager;
-    private final PipedriveClient pipedriveClient;
-    private final WebhookService webhookService;
 
     @EventListener
     public void listen(final DocspaceLoginUserEvent event) {
-        User user = event.getUser();
+        User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
 
-        if (user.isSystemUser()) {
+        if (currentUser.isSystemUser()) {
             docspaceActionManager.initSharedGroup();
             pipedriveActionManager.initWebhooks();
         } else {
-            docspaceActionManager.inviteDocspaceAccountToSharedGroup(user.getDocspaceAccount().getUuid());
+            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
+                public Void doWork() {
+                    docspaceActionManager.inviteDocspaceAccountToSharedGroup(event.getDocspaceAccount().getUuid());
+                    return null;
+                }
+            }, currentClient.getSystemUser());
         }
     }
 
     @EventListener
     public void listen(final DocspaceLogoutUserEvent event) {
-        User user = event.getUser();
+        User currentUser = SecurityUtils.getCurrentUser();
+        Client currentClient = SecurityUtils.getCurrentClient();
 
-        docspaceActionManager.removeDocspaceAccountFromSharedGroup(user.getDocspaceAccount().getUuid());
+        if (currentUser.isSystemUser()) {
+            try {
+                docspaceActionManager.removeDocspaceAccountFromSharedGroup(event.getDocspaceAccount().getUuid());
+            } catch (Exception e) {
+                log.warn(e.getMessage(), e);
+            }
 
-        if(user.isSystemUser()) {
-            List<Webhook> webhooks = webhookService.findAllByUserId(user.getId());
-
-            for (Webhook webhook : webhooks) {
-                pipedriveClient.deleteWebhook(webhook.getWebhookId());
-                webhookService.deleteById(webhook.getId());
+            try {
+                pipedriveActionManager.removeWebhooks();
+            } catch (Exception e) {
+                log.warn(e.getMessage(), e);
+            }
+        } else {
+            try {
+                SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
+                    public Void doWork() {
+                        docspaceActionManager.removeDocspaceAccountFromSharedGroup(event.getDocspaceAccount().getUuid());
+                        return null;
+                    }
+                }, currentClient.getSystemUser());
+            } catch (Exception e) {
+                log.warn(e.getMessage(), e);
             }
         }
     }

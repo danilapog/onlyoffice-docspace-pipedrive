@@ -112,19 +112,13 @@ public class DocspaceActionManager {
         Client currentClient = SecurityUtils.getCurrentClient();
 
         try {
-            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-                public Void doWork() {
-                    docspaceClient.updateGroup(
-                            currentClient.getSettings().getSharedGroupId(),
-                            null,
-                            null,
-                            Collections.singletonList(docspaceAccountId),
-                            null
-                    );
-
-                    return null;
-                }
-            }, currentClient.getSystemUser());
+            docspaceClient.updateGroup(
+                    currentClient.getSettings().getSharedGroupId(),
+                    null,
+                    null,
+                    Collections.singletonList(docspaceAccountId),
+                    null
+            );
         } catch (WebClientResponseException | SharedGroupIdNotFoundException e) {
             if (e instanceof SharedGroupIdNotFoundException) {
                 initSharedGroup();
@@ -147,19 +141,13 @@ public class DocspaceActionManager {
     public void removeDocspaceAccountFromSharedGroup(UUID docspaceAccountId) {
         Client currentClient = SecurityUtils.getCurrentClient();
 
-        SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-            public Void doWork() {
-                docspaceClient.updateGroup(
-                        currentClient.getSettings().getSharedGroupId(),
-                        null,
-                        null,
-                        null,
-                        Collections.singletonList(docspaceAccountId)
-                );
-
-                return null;
-            }
-        }, currentClient.getSystemUser());
+        docspaceClient.updateGroup(
+                currentClient.getSettings().getSharedGroupId(),
+                null,
+                null,
+                null,
+                Collections.singletonList(docspaceAccountId)
+        );
     }
 
     public void inviteSharedGroupToRoom(final Long roomId) {

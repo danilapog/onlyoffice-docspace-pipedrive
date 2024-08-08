@@ -18,6 +18,7 @@
 
 package com.onlyoffice.docspacepipedrive.events.user;
 
+import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
@@ -25,9 +26,9 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 public class DocspaceLogoutUserEvent extends ApplicationEvent {
-    private final User user;
-    public DocspaceLogoutUserEvent(final Object source, final User user) {
+    private final DocspaceAccount docspaceAccount;
+    public DocspaceLogoutUserEvent(final Object source, final DocspaceAccount docspaceAccount) {
         super(source);
-        this.user = user;
+        this.docspaceAccount = docspaceAccount;
     }
 }

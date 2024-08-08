@@ -126,7 +126,7 @@ public class UserController {
         DocspaceAccount savedDocspaceAccount = docspaceAccountService.save(currentUser.getId(), docspaceAccount);
         currentUser.setDocspaceAccount(savedDocspaceAccount);
 
-        eventPublisher.publishEvent(new DocspaceLoginUserEvent(this, currentUser));
+        eventPublisher.publishEvent(new DocspaceLoginUserEvent(this, savedDocspaceAccount));
 
         return ResponseEntity.ok(null);
     }
@@ -175,7 +175,7 @@ public class UserController {
         currentUser.setDocspaceAccount(savedDocspaceAccount);
         currentUser.setClient(updatedClient);
 
-        eventPublisher.publishEvent(new DocspaceLoginUserEvent(this, currentUser));
+        eventPublisher.publishEvent(new DocspaceLoginUserEvent(this, savedDocspaceAccount));
 
         return ResponseEntity.ok(null);
     }
@@ -183,7 +183,7 @@ public class UserController {
     @DeleteMapping("/docspace-account")
     public ResponseEntity<Void> deleteDocspaceAccount(@AuthenticationPrincipal User currentUser) {
 
-        eventPublisher.publishEvent(new DocspaceLogoutUserEvent(this, currentUser));
+        eventPublisher.publishEvent(new DocspaceLogoutUserEvent(this, currentUser.getDocspaceAccount()));
 
         docspaceAccountService.deleteById(currentUser.getId());
 
