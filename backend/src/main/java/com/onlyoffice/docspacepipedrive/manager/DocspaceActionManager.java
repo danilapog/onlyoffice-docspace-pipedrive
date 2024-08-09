@@ -108,7 +108,7 @@ public class DocspaceActionManager {
         }, systemUser);
     }
 
-    public void inviteDocspaceAccountToSharedGroup(UUID docspaceAccountId) {
+    public void inviteDocspaceAccountToSharedGroup(final UUID docspaceAccountId) {
         Client currentClient = SecurityUtils.getCurrentClient();
 
         try {
@@ -138,7 +138,7 @@ public class DocspaceActionManager {
         }
     }
 
-    public void removeDocspaceAccountFromSharedGroup(UUID docspaceAccountId) {
+    public void removeDocspaceAccountFromSharedGroup(final UUID docspaceAccountId) {
         Client currentClient = SecurityUtils.getCurrentClient();
 
         docspaceClient.updateGroup(

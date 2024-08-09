@@ -29,5 +29,5 @@ public interface DocspaceAccountService {
     DocspaceAccount save(Long id, DocspaceAccount docspaceAccount);
     DocspaceToken saveToken(Long id, String value);
     void deleteById(Long id);
-    void deleteAllByIdInBatch(final List<Long> ids);
+    void deleteAllByIdInBatch(List<Long> ids);
 }

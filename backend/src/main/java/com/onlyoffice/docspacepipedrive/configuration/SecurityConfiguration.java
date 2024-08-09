@@ -52,8 +52,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
-import java.util.Arrays;
-
 
 @Configuration
 @EnableWebSecurity
@@ -61,6 +59,8 @@ import java.util.Arrays;
 public class SecurityConfiguration {
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
     @Value("${spring.security.oauth2.client.registration.pipedrive.client-id}")
     private String encryptPassword;
     @Value("${spring.security.oauth2.client.registration.pipedrive.client-secret}")
@@ -102,13 +102,11 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    //ToDo: Modify Cors settings
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.addAllowedOrigin("*");
+        configuration.addAllowedOrigin(frontendUrl);
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
 

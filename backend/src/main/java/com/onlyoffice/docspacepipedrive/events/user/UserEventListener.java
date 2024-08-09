@@ -75,7 +75,9 @@ public class UserEventListener {
             try {
                 SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
                     public Void doWork() {
-                        docspaceActionManager.removeDocspaceAccountFromSharedGroup(event.getDocspaceAccount().getUuid());
+                        docspaceActionManager.removeDocspaceAccountFromSharedGroup(
+                                event.getDocspaceAccount().getUuid()
+                        );
                         return null;
                     }
                 }, currentClient.getSystemUser());

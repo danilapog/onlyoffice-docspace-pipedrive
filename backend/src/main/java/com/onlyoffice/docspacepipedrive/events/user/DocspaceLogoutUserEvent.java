@@ -19,7 +19,6 @@
 package com.onlyoffice.docspacepipedrive.events.user;
 
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
-import com.onlyoffice.docspacepipedrive.entity.User;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

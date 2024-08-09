@@ -176,7 +176,9 @@ public class DealEventListener {
             return;
         }
 
-        List<PipedriveDealFollowerEvent> dealFollowerEvents = pipedriveClient.getDealFollowersFlow(pipedriveDeal.getId());
+        List<PipedriveDealFollowerEvent> dealFollowerEvents = pipedriveClient.getDealFollowersFlow(
+                pipedriveDeal.getId()
+        );
 
         List<Long> userIdsAddedFollowers = findUserIdsInDealFollowersEvents(
                 dealFollowerEvents,
@@ -212,7 +214,9 @@ public class DealEventListener {
             return;
         }
 
-        List<PipedriveDealFollowerEvent> dealFollowerEvents = pipedriveClient.getDealFollowersFlow(pipedriveDeal.getId());
+        List<PipedriveDealFollowerEvent> dealFollowerEvents = pipedriveClient.getDealFollowersFlow(
+                pipedriveDeal.getId()
+        );
 
         List<Long> userIdsRemovedFollowers = findUserIdsInDealFollowersEvents(
                 dealFollowerEvents,
@@ -235,8 +239,8 @@ public class DealEventListener {
         docspaceActionManager.removeListDocspaceAccountsFromRoom(room.getRoomId(), docspaceAccounts);
     }
 
-    private List<Long> findUserIdsInDealFollowersEvents(List<PipedriveDealFollowerEvent> dealFollowerEvents,
-                                                        String action, String time) {
+    private List<Long> findUserIdsInDealFollowersEvents(final List<PipedriveDealFollowerEvent> dealFollowerEvents,
+                                                        final String action, final String time) {
         return dealFollowerEvents.stream()
                 .filter(followerEvent -> {
                     return followerEvent.getData().getAction().equals(action)

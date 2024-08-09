@@ -84,7 +84,7 @@ public class User {
     private Client client;
 
     public boolean isSystemUser() {
-        if (this.client.existSystemUser()){
+        if (this.client.existSystemUser()) {
            return this.client.getSystemUser().getId().equals(this.id);
         }
 

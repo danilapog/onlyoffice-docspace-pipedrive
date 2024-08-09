@@ -19,7 +19,6 @@
 package com.onlyoffice.docspacepipedrive.entity.docspaceaccount;
 
 import com.onlyoffice.docspacepipedrive.encryption.EncryptionAttributeConverter;
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

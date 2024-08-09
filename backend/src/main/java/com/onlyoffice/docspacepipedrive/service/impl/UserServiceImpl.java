@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAllByClientId(Long clientId) {
+    public List<User> findAllByClientId(final Long clientId) {
         return userRepository.findAllByClientId(clientId);
     }
 

@@ -50,7 +50,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void deleteAllByClientId(Long clientId) {
+    public void deleteAllByClientId(final Long clientId) {
         roomRepository.deleteAllByClientId(clientId);
     }
 }
