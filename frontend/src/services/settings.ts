@@ -22,7 +22,6 @@ import AppExtensionsSDK, { Command } from "@pipedrive/app-extensions-sdk";
 
 import { SettingsResponse } from "src/types/settings";
 
-
 export const getSettings = async (sdk: AppExtensionsSDK) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
@@ -38,7 +37,7 @@ export const getSettings = async (sdk: AppExtensionsSDK) => {
     url: `/api/v1/settings`,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + pctx.token,
+      Authorization: `Bearer ${pctx.token}`,
     },
     timeout: 5000,
   });
@@ -46,10 +45,7 @@ export const getSettings = async (sdk: AppExtensionsSDK) => {
   return response.data;
 };
 
-export const postSettings = async (
-  sdk: AppExtensionsSDK,
-  url: string
-) => {
+export const postSettings = async (sdk: AppExtensionsSDK, url: string) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
@@ -62,10 +58,10 @@ export const postSettings = async (
     url: `/api/v1/settings`,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + pctx.token,
+      Authorization: `Bearer ${pctx.token}`,
     },
     data: {
-      url: url
+      url,
     },
     timeout: 10000,
   });
@@ -73,9 +69,7 @@ export const postSettings = async (
   return response.data;
 };
 
-export const deleteSettings = async (
-  sdk: AppExtensionsSDK,
-) => {
+export const deleteSettings = async (sdk: AppExtensionsSDK) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
@@ -88,7 +82,7 @@ export const deleteSettings = async (
     url: `/api/v1/settings`,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + pctx.token,
+      Authorization: `Bearer ${pctx.token}`,
     },
     timeout: 10000,
   });

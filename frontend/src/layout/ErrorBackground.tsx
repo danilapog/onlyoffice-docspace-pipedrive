@@ -49,7 +49,11 @@ export const OnlyofficeBackgroundError: React.FC<ErrorProps> = ({
     </div>
     {onClick && button && (
       <div className="pt-5 z-[100]">
-        <OnlyofficeButton type={ButtonType.Primary} text={button} onClick={onClick} />
+        <OnlyofficeButton
+          type={ButtonType.Primary}
+          text={button}
+          onClick={onClick}
+        />
       </div>
     )}
   </div>

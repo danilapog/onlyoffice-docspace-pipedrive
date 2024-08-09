@@ -22,7 +22,6 @@ import AppExtensionsSDK, { Command } from "@pipedrive/app-extensions-sdk";
 
 import { UserResponse } from "src/types/user";
 
-
 export const getUser = async (sdk: AppExtensionsSDK) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
@@ -38,7 +37,7 @@ export const getUser = async (sdk: AppExtensionsSDK) => {
     url: `/api/v1/user`,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + pctx.token,
+      Authorization: `Bearer ${pctx.token}`,
     },
     timeout: 15000,
   });
@@ -64,19 +63,17 @@ export const putDocspaceAccount = async (
     url: `/api/v1/user/docspace-account?system=${system}`,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + pctx.token,
+      Authorization: `Bearer ${pctx.token}`,
     },
     data: {
-      userName: userName,
-      passwordHash: passwordHash
+      userName,
+      passwordHash,
     },
     timeout: 10000,
   });
 };
 
-export const deleteDocspaceAccount = async (
-  sdk: AppExtensionsSDK
-) => {
+export const deleteDocspaceAccount = async (sdk: AppExtensionsSDK) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
@@ -89,7 +86,7 @@ export const deleteDocspaceAccount = async (
     url: `/api/v1/user/docspace-account`,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + pctx.token,
+      Authorization: `Bearer ${pctx.token}`,
     },
     timeout: 4000,
   });

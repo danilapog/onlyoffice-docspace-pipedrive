@@ -22,8 +22,8 @@ import cx from "classnames";
 export enum ButtonType {
   Normal,
   Primary,
-  Danger
-};
+  Danger,
+}
 
 type ButtonProps = {
   text: string;
@@ -46,7 +46,8 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
     "hover:shadow-lg duration-200": !disabled,
     "bg-green-700 text-white": type === ButtonType.Primary,
     "bg-red-600 text-white": type === ButtonType.Danger,
-    "bg-white text-black border border-slate-300 border-solid": type === ButtonType.Normal,
+    "bg-white text-black border border-slate-300 border-solid":
+      type === ButtonType.Normal,
     "min-w-[62px] h-[32px]": true,
     "w-full": fullWidth,
     "bg-opacity-50 cursor-not-allowed": disabled,

@@ -22,11 +22,7 @@ import AppExtensionsSDK, { Command } from "@pipedrive/app-extensions-sdk";
 
 import { RoomResponse } from "src/types/room";
 
-
-export const getRoom = async (
-  sdk: AppExtensionsSDK,
-  dealId: number
-) => {
+export const getRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
@@ -41,7 +37,7 @@ export const getRoom = async (
     url: `/api/v1/room/${dealId}`,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + pctx.token,
+      Authorization: `Bearer ${pctx.token}`,
     },
     timeout: 3000,
   });
@@ -49,10 +45,7 @@ export const getRoom = async (
   return response.data;
 };
 
-export const createRoom = async (
-  sdk: AppExtensionsSDK,
-  dealId: number
-) => {
+export const createRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
@@ -65,7 +58,7 @@ export const createRoom = async (
     url: `/api/v1/room/${dealId}`,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + pctx.token,
+      Authorization: `Bearer ${pctx.token}`,
     },
     timeout: 10000,
   });

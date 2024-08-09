@@ -35,7 +35,6 @@ import { SettingsResponse } from "src/types/settings";
 import CommonError from "@assets/common-error.svg";
 import TokenError from "@assets/token-error.svg";
 
-
 type AppContextProps = {
   children?: JSX.Element | JSX.Element[];
 };
@@ -68,9 +67,11 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         setSDK(s);
         try {
           const user = await getUser(s);
-          const settings = await getSettings(s);  
+          const settings = await getSettings(s);
 
-          await i18next.changeLanguage(`${user.language.language_code}-${user.language.country_code}`);
+          await i18next.changeLanguage(
+            `${user.language.language_code}-${user.language.country_code}`
+          );
           setUser(user);
           setSettings(settings);
         } catch (e) {
@@ -82,24 +83,30 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
       .catch((e) => console.error(e));
   }, []);
 
-  return(
+  return (
     <>
-      {loading && (
-        <OnlyofficeSpinner />
-      )}
+      {loading && <OnlyofficeSpinner />}
       {!loading && error && (
         <OnlyofficeBackgroundError
           Icon={
-            error?.response?.status === 401
-              ? <TokenError className="mb-5" />
-              : <CommonError className="mb-5" />
+            error?.response?.status === 401 ? (
+              <TokenError className="mb-5" />
+            ) : (
+              <CommonError className="mb-5" />
+            )
           }
           title={t(
-            error?.response?.status === 401 ? "background.error.title.token-expired" : "background.error.title.common",
-            error?.response?.status === 401 ? "The document security token has expired" : "Error"
+            error?.response?.status === 401
+              ? "background.error.title.token-expired"
+              : "background.error.title.common",
+            error?.response?.status === 401
+              ? "The document security token has expired"
+              : "Error"
           )}
           subtitle={t(
-            error?.response?.status === 401 ? "background.error.subtitle.token-expired" : "background.error.subtitle.common",
+            error?.response?.status === 401
+              ? "background.error.subtitle.token-expired"
+              : "background.error.subtitle.common",
             error?.response?.status === 401
               ? "Something went wrong. Please re-authorize the app."
               : "Something went wrong. Please reload the app."
@@ -116,16 +123,43 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
           }
         />
       )}
-      {!loading && (!user?.isAdmin && (!settings?.url || !settings.existSystemUser) && !user?.docspaceAccount) && !error && (
-        <OnlyofficeBackgroundError
-          Icon={<CommonError className="mb-5" />}
-          title={t("background.error.subtitle.plugin.not-active.message", "ONLYOFFICE DocSpace App is not yet available")}
-          subtitle={t("background.error.subtitle.plugin.not-active.help", "Please wait until a Pipedrive Administrator configures the app settings")}
-        />
-      )}
-      {!loading && (user?.isAdmin || (settings?.url && settings.existSystemUser) || user?.docspaceAccount) && !error && sdk &&(
-        <AppContext.Provider value={{sdk, user, setUser, settings, setSettings, error, setError}}>{children}</AppContext.Provider>
-      )}
+      {!loading &&
+        !user?.isAdmin &&
+        (!settings?.url || !settings.existSystemUser) &&
+        !user?.docspaceAccount &&
+        !error && (
+          <OnlyofficeBackgroundError
+            Icon={<CommonError className="mb-5" />}
+            title={t(
+              "background.error.subtitle.plugin.not-active.message",
+              "ONLYOFFICE DocSpace App is not yet available"
+            )}
+            subtitle={t(
+              "background.error.subtitle.plugin.not-active.help",
+              "Please wait until a Pipedrive Administrator configures the app settings"
+            )}
+          />
+        )}
+      {!loading &&
+        (user?.isAdmin ||
+          (settings?.url && settings.existSystemUser) ||
+          user?.docspaceAccount) &&
+        !error &&
+        sdk && (
+          <AppContext.Provider
+            value={{
+              sdk,
+              user,
+              setUser,
+              settings,
+              setSettings,
+              error,
+              setError,
+            }}
+          >
+            {children}
+          </AppContext.Provider>
+        )}
     </>
   );
 };

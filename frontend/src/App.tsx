@@ -30,7 +30,6 @@ import { RoomPage } from "@pages/Room";
 
 import { AppContextProvider } from "@context/AppContext";
 
-
 const LazyRoutes: React.FC = () => {
   const location = useLocation();
   return (

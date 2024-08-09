@@ -16,7 +16,6 @@
  *
  */
 
-
 export type UserResponse = {
   id: string;
   name: string;
@@ -25,7 +24,7 @@ export type UserResponse = {
   language: {
     country_code: string;
     language_code: string;
-  }
+  };
   docspaceAccount: DocspaceAccount | null;
 };
 
