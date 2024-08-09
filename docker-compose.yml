@@ -10,6 +10,7 @@ services:
       - postgres
     environment:
       - BASE_URL=${BACKEND_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/${POSTGRES_DB}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
