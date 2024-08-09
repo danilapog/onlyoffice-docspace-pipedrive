@@ -29,12 +29,12 @@ public class EncryptionAttributeConverter implements AttributeConverter<String, 
     private final TextEncryptor textEncryptor;
 
     @Override
-    public String convertToDatabaseColumn(String s) {
+    public String convertToDatabaseColumn(final String s) {
         return textEncryptor.encrypt(s);
     }
 
     @Override
-    public String convertToEntityAttribute(String s) {
+    public String convertToEntityAttribute(final String s) {
         return textEncryptor.decrypt(s);
     }
 }

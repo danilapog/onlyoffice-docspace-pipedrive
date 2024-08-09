@@ -18,7 +18,6 @@
 
 package com.onlyoffice.docspacepipedrive.web.controller;
 
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.UserService;

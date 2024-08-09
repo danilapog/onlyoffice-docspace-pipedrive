@@ -137,8 +137,8 @@ public class UserController {
     @PutMapping(path = "/docspace-account", params = "system=true")
     @Transactional
     public ResponseEntity<Void> putSystemDocspaceAccount(@AuthenticationPrincipal User currentUser,
-                                                         @AuthenticationPrincipal(expression = "client") Client currentClient,
-                                                         @RequestBody DocspaceAccountRequest request) {
+            @AuthenticationPrincipal(expression = "client") Client currentClient,
+            @RequestBody DocspaceAccountRequest request) {
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
         if (!pipedriveUser.isSalesAdmin()) {
             throw new PipedriveAccessDeniedException(currentUser.getUserId());
