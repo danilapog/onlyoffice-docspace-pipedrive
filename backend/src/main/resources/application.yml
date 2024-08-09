@@ -1,5 +1,6 @@
 app:
   base-url: ${BASE_URL}
+  frontend-url: ${FRONTEND_URL}
 
 pipedrive:
   base-url: https://app.pipedrive.com
