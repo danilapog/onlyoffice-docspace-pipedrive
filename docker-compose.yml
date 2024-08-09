@@ -24,6 +24,8 @@ services:
     build:
       context: .
       target: frontend
+      args:
+        - BACKEND_URL=${BACKEND_URL}
     image: onlyoffice/pipedrive-docspace-frontend:${PRODUCT_VERSION}
     stdin_open: true
     ports:
