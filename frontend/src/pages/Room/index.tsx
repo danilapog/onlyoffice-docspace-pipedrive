@@ -50,6 +50,7 @@ export const RoomPage: React.FC = () => {
     height: "100%",
     theme: "Base",
     events: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onAppReady: (e: string | Event) => {
         window.DocSpace.SDK.frames[DOCSPACE_FRAME_ID].setIsLoaded(false); // ToDo: need add to sdk event onContentReady()
         setShowDocspaceWindow(true);
@@ -58,6 +59,8 @@ export const RoomPage: React.FC = () => {
       onAppError: (e: string | Event) => {
         setAppError(AppErrorType.COMMON_ERROR);
         setLoading(false);
+
+        // eslint-disable-next-line no-console
         console.error(e);
       },
     } as TFrameEvents,

@@ -96,7 +96,10 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
           setLoading(false);
         }
       })
-      .catch((e) => console.error(e));
+      .catch(
+        // eslint-disable-next-line no-console
+        (e) => console.error(e),
+      );
   }, []);
 
   return (
