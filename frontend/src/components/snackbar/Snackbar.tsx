@@ -33,7 +33,7 @@ export const OnlyofficeSnackbar: React.FC<SnackbarProps> = ({
   const [show, setShow] = useState(true);
 
   return (
-    <>
+    <div>
       {show && (
         <div className="flex w-full px-5 py-3 bg-amber-100 font-normal text-xs items-start">
           <div className="flex flex-col w-full gap-2">
@@ -41,7 +41,12 @@ export const OnlyofficeSnackbar: React.FC<SnackbarProps> = ({
             <div className="leading-3">{text}</div>
           </div>
           {isClosed && (
-            <button className="inline-block" onClick={(e) => setShow(false)}>
+            <button
+              type="button"
+              className="inline-block"
+              aria-label="Close"
+              onClick={() => setShow(false)}
+            >
               <svg
                 width="12"
                 height="12"
@@ -61,6 +66,6 @@ export const OnlyofficeSnackbar: React.FC<SnackbarProps> = ({
           )}
         </div>
       )}
-    </>
+    </div>
   );
 };

@@ -88,7 +88,7 @@ export const RoomPage: React.FC = () => {
         });
       })
       .catch(async (e) => {
-        if (e?.response?.status == 404) {
+        if (e?.response?.status === 404) {
           if (!user?.docspaceAccount?.canCreateRoom) {
             setAppError(AppErrorType.DOCSPACE_ROOM_NOT_FOUND);
             setLoading(false);
@@ -103,7 +103,7 @@ export const RoomPage: React.FC = () => {
           setAppError(AppErrorType.COMMON_ERROR);
         }
       });
-  }, []);
+  }, [sdk, settings, user]);
 
   const handleCreateRoom = () => {
     setLoading(true);
@@ -120,15 +120,15 @@ export const RoomPage: React.FC = () => {
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
             "room.creating.ok",
-            "ONLYOFFICE DocSpace room was successfully created!"
+            "ONLYOFFICE DocSpace room was successfully created!",
           ),
         });
       })
-      .catch(async (e) => {
+      .catch(async () => {
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
             "room.creating.error",
-            "Failed to create ONLYOFFICE DocSpace room!"
+            "Failed to create ONLYOFFICE DocSpace room!",
           ),
         });
         setLoading(false);
@@ -158,17 +158,17 @@ export const RoomPage: React.FC = () => {
           <OnlyofficeSnackbar
             header={t(
               "notification.system-user.not-found",
-              "System User is not set."
+              "System User is not set.",
             )}
             text={`${
               user?.isAdmin
                 ? t(
                     "notification.plugin.set-system-user",
-                    "Please go to Settings and set yourself as a System User."
+                    "Please go to Settings and set yourself as a System User.",
                   )
                 : t(
                     "notification.plugin.functionality-is-limited",
-                    "Plugin functionality is limited."
+                    "Plugin functionality is limited.",
                   )
             }`}
           />
@@ -180,7 +180,7 @@ export const RoomPage: React.FC = () => {
             <div className="w-full pb-4">
               {t(
                 "room.create.description",
-                "Create ONLYOFFICE DocSpace room to easily collaborate on documents in this deal"
+                "Create ONLYOFFICE DocSpace room to easily collaborate on documents in this deal",
               )}
             </div>
             <OnlyofficeButton

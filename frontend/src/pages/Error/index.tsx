@@ -51,7 +51,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           title: t("background.error.title.common", "Error"),
           subtitle: t(
             "background.error.subtitle.common",
-            "Something went wrong. Please reload the app."
+            "Something went wrong. Please reload the app.",
           ),
         });
         break;
@@ -61,17 +61,17 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           Icon: <TokenError className="mb-5" />,
           title: t(
             "background.error.title.token-expired",
-            "The document security token has expired"
+            "The document security token has expired",
           ),
           subtitle: t(
             "background.error.subtitle.token-expired",
-            "Something went wrong. Please re-authorize the app."
+            "Something went wrong. Please re-authorize the app.",
           ),
           button: t("button.reauthorize", "Re-authorize") || "Re-authorize",
           onClick: () =>
             window.open(
               `${process.env.BACKEND_URL}/oauth2/authorization/pipedrive`,
-              "_blank"
+              "_blank",
             ),
         });
         break;
@@ -81,11 +81,11 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           Icon: <CommonError className="mb-5" />,
           title: t(
             "background.error.subtitle.plugin.not-active.message",
-            "ONLYOFFICE DocSpace App is not yet available"
+            "ONLYOFFICE DocSpace App is not yet available",
           ),
           subtitle: t(
             "background.error.subtitle.plugin.not-active.help",
-            "Please wait until a Pipedrive Administrator configures the app settings"
+            "Please wait until a Pipedrive Administrator configures the app settings",
           ),
         });
         break;
@@ -95,17 +95,17 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           Icon: <CommonError className="mb-5" />,
           title: t(
             "background.error.subtitle.docspace-connection",
-            "You are not connected to ONLYOFFICE DocSpace"
+            "You are not connected to ONLYOFFICE DocSpace",
           ),
           subtitle: `${
             user?.isAdmin
               ? t(
                   "background.error.hint.admin.docspace-connection",
-                  "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings."
+                  "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
                 )
               : t(
                   "background.error.hint.docspace-connection",
-                  "Please contact the administrator."
+                  "Please contact the administrator.",
                 )
           }`,
           button: t("button.settings", "Settings") || "Settings",
@@ -120,11 +120,11 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           Icon: <CommonError className="mb-5" />,
           title: t(
             "background.error.subtitle.docspace-authorization.message",
-            "Can not get authorize in ONLYOFFICE DocSpace"
+            "Can not get authorize in ONLYOFFICE DocSpace",
           ),
           subtitle: t(
             "background.error.subtitle.docspace-authorization.help",
-            "Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings"
+            "Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings",
           ),
           button: t("button.settings", "Settings") || "Settings",
           onClick: () =>
@@ -137,11 +137,11 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           Icon: <DenniedError className="mb-5" />,
           title: t(
             "background.error.title.create-room",
-            "Sorry, you don't have a permission to create rooms"
+            "Sorry, you don't have a permission to create rooms",
           ),
           subtitle: t(
             "background.error.subtitle.create-room",
-            "Please ask a Pipedrive Administrator to create a room or contact a DocSpace admin to upgrade your role."
+            "Please ask a Pipedrive Administrator to create a room or contact a DocSpace admin to upgrade your role.",
           ),
           button: t("button.settings", "Settings") || "Settings",
           onClick: () =>
@@ -154,21 +154,21 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           Icon: <UnreachableError className="mb-5" />,
           title: t(
             "docspace.error.unreached",
-            "ONLYOFFICE DocSpace cannot be reached"
+            "ONLYOFFICE DocSpace cannot be reached",
           ),
           subtitle: `${t(
             "docspace.error.unreached",
-            "ONLYOFFICE DocSpace cannot be reached"
+            "ONLYOFFICE DocSpace cannot be reached",
           )}. 
               ${
                 user?.isAdmin
                   ? t(
                       "background.error.hint.admin.docspace-connection",
-                      "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings."
+                      "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
                     )
                   : t(
                       "background.error.hint.docspace-connection",
-                      "Please contact the administrator."
+                      "Please contact the administrator.",
                     )
               }`,
           button: t("button.settings", "Settings") || "Settings",

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
 import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
@@ -38,7 +38,7 @@ export const AuthorizationSetting: React.FC = () => {
           description:
             t(
               "settings.authorization.login.system.confirm",
-              "Do you agree to connect your DocSpace account? The app will use it to perform actions."
+              "Do you agree to connect your DocSpace account? The app will use it to perform actions.",
             ) || "",
         });
         if (!confirmed) {
@@ -61,7 +61,7 @@ export const AuthorizationSetting: React.FC = () => {
           t(
             "settings.authorization.deleting.system.confirm",
             `Are you sure you want to log out? You are a System User and this action will
-          result in the ONLYOFFICE DocSpace functionality being limited.`
+          result in the ONLYOFFICE DocSpace functionality being limited.`,
           ) || "",
       });
       executelogout = confirmed;
@@ -84,15 +84,15 @@ export const AuthorizationSetting: React.FC = () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "settings.authorization.deleting.ok",
-              "ONLYOFFICE DocSpace authorization has been successfully deleted"
+              "ONLYOFFICE DocSpace authorization has been successfully deleted",
             ),
           });
         })
-        .catch(async (e) => {
+        .catch(async () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "background.error.subtitle.common",
-              "Something went wrong. Please reload the app."
+              "Something went wrong. Please reload the app.",
             ),
           });
         })
@@ -102,9 +102,10 @@ export const AuthorizationSetting: React.FC = () => {
 
   const onAppReady = async () => {
     if (email && password) {
-      const hashSettings = await window.DocSpace.SDK.frames[
-        DOCSPACE_SYSTEM_FRAME_ID
-      ].getHashSettings();
+      const hashSettings =
+        await window.DocSpace.SDK.frames[
+          DOCSPACE_SYSTEM_FRAME_ID
+        ].getHashSettings();
       const passwordHash = await window.DocSpace.SDK.frames[
         DOCSPACE_SYSTEM_FRAME_ID
       ].createHash(password, hashSettings);
@@ -136,7 +137,7 @@ export const AuthorizationSetting: React.FC = () => {
             await sdk.execute(Command.SHOW_SNACKBAR, {
               message: t(
                 "settings.authorization.saving.ok",
-                "ONLYOFFICE DocSpace authorization has been successfully saved"
+                "ONLYOFFICE DocSpace authorization has been successfully saved",
               ),
             });
           })
@@ -148,7 +149,7 @@ export const AuthorizationSetting: React.FC = () => {
               await sdk.execute(Command.SHOW_SNACKBAR, {
                 message: t(
                   "settings.connection.saving.error.forbidden",
-                  "The specified user is not a ONLYOFFICE DocSpace administrator"
+                  "The specified user is not a ONLYOFFICE DocSpace administrator",
                 ),
               });
               return;
@@ -157,7 +158,7 @@ export const AuthorizationSetting: React.FC = () => {
             await sdk.execute(Command.SHOW_SNACKBAR, {
               message: t(
                 "settings.authorization.saving.error",
-                "Could not save ONLYOFFICE DocSpace authorization"
+                "Could not save ONLYOFFICE DocSpace authorization",
               ),
             });
           })
@@ -178,7 +179,7 @@ export const AuthorizationSetting: React.FC = () => {
     await sdk.execute(Command.SHOW_SNACKBAR, {
       message: t(
         "docspace.error.unreached",
-        "ONLYOFFICE DocSpace cannot be reached"
+        "ONLYOFFICE DocSpace cannot be reached",
       ),
     });
     setSaving(false);
@@ -191,17 +192,17 @@ export const AuthorizationSetting: React.FC = () => {
           Icon={<CommonError />}
           title={t(
             "background.error.subtitle.docspace-connection",
-            "You are not connected to ONLYOFFICE DocSpace"
+            "You are not connected to ONLYOFFICE DocSpace",
           )}
           subtitle={`${
             user?.isAdmin
               ? t(
                   "background.error.hint.admin.docspace-connection",
-                  "Please go to the Connection tab to configure the DocSpace app settings."
+                  "Please go to the Connection tab to configure the DocSpace app settings.",
                 )
               : t(
                   "background.error.hint.docspace-connection",
-                  "Please contact the administrator."
+                  "Please contact the administrator.",
                 )
           }`}
         />
@@ -213,7 +214,7 @@ export const AuthorizationSetting: React.FC = () => {
               <OnlyofficeTitle
                 text={t(
                   "settings.authorization.title",
-                  "Login to ONLYOFFICE DocSpace account"
+                  "Login to ONLYOFFICE DocSpace account",
                 )}
               />
             </div>
@@ -225,7 +226,7 @@ export const AuthorizationSetting: React.FC = () => {
                 <span className="pl-3">
                   {t(
                     "settings.authorization.status.authorized",
-                    "You have successfully logged in to your ONLYOFFICE DocSpace account"
+                    "You have successfully logged in to your ONLYOFFICE DocSpace account",
                   )}
                   {user.isSystem && (
                     <>
@@ -279,15 +280,15 @@ export const AuthorizationSetting: React.FC = () => {
                       checked={isSystem}
                       text={t(
                         "settings.authorization.inputs.system",
-                        "Use this account with System user (DocSpace Admin role required)"
+                        "Use this account with System user (DocSpace Admin role required)",
                       )}
                       disabled={!settings?.existSystemUser}
-                      onChange={(e) => setIsSystem(!isSystem)}
+                      onChange={() => setIsSystem(!isSystem)}
                     />
                     <OnlyofficeTooltip
                       text={t(
                         "settings.authorization.inputs.system.help",
-                        "If you click on this switch, the plugin will perform actions from your DocSpace account"
+                        "If you click on this switch, the plugin will perform actions from your DocSpace account",
                       )}
                     />
                   </div>

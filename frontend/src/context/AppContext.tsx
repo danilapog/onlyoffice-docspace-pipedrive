@@ -73,7 +73,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
           const settingsResponse = await getSettings(s);
 
           await i18next.changeLanguage(
-            `${userResponse.language.language_code}-${userResponse.language.country_code}`
+            `${userResponse.language.language_code}-${userResponse.language.country_code}`,
           );
 
           if (

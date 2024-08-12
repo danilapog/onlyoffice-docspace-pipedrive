@@ -32,7 +32,7 @@ type Section = {
 
 export const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
-  const { user, settings } = useContext(AppContext);
+  const { user } = useContext(AppContext);
 
   const sections: Array<Section> = [
     {
@@ -54,7 +54,7 @@ export const SettingsPage: React.FC = () => {
   const firstAvailableSection = sections.find((section) => section.available);
 
   const [selectedSection, setSelectedSection] = useState<string | undefined>(
-    firstAvailableSection?.id
+    firstAvailableSection?.id,
   );
 
   return (
@@ -68,6 +68,7 @@ export const SettingsPage: React.FC = () => {
                 key={section.id}
                 id={section.id}
                 tabIndex={0}
+                role="button"
                 className={`text-left font border-spacing-7 px-10 py-2 m-1 rounded-lg cursor-pointer ${
                   section.id === selectedSection
                     ? "text-blue-600 font-medium bg-sky-100"

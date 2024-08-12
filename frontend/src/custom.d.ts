@@ -17,11 +17,6 @@
  */
 
 declare module "*.svg" {
-  const content: any;
-  export default content;
-}
-
-declare module "*ico" {
-  const content: any;
+  const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
   export default content;
 }

@@ -23,7 +23,7 @@ import { OnlyofficeSubtitle } from "@components/title";
 import { OnlyofficeError } from "@components/error/Error";
 
 export type ErrorProps = {
-  Icon: any;
+  Icon: JSX.Element | JSX.Element[];
   title: string;
   subtitle: string;
   button?: string;

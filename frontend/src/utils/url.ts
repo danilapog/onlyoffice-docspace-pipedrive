@@ -25,3 +25,6 @@ export const getCurrentURL = () => {
 
   return { url, parameters: params };
 };
+
+export const stripTrailingSlash = (url: string) =>
+  url.endsWith("/") ? url.slice(0, -1) : url;

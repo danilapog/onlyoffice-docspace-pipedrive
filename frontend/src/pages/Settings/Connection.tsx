@@ -28,7 +28,7 @@ import { OnlyofficeHint } from "@components/hint";
 
 import { deleteSettings, postSettings } from "@services/settings";
 
-import { getCurrentURL } from "@utils/url";
+import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 
 import { AppContext } from "@context/AppContext";
 import { SettingsResponse } from "src/types/settings";
@@ -64,7 +64,7 @@ export const ConnectionSettings: React.FC = () => {
           "settings.connection.disconnection.description",
           `Are you sure you want to disconnect ONLYOFFICE DocSpace? This will 
         result in all connections between Deals and DocSpace rooms being lost. 
-        And also all user authorization data will be deleted.`
+        And also all user authorization data will be deleted.`,
         ) || "",
     });
 
@@ -74,7 +74,7 @@ export const ConnectionSettings: React.FC = () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "settings.connection.disconnection.ok",
-              "ONLYOFFICE DocSpace succesfuly disconnected"
+              "ONLYOFFICE DocSpace succesfuly disconnected",
             ),
           });
           setSettings(undefined);
@@ -84,7 +84,7 @@ export const ConnectionSettings: React.FC = () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "settings.connection.disconnection.error",
-              "Could not disconnect ONLYOFFICE DocSpace"
+              "Could not disconnect ONLYOFFICE DocSpace",
             ),
           });
         })
@@ -104,15 +104,15 @@ export const ConnectionSettings: React.FC = () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "settings.connection.saving.ok",
-              "ONLYOFFICE DocSpace settings have been saved"
+              "ONLYOFFICE DocSpace settings have been saved",
             ),
           });
         })
-        .catch(async (e) => {
+        .catch(async () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "settings.connection.saving.error",
-              "Could not save ONLYOFFICE DocSpace settings"
+              "Could not save ONLYOFFICE DocSpace settings",
             ),
           });
         })
@@ -131,11 +131,11 @@ export const ConnectionSettings: React.FC = () => {
       await sdk.execute(Command.SHOW_SNACKBAR, {
         message: t(
           "docspace.error.csp",
-          "The current domain is not set in the Content Security Policy (CSP) settings. Please add it via the Developer Tools section."
+          "The current domain is not set in the Content Security Policy (CSP) settings. Please add it via the Developer Tools section.",
         ),
         link: {
           url: `${stripTrailingSlash(
-            address || ""
+            address || "",
           )}/portal-settings/developer-tools/javascript-sdk`,
           label: t("docspace.link.developer-tools", "Developer Tools section"),
         },
@@ -154,14 +154,11 @@ export const ConnectionSettings: React.FC = () => {
     await sdk.execute(Command.SHOW_SNACKBAR, {
       message: t(
         "docspace.error.unreached",
-        "ONLYOFFICE DocSpace cannot be reached"
+        "ONLYOFFICE DocSpace cannot be reached",
       ),
     });
     setConnecting(false);
   };
-
-  const stripTrailingSlash = (url: string) =>
-    url.endsWith("/") ? url.slice(0, -1) : url;
 
   return (
     <>
@@ -170,7 +167,7 @@ export const ConnectionSettings: React.FC = () => {
           <OnlyofficeTitle
             text={t(
               "settings.connection.title",
-              "Configure connection settings of the ONLYOFFICE DocSpace app"
+              "Configure connection settings of the ONLYOFFICE DocSpace app",
             )}
           />
         </div>
@@ -180,7 +177,7 @@ export const ConnectionSettings: React.FC = () => {
               <p className="font-semibold">
                 {t(
                   "settings.connection.hint.csp.title",
-                  "Check the CSP settings"
+                  "Check the CSP settings",
                 )}
               </p>
               <p>
@@ -190,7 +187,7 @@ export const ConnectionSettings: React.FC = () => {
                   values={{
                     path: t(
                       "settings.connection.hint.csp.path",
-                      "DocSpace Settings - Developer tools - JavaScript SDK"
+                      "DocSpace Settings - Developer tools - JavaScript SDK",
                     ),
                   }}
                   components={{ semibold: <span className="font-semibold" /> }}
@@ -201,7 +198,7 @@ export const ConnectionSettings: React.FC = () => {
               <p className="font-semibold">
                 {t(
                   "settings.connection.hint.csp.pipedrive-adress",
-                  "Pipedrive portal address"
+                  "Pipedrive portal address",
                 )}
                 :{" "}
                 <span className="text-green-700">
@@ -211,7 +208,7 @@ export const ConnectionSettings: React.FC = () => {
               <p className="font-semibold">
                 {t(
                   "settings.connection.hint.csp.docspace-adress",
-                  "ONLYOFFICE DocSpace app"
+                  "ONLYOFFICE DocSpace app",
                 )}
                 :{" "}
                 <span className="text-green-700">
@@ -227,7 +224,7 @@ export const ConnectionSettings: React.FC = () => {
           <OnlyofficeInput
             text={t(
               "settings.connection.inputs.address",
-              "ONLYOFFICE DocSpace address"
+              "ONLYOFFICE DocSpace address",
             )}
             placeholder="https://"
             valid={showValidationMessage ? !!address : true}

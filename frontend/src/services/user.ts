@@ -49,7 +49,7 @@ export const putDocspaceAccount = async (
   sdk: AppExtensionsSDK,
   userName: string,
   passwordHash: string,
-  system: boolean
+  system: boolean,
 ) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
