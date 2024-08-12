@@ -106,7 +106,7 @@ export const RoomPage: React.FC = () => {
           setAppError(AppErrorType.COMMON_ERROR);
         }
       });
-  }, [sdk, settings, user]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleCreateRoom = () => {
     setLoading(true);
