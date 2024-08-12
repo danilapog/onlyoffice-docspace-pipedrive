@@ -22,7 +22,7 @@ import { ButtonType, OnlyofficeButton } from "@components/button";
 import { OnlyofficeSubtitle } from "@components/title";
 import { OnlyofficeError } from "@components/error/Error";
 
-type ErrorProps = {
+export type ErrorProps = {
   Icon: any;
   title: string;
   subtitle: string;

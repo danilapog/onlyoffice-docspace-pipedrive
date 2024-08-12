@@ -19,41 +19,30 @@
 import React, { useContext, useEffect, useState } from "react";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
-import { Command, View } from "@pipedrive/app-extensions-sdk";
+import { Command } from "@pipedrive/app-extensions-sdk";
 import {
   DocSpace,
   TFrameConfig,
   TFrameEvents,
 } from "@onlyoffice/docspace-react";
 
-import { AppContext } from "@context/AppContext";
+import { AppContext, AppErrorType } from "@context/AppContext";
 
 import { createRoom, getRoom } from "@services/room";
 import { getCurrentURL } from "@utils/url";
 
 import { ButtonType, OnlyofficeButton } from "@components/button";
 import { OnlyofficeSpinner } from "@components/spinner";
-import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 
-import CommonError from "@assets/common-error.svg";
-import DenniedError from "@assets/dennied-error.svg";
-import UnreachableError from "@assets/unreachable-error.svg";
 import { OnlyofficeSnackbar } from "@components/snackbar";
 
 const DOCSPACE_FRAME_ID = "docspace-frame";
 
-type iError = {
-  Icon: any;
-  title: string;
-  message: string;
-  button?: string;
-  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
-};
-
 export const RoomPage: React.FC = () => {
+  const { sdk, user, settings, setAppError } = useContext(AppContext);
+
   const [loading, setLoading] = useState(true);
   const [showDocspaceWindow, setShowDocspaceWindow] = useState(false);
-  const [iError, setIError] = useState<iError>();
   const [config, setConfig] = useState<TFrameConfig>({
     frameId: DOCSPACE_FRAME_ID,
     mode: "manager",
@@ -67,14 +56,7 @@ export const RoomPage: React.FC = () => {
         setLoading(false);
       },
       onAppError: (e: string | Event) => {
-        setIError({
-          Icon: <CommonError />,
-          title: t("background.error.title", "Error"),
-          message: t(
-            "background.error.subtitle.common",
-            "Something went wrong. Please reload the app."
-          ),
-        });
+        setAppError(AppErrorType.COMMON_ERROR);
         setLoading(false);
         console.error(e);
       },
@@ -82,53 +64,17 @@ export const RoomPage: React.FC = () => {
   } as TFrameConfig);
 
   const { t } = useTranslation();
-  const { sdk, user, settings, setError } = useContext(AppContext);
   const { parameters } = getCurrentURL();
 
   useEffect(() => {
     if (!settings?.url) {
-      setIError({
-        Icon: <CommonError />,
-        title: t(
-          "background.error.subtitle.docspace-connection",
-          "You are not connected to ONLYOFFICE DocSpace"
-        ),
-        message: `${
-          user?.isAdmin
-            ? t(
-                "background.error.hint.admin.docspace-connection",
-                "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings."
-              )
-            : t(
-                "background.error.hint.docspace-connection",
-                "Please contact the administrator."
-              )
-        }`,
-        button: t("button.settings", "Settings") || "Settings",
-        onClick: user?.isAdmin
-          ? async () =>
-              await sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
-          : undefined,
-      });
+      setAppError(AppErrorType.DOCSPACE_CONNECTION);
       setLoading(false);
       return;
     }
 
     if (!user?.docspaceAccount) {
-      setIError({
-        Icon: <CommonError />,
-        title: t(
-          "background.error.subtitle.docspace-authorization.message",
-          "Can not get authorize in ONLYOFFICE DocSpace"
-        ),
-        message: t(
-          "background.error.subtitle.docspace-authorization.help",
-          "Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings"
-        ),
-        button: t("button.settings", "Settings") || "Settings",
-        onClick: async () =>
-          await sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
-      });
+      setAppError(AppErrorType.DOCSPACE_AUTHORIZATION);
       setLoading(false);
       return;
     }
@@ -144,25 +90,17 @@ export const RoomPage: React.FC = () => {
       .catch(async (e) => {
         if (e?.response?.status == 404) {
           if (!user?.docspaceAccount?.canCreateRoom) {
-            setIError({
-              Icon: <DenniedError />,
-              title: t(
-                "background.error.title.create-room",
-                "Sorry, you don't have a permission to create rooms"
-              ),
-              message: t(
-                "background.error.subtitle.create-room",
-                "Please ask a Pipedrive Administrator to create a room or contact a DocSpace admin to upgrade your role."
-              ),
-            });
+            setAppError(AppErrorType.DOCSPACE_ROOM_NOT_FOUND);
             setLoading(false);
             return;
           }
 
           await sdk.execute(Command.RESIZE, { height: 150 });
           setLoading(false);
+        } else if (e?.response?.status === 401) {
+          setAppError(AppErrorType.TOKEN_ERROR);
         } else {
-          setError(e);
+          setAppError(AppErrorType.COMMON_ERROR);
         }
       });
   }, []);
@@ -200,47 +138,11 @@ export const RoomPage: React.FC = () => {
   const onRequestPasswordHash = () => user?.docspaceAccount?.passwordHash || "";
 
   const onLoadComponentError = () => {
-    setIError({
-      Icon: <UnreachableError />,
-      title: t("background.error.title", "Error"),
-      message: `${t(
-        "docspace.error.unreached",
-        "ONLYOFFICE DocSpace cannot be reached"
-      )}. 
-                  ${
-                    user?.isAdmin
-                      ? t(
-                          "background.error.hint.admin.docspace-connection",
-                          "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings."
-                        )
-                      : t(
-                          "background.error.hint.docspace-connection",
-                          "Please contact the administrator."
-                        )
-                  }`,
-      button: t("button.settings", "Settings") || "Settings",
-      onClick: user?.isAdmin
-        ? async () =>
-            await sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
-        : undefined,
-    });
+    setAppError(AppErrorType.DOCSPACE_UNREACHABLE);
   };
 
   const onUnSuccessLogin = () => {
-    setIError({
-      Icon: <CommonError />,
-      title: t(
-        "background.error.subtitle.docspace-authorization.message",
-        "Can not get authorize in ONLYOFFICE DocSpace"
-      ),
-      message: t(
-        "background.error.subtitle.docspace-authorization.help",
-        "Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings"
-      ),
-      button: t("button.settings", "Settings") || "Settings",
-      onClick: async () =>
-        await sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
-    });
+    setAppError(AppErrorType.DOCSPACE_AUTHORIZATION);
     setLoading(false);
   };
 
@@ -251,16 +153,7 @@ export const RoomPage: React.FC = () => {
           <OnlyofficeSpinner />
         </div>
       )}
-      {!loading && iError && (
-        <OnlyofficeBackgroundError
-          Icon={iError.Icon}
-          title={iError.title}
-          subtitle={iError.message}
-          button={iError.button}
-          onClick={iError.onClick}
-        />
-      )}
-      {!loading && !iError && !settings?.existSystemUser && (
+      {!loading && !settings?.existSystemUser && (
         <div className="w-full">
           <OnlyofficeSnackbar
             header={t(
@@ -281,27 +174,24 @@ export const RoomPage: React.FC = () => {
           />
         </div>
       )}
-      {!loading &&
-        !config.id &&
-        !iError &&
-        user?.docspaceAccount?.canCreateRoom && (
-          <div className="h-full flex flex-row">
-            <div className="p-5">
-              <div className="w-full pb-4">
-                {t(
-                  "room.create.description",
-                  "Create ONLYOFFICE DocSpace room to easily collaborate on documents in this deal"
-                )}
-              </div>
-              <OnlyofficeButton
-                text={t("button.create.room", "Create room")}
-                type={ButtonType.Primary}
-                onClick={handleCreateRoom}
-              />
+      {!loading && !config.id && user?.docspaceAccount?.canCreateRoom && (
+        <div className="h-full flex flex-row">
+          <div className="p-5">
+            <div className="w-full pb-4">
+              {t(
+                "room.create.description",
+                "Create ONLYOFFICE DocSpace room to easily collaborate on documents in this deal"
+              )}
             </div>
+            <OnlyofficeButton
+              text={t("button.create.room", "Create room")}
+              type={ButtonType.Primary}
+              onClick={handleCreateRoom}
+            />
           </div>
-        )}
-      {config.id && user && settings?.url && !iError && (
+        </div>
+      )}
+      {config.id && user && settings?.url && (
         <div
           className={`w-full h-full flex flex-row
             ${!showDocspaceWindow ? "hidden" : ""}
