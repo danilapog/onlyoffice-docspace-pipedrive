@@ -16,7 +16,7 @@
  *
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import AppExtensionsSDK from "@pipedrive/app-extensions-sdk";
 import i18next from "i18next";
 
@@ -63,6 +63,20 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [appError, setAppError] = useState<AppErrorType | undefined>();
 
+  const appContextProviderValue = useMemo(
+    () =>
+      ({
+        sdk,
+        user,
+        setUser,
+        settings,
+        setSettings,
+        appError,
+        setAppError,
+      }) as IAppContext,
+    [sdk, user, setUser, settings, setSettings, appError, setAppError],
+  );
+
   useEffect(() => {
     new AppExtensionsSDK()
       .initialize()
@@ -106,17 +120,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
     <>
       {loading && <OnlyofficeSpinner />}
       {!loading && sdk && (
-        <AppContext.Provider
-          value={{
-            sdk,
-            user,
-            setUser,
-            settings,
-            setSettings,
-            appError,
-            setAppError,
-          }}
-        >
+        <AppContext.Provider value={appContextProviderValue}>
           {children}
         </AppContext.Provider>
       )}
