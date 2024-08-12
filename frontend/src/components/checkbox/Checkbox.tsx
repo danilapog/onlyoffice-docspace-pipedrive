@@ -51,25 +51,24 @@ export const OnlyofficeCheckbox: React.FC<CheckboxProps> = ({
   });
 
   return (
-    <>
-      <label className={`inline-flex items-center ${disabled ? "cursor-not-allowed": "cursor-pointer"} `}>
-        <input
-          type="checkbox"
-          className="sr-only peer"
-          checked={checked}
-          onChange={onChange}
-          disabled={disabled}
-        />
-        <div
-          className={istyle}
-        >
-        </div>
-        <span
-          className={`font-semibold text-${labelSize} text-gray-700 py-2 ml-2`}
-        >
-          {text}
-        </span>
-      </label>
-    </>
+    <label
+      className={`inline-flex items-center ${
+        disabled ? "cursor-not-allowed" : "cursor-pointer"
+      } `}
+    >
+      <input
+        type="checkbox"
+        className="sr-only peer"
+        checked={checked}
+        onChange={onChange}
+        disabled={disabled}
+      />
+      <div className={istyle} />
+      <span
+        className={`font-semibold text-${labelSize} text-gray-700 py-2 ml-2`}
+      >
+        {text}
+      </span>
+    </label>
   );
 };

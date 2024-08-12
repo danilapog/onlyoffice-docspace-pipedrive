@@ -18,31 +18,21 @@
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from "react";
-import Info from "@assets/info.svg"
+import Info from "@assets/info.svg";
 
 type TooltipProps = {
   text: string;
 };
 
-export const OnlyofficeTooltip: React.FC<TooltipProps> = ({
-  text,
-}) => {
-  return (
-    <>
-      <div className="group relative flex flex-col max-w-max p-2 items-center justify-center cursor-pointer">
-        <Info />
-        <div
-          className={
-            `absolute left-3/4 w-max max-w-80 transform invisible
+export const OnlyofficeTooltip: React.FC<TooltipProps> = ({ text }) => (
+  <div className="group relative flex flex-col max-w-max p-2 items-center justify-center cursor-pointer">
+    <Info />
+    <div
+      className={`absolute left-3/4 w-max max-w-80 transform invisible
             rounded-md border shadow-md bg-white transition-all
-            duration-200 group-hover:translate-x-1 group-hover:visible`
-          }
-        >
-          <div className="w-full p-4">
-            {text}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
+            duration-200 group-hover:translate-x-1 group-hover:visible`}
+    >
+      <div className="w-full p-4">{text}</div>
+    </div>
+  </div>
+);

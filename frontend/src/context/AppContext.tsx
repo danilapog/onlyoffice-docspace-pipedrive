@@ -16,15 +16,13 @@
  *
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import AppExtensionsSDK from "@pipedrive/app-extensions-sdk";
 import i18next from "i18next";
-import { useTranslation } from "react-i18next";
 
 import { AxiosError } from "axios";
 
 import { OnlyofficeSpinner } from "@components/spinner";
-import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 
 import { getUser } from "@services/user";
 import { getSettings } from "@services/settings";
@@ -32,13 +30,19 @@ import { getSettings } from "@services/settings";
 import { UserResponse } from "src/types/user";
 import { SettingsResponse } from "src/types/settings";
 
-import CommonError from "@assets/common-error.svg";
-import TokenError from "@assets/token-error.svg";
-
-
 type AppContextProps = {
   children?: JSX.Element | JSX.Element[];
 };
+
+export enum AppErrorType {
+  COMMON_ERROR,
+  TOKEN_ERROR,
+  PLUGIN_NOT_AVAILABLE,
+  DOCSPACE_CONNECTION,
+  DOCSPACE_AUTHORIZATION,
+  DOCSPACE_ROOM_NOT_FOUND,
+  DOCSPACE_UNREACHABLE,
+}
 
 export interface IAppContext {
   sdk: AppExtensionsSDK;
@@ -46,8 +50,8 @@ export interface IAppContext {
   setUser: (value: UserResponse) => void;
   settings: SettingsResponse | undefined;
   setSettings: (value: SettingsResponse | undefined) => void;
-  error: AxiosError | undefined;
-  setError: (value: AxiosError) => void;
+  appError: AppErrorType | undefined;
+  setAppError: (value: AppErrorType) => void;
 }
 
 export const AppContext = React.createContext<IAppContext>({} as IAppContext);
@@ -57,9 +61,21 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const [user, setUser] = useState<UserResponse>();
   const [settings, setSettings] = useState<SettingsResponse>();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>();
+  const [appError, setAppError] = useState<AppErrorType | undefined>();
 
-  const { t } = useTranslation();
+  const appContextProviderValue = useMemo(
+    () =>
+      ({
+        sdk,
+        user,
+        setUser,
+        settings,
+        setSettings,
+        appError,
+        setAppError,
+      }) as IAppContext,
+    [sdk, user, setUser, settings, setSettings, appError, setAppError],
+  );
 
   useEffect(() => {
     new AppExtensionsSDK()
@@ -67,64 +83,46 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
       .then(async (s) => {
         setSDK(s);
         try {
-          const user = await getUser(s);
-          const settings = await getSettings(s);  
+          const userResponse = await getUser(s);
+          const settingsResponse = await getSettings(s);
 
-          await i18next.changeLanguage(`${user.language.language_code}-${user.language.country_code}`);
-          setUser(user);
-          setSettings(settings);
+          await i18next.changeLanguage(
+            `${userResponse.language.language_code}-${userResponse.language.country_code}`,
+          );
+
+          if (
+            !userResponse?.isAdmin &&
+            (!settingsResponse?.url || !settingsResponse.existSystemUser) &&
+            !userResponse?.docspaceAccount
+          ) {
+            setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+          }
+
+          setUser(userResponse);
+          setSettings(settingsResponse);
         } catch (e) {
-          setError(e);
+          if (e instanceof AxiosError && e?.response?.status === 401) {
+            setAppError(AppErrorType.TOKEN_ERROR);
+          } else {
+            setAppError(AppErrorType.COMMON_ERROR);
+          }
         } finally {
           setLoading(false);
         }
       })
-      .catch((e) => console.error(e));
+      .catch(
+        // eslint-disable-next-line no-console
+        (e) => console.error(e),
+      );
   }, []);
 
-  return(
+  return (
     <>
-      {loading && (
-        <OnlyofficeSpinner />
-      )}
-      {!loading && error && (
-        <OnlyofficeBackgroundError
-          Icon={
-            error?.response?.status === 401
-              ? <TokenError className="mb-5" />
-              : <CommonError className="mb-5" />
-          }
-          title={t(
-            error?.response?.status === 401 ? "background.error.title.token-expired" : "background.error.title.common",
-            error?.response?.status === 401 ? "The document security token has expired" : "Error"
-          )}
-          subtitle={t(
-            error?.response?.status === 401 ? "background.error.subtitle.token-expired" : "background.error.subtitle.common",
-            error?.response?.status === 401
-              ? "Something went wrong. Please re-authorize the app."
-              : "Something went wrong. Please reload the app."
-          )}
-          button={t("button.reauthorize", "Re-authorize") || "Re-authorize"}
-          onClick={
-            error?.response?.status === 401
-              ? () =>
-                  window.open(
-                    `${process.env.BACKEND_URL}/oauth2/authorization/pipedrive`,
-                    "_blank"
-                  )
-              : undefined
-          }
-        />
-      )}
-      {!loading && (!user?.isAdmin && (!settings?.url || !settings.existSystemUser) && !user?.docspaceAccount) && !error && (
-        <OnlyofficeBackgroundError
-          Icon={<CommonError className="mb-5" />}
-          title={t("background.error.subtitle.plugin.not-active.message", "ONLYOFFICE DocSpace App is not yet available")}
-          subtitle={t("background.error.subtitle.plugin.not-active.help", "Please wait until a Pipedrive Administrator configures the app settings")}
-        />
-      )}
-      {!loading && (user?.isAdmin || (settings?.url && settings.existSystemUser) || user?.docspaceAccount) && !error && sdk &&(
-        <AppContext.Provider value={{sdk, user, setUser, settings, setSettings, error, setError}}>{children}</AppContext.Provider>
+      {loading && <OnlyofficeSpinner />}
+      {!loading && sdk && (
+        <AppContext.Provider value={appContextProviderValue}>
+          {children}
+        </AppContext.Provider>
       )}
     </>
   );

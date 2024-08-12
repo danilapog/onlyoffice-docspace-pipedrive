@@ -22,8 +22,8 @@ import { ButtonType, OnlyofficeButton } from "@components/button";
 import { OnlyofficeSubtitle } from "@components/title";
 import { OnlyofficeError } from "@components/error/Error";
 
-type ErrorProps = {
-  Icon: any;
+export type ErrorProps = {
+  Icon: JSX.Element | JSX.Element[];
   title: string;
   subtitle: string;
   button?: string;
@@ -49,7 +49,11 @@ export const OnlyofficeBackgroundError: React.FC<ErrorProps> = ({
     </div>
     {onClick && button && (
       <div className="pt-5 z-[100]">
-        <OnlyofficeButton type={ButtonType.Primary} text={button} onClick={onClick} />
+        <OnlyofficeButton
+          type={ButtonType.Primary}
+          text={button}
+          onClick={onClick}
+        />
       </div>
     )}
   </div>

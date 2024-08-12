@@ -18,25 +18,19 @@
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from "react";
-import Info from "@assets/info.svg"
+import Info from "@assets/info.svg";
 
 type HintProps = {
   children?: JSX.Element | JSX.Element[];
 };
 
-export const OnlyofficeHint: React.FC<HintProps> = ({
-  children
-}) => {
-  return (
-    <div className="p-3 bg-sky-100 w-full border rounded-lg border-blue-400 text-slate-800 text-sm">
-      <div className="flex">
-        <div className="p-2">
-          <Info />
-        </div>
-        <div className="p-2">
-          {children}
-        </div>
+export const OnlyofficeHint: React.FC<HintProps> = ({ children }) => (
+  <div className="p-3 bg-sky-100 w-full border rounded-lg border-blue-400 text-slate-800 text-sm">
+    <div className="flex">
+      <div className="p-2">
+        <Info />
       </div>
+      <div className="p-2">{children}</div>
     </div>
-  );
-};
+  </div>
+);

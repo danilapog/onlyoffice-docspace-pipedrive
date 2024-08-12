@@ -29,7 +29,7 @@ import { SettingsPage } from "@pages/Settings";
 import { RoomPage } from "@pages/Room";
 
 import { AppContextProvider } from "@context/AppContext";
-
+import { ErrorPage } from "@pages/Error";
 
 const LazyRoutes: React.FC = () => {
   const location = useLocation();
@@ -40,7 +40,9 @@ const LazyRoutes: React.FC = () => {
           path="settings"
           element={
             <AppContextProvider>
-              <SettingsPage />
+              <ErrorPage>
+                <SettingsPage />
+              </ErrorPage>
             </AppContextProvider>
           }
         />
@@ -48,7 +50,9 @@ const LazyRoutes: React.FC = () => {
           path="room"
           element={
             <AppContextProvider>
-              <RoomPage />
+              <ErrorPage>
+                <RoomPage />
+              </ErrorPage>
             </AppContextProvider>
           }
         />

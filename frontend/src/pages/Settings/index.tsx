@@ -25,18 +25,26 @@ import { AuthorizationSetting } from "./Authorization";
 import { ConnectionSettings } from "./Connection";
 
 type Section = {
-  id: string,
-  title: string,
-  available: boolean,
+  id: string;
+  title: string;
+  available: boolean;
 };
 
 export const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
-  const { user, settings } = useContext(AppContext);
+  const { user } = useContext(AppContext);
 
   const sections: Array<Section> = [
-    {id: "conntection",  title: t("settings.connection.menu-item", "Connection"), available: true},
-    {id: "authorization", title: t("settings.authorization.menu-item", "Authorization"), available: true},
+    {
+      id: "conntection",
+      title: t("settings.connection.menu-item", "Connection"),
+      available: true,
+    },
+    {
+      id: "authorization",
+      title: t("settings.authorization.menu-item", "Authorization"),
+      available: true,
+    },
   ];
 
   if (!user?.isAdmin) {
@@ -45,22 +53,26 @@ export const SettingsPage: React.FC = () => {
 
   const firstAvailableSection = sections.find((section) => section.available);
 
-  const [selectedSection, setSelectedSection] = useState<string|undefined>(firstAvailableSection?.id);
+  const [selectedSection, setSelectedSection] = useState<string | undefined>(
+    firstAvailableSection?.id,
+  );
 
   return (
-    <>
-      <div className="w-screen h-screen">
-        <div className="flex flex-row">
-          <div className="basis-1/5 border-r-2 p-1">
-            {sections.filter(section => section.available).map(section => (
+    <div className="w-screen h-screen">
+      <div className="flex flex-row">
+        <div className="basis-1/5 border-r-2 p-1">
+          {sections
+            .filter((section) => section.available)
+            .map((section) => (
               <div
                 key={section.id}
                 id={section.id}
                 tabIndex={0}
+                role="button"
                 className={`text-left font border-spacing-7 px-10 py-2 m-1 rounded-lg cursor-pointer ${
                   section.id === selectedSection
-                  ? "text-blue-600 font-medium bg-sky-100"
-                  : "hover:bg-stone-200"
+                    ? "text-blue-600 font-medium bg-sky-100"
+                    : "hover:bg-stone-200"
                 }`}
                 onClick={() => setSelectedSection(section.id)}
                 onKeyDown={() => setSelectedSection(section.id)}
@@ -68,17 +80,12 @@ export const SettingsPage: React.FC = () => {
                 {section.title}
               </div>
             ))}
-          </div>
-          <div className="basis-4/5 custom-scroll w-screen h-screen overflow-y-scroll overflow-x-hidden p-2">
-            {selectedSection === "conntection" &&
-              <ConnectionSettings />
-            }
-            {selectedSection === "authorization" &&
-              <AuthorizationSetting />
-            }
-          </div>
+        </div>
+        <div className="basis-4/5 custom-scroll w-screen h-screen overflow-y-scroll overflow-x-hidden p-2">
+          {selectedSection === "conntection" && <ConnectionSettings />}
+          {selectedSection === "authorization" && <AuthorizationSetting />}
         </div>
       </div>
-    </>
+    </div>
   );
 };
