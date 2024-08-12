@@ -9,3 +9,10 @@ services:
       POSTGRES_PASSWORD: onlyoffice
     ports:
       - "5432:5432"
+
+  redis:
+    image: redis:7.0.12
+    environment:
+      REDIS_PASSWORD: redis
+    ports:
+      - "6379:6379"
