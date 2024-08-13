@@ -1,16 +1,25 @@
-version: '3'
+version: '3.8'
 
 services:
   backend:
     build:
-      context: ./backend
+      context: .
+      target: backend
+    image: onlyoffice/pipedrive-docspace-backend:${PRODUCT_VERSION}
     depends_on:
       - postgres
+      - redis
     environment:
-      - BASE_URL=${BASE_URL}
+      - BASE_URL=${BACKEND_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/${POSTGRES_DB}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_USERNAME=${REDIS_USERNAME}
+      - SPRING_DATA_REDIS_PASSWORD=${REDIS_PASSWORD}
+      - SPRING_DATA_REDIS_DATABASE=${REDIS_DB}
       - PIPEDRIVE_CLIENT_ID=${PIPEDRIVE_CLIENT_ID}
       - PIPEDRIVE_CLIENT_SECRET=${PIPEDRIVE_CLIENT_SECRET}
     stdin_open: true
@@ -19,7 +28,11 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: .
+      target: frontend
+      args:
+        - BACKEND_URL=${BACKEND_URL}
+    image: onlyoffice/pipedrive-docspace-frontend:${PRODUCT_VERSION}
     stdin_open: true
     ports:
       - "3000:80"
@@ -34,3 +47,9 @@ services:
     stdin_open: true
     ports:
       - "5432:5432"
+
+  redis:
+    image: redis:7.0.12
+    stdin_open: true
+    ports:
+      - "6379:6379"
