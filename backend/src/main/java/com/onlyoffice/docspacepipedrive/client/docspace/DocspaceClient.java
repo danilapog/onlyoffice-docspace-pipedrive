@@ -171,6 +171,25 @@ public class DocspaceClient {
                 .block();
     }
 
+    public DocspaceRoom addTagsToRoom(final Long roomId, final List<String> tagNames) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("names", tagNames);
+
+        return docspaceWebClient.put()
+                .uri(uriBuilder -> {
+                    return uriBuilder.path("api/2.0/files/rooms/{roomId}/tags")
+                            .build(roomId);
+                })
+                .bodyValue(map)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceRoom>>() { })
+                .map(DocspaceResponse<DocspaceRoom>::getResponse)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new DocspaceWebClientResponseException(e));
+                })
+                .block();
+    }
+
     public DocspaceGroup createGroup(final String name, final UUID owner, final List<UUID> members) {
         Map<String, Object> map = new HashMap<>();
 
@@ -216,6 +235,34 @@ public class DocspaceClient {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceGroup>>() { })
                 .map(DocspaceResponse<DocspaceGroup>::getResponse)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new DocspaceWebClientResponseException(e));
+                })
+                .block();
+    }
+
+    public List<String> getTags() {
+        return docspaceWebClient.get()
+                .uri("api/2.0/files/tags")
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<List<String>>>() { })
+                .map(DocspaceResponse<List<String>>::getResponse)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new DocspaceWebClientResponseException(e));
+                })
+                .block();
+    }
+
+    public String createTag(final String tagName) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", tagName);
+
+        return docspaceWebClient.post()
+                .uri("api/2.0/files/tags")
+                .bodyValue(map)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<String>>() { })
+                .map(DocspaceResponse<String>::getResponse)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new DocspaceWebClientResponseException(e));
                 })
