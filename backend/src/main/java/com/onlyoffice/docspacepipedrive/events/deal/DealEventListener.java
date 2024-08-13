@@ -49,6 +49,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class DealEventListener {
+    private static final String INTEGRATION_TAG_NAME = "Pipedrive Integration";
     private final DocspaceActionManager docspaceActionManager;
     private final PipedriveClient pipedriveClient;
     private final UserService userService;
@@ -112,6 +113,8 @@ public class DealEventListener {
                 .toList();
 
         docspaceActionManager.inviteListDocspaceAccountsToRoom(roomId, docspaceAccounts);
+
+        docspaceActionManager.addTagToRoom(roomId, INTEGRATION_TAG_NAME);
     }
 
     @EventListener
