@@ -142,10 +142,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           subtitle: t(
             "background.error.subtitle.create-room",
             "Please ask a Pipedrive Administrator to create a room or contact a DocSpace admin to upgrade your role.",
-          ),
-          button: t("button.settings", "Settings") || "Settings",
-          onClick: () =>
-            sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
+          )
         });
         break;
       }
