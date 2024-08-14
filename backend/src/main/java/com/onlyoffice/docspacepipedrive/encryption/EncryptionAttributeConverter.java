@@ -22,6 +22,7 @@ import jakarta.persistence.AttributeConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 @RequiredArgsConstructor
@@ -30,11 +31,19 @@ public class EncryptionAttributeConverter implements AttributeConverter<String, 
 
     @Override
     public String convertToDatabaseColumn(final String s) {
-        return textEncryptor.encrypt(s);
+        if (StringUtils.hasText(s)) {
+            return textEncryptor.encrypt(s);
+        }
+
+        return s;
     }
 
     @Override
     public String convertToEntityAttribute(final String s) {
-        return textEncryptor.decrypt(s);
+        if (StringUtils.hasText(s)) {
+            return textEncryptor.decrypt(s);
+        }
+
+        return s;
     }
 }
