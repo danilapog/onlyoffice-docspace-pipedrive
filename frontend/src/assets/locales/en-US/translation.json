@@ -50,7 +50,7 @@
   "settings.connection.saving.error.undefined": "Could not save ONLYOFFICE DocSpace settings",
   "settings.connection.saving.ok": "ONLYOFFICE DocSpace settings have been saved",
   "settings.connection.disconnection.description": "Are you sure you want to disconnect ONLYOFFICE DocSpace? This will result in all connections between Deals and DocSpace rooms being lost. And also all user authorization data will be deleted.",
-  "settings.connection.disconnection.ok": "ONLYOFFICE DocSpace succesfuly disconnected",
+  "settings.connection.disconnection.ok": "ONLYOFFICE DocSpace succesfully disconnected",
   "settings.connection.disconnection.error": "Could not disconnect ONLYOFFICE DocSpace",
   "settings.connection.title": "Configure connection settings of the ONLYOFFICE DocSpace app",
   "settings.connection.hint.csp.title": "Check the CSP settings",
