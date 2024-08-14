@@ -198,7 +198,7 @@ export const AuthorizationSetting: React.FC = () => {
             user?.isAdmin
               ? t(
                   "background.error.hint.admin.docspace-connection",
-                  "Please go to the Connection tab to configure the DocSpace app settings.",
+                  "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
                 )
               : t(
                   "background.error.hint.docspace-connection",
@@ -279,7 +279,7 @@ export const AuthorizationSetting: React.FC = () => {
                     <OnlyofficeCheckbox
                       checked={isSystem}
                       text={t(
-                        "settings.authorization.inputs.system",
+                        "settings.authorization.inputs.system.title",
                         "Use this account with System user (DocSpace Admin role required)",
                       )}
                       disabled={!settings?.existSystemUser}

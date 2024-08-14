@@ -111,7 +111,7 @@ export const ConnectionSettings: React.FC = () => {
         .catch(async () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
-              "settings.connection.saving.error",
+              "settings.connection.saving.error.undefined",
               "Could not save ONLYOFFICE DocSpace settings",
             ),
           });
