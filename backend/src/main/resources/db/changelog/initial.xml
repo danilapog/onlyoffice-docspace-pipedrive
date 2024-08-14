@@ -1,0 +1,95 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="onlyoffice (generated)" id="1723631619375-1">
+        <createTable tableName="rooms">
+            <column autoIncrement="true" name="id" startWith="5" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="rooms_pkey"/>
+            </column>
+            <column name="deal_id" type="BIGINT"/>
+            <column name="room_id" type="BIGINT"/>
+            <column name="client_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-2">
+        <createTable tableName="settings">
+            <column autoIncrement="true" name="id" startWith="4" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="settings_pkey"/>
+            </column>
+            <column name="shared_group_id" type="UUID"/>
+            <column name="url" type="VARCHAR(255)"/>
+            <column name="client_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-3">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" startWith="2" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="access_token_expires_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="access_token_issued_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="access_token_value" type="VARCHAR(2048)"/>
+            <column name="refresh_token_issued_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="refresh_token_value" type="VARCHAR(512)"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="client_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-4">
+        <createTable tableName="clients">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="clients_pkey"/>
+            </column>
+            <column name="company_name" type="VARCHAR(255)"/>
+            <column name="installation_date" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="url" type="VARCHAR(255)"/>
+            <column name="system_user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-5">
+        <addUniqueConstraint columnNames="client_id" constraintName="uk_jj22tpleetwxuobr0qswvwu2r" tableName="settings"/>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-6">
+        <addUniqueConstraint columnNames="user_id, client_id" constraintName="uks7734e0wrvwtshax0rxeqxrh4" tableName="users"/>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-7">
+        <addUniqueConstraint columnNames="system_user_id" constraintName="uk_qfxkm7896e7qh2ou11btki1yt" tableName="clients"/>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-8">
+        <createTable tableName="docspace_accounts">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="docspace_accounts_pkey"/>
+            </column>
+            <column name="token_issued_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="token_value" type="VARCHAR(2048)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="password_hash" type="VARCHAR(255)"/>
+            <column name="uuid" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-9">
+        <createTable tableName="webhooks">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="webhooks_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="webhook_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-10">
+        <addForeignKeyConstraint baseColumnNames="client_id" baseTableName="rooms" constraintName="fk2rq52wlwfbvk92u61gwv62r6r" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="clients" validate="true"/>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-11">
+        <addForeignKeyConstraint baseColumnNames="system_user_id" baseTableName="clients" constraintName="fk8n09h61v35vxdp1o5nnoki0rm" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-12">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="webhooks" constraintName="fka6h59mek9bcdkqgmnt7lc06ip" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-13">
+        <addForeignKeyConstraint baseColumnNames="client_id" baseTableName="settings" constraintName="fkh0ckbipyrqgc13y4tm55a25xx" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="clients" validate="true"/>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1723631619375-14">
+        <addForeignKeyConstraint baseColumnNames="client_id" baseTableName="users" constraintName="fkqvykjc6027qa8n5es37omu3xs" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="clients" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

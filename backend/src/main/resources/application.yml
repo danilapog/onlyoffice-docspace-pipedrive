@@ -25,7 +25,8 @@ spring:
       client-name-attribute: companyId
       user-name-attribute: userId
   jpa:
-    generate-ddl: true
+    hibernate:
+      ddl-auto: validate
   datasource:
     url: jdbc:postgresql://localhost:5432/onlyoffice_pipedrive
     username: onlyoffice
@@ -34,3 +35,5 @@ spring:
       schema: public
       connection-init-sql: CREATE SCHEMA IF NOT EXISTS public
       connection-timeout: 10000
+  liquibase:
+    changelog: classpath://db/changelog/db.changelog-master.xml
