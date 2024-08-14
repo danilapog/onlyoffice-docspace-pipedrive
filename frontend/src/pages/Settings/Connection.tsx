@@ -44,9 +44,9 @@ export const ConnectionSettings: React.FC = () => {
   const [disconnecting, setDisconnecting] = useState(false);
   const [changing, setChanging] = useState(false);
   const [showValidationMessage, setShowValidationMessage] = useState(false);
-  const [address, setAddress] = useState<string | undefined>(settings?.url);
+  const [address, setAddress] = useState<string>(settings?.url || "");
 
-  const handleSettings = async () => {
+  const handleConnect = async () => {
     if (address) {
       setConnecting(true);
     } else {
@@ -239,7 +239,7 @@ export const ConnectionSettings: React.FC = () => {
               text={t("button.connect", "Connect")}
               type={ButtonType.Primary}
               disabled={connecting}
-              onClick={handleSettings}
+              onClick={handleConnect}
             />
           )}
           {!!settings?.url && !changing && (
@@ -267,14 +267,14 @@ export const ConnectionSettings: React.FC = () => {
                 disabled={connecting}
                 onClick={() => {
                   setChanging(false);
-                  setAddress(settings?.url);
+                  setAddress(settings?.url || "");
                 }}
               />
               <OnlyofficeButton
                 text={t("button.save", "Save")}
                 type={ButtonType.Primary}
                 disabled={connecting}
-                onClick={handleSettings}
+                onClick={handleConnect}
               />
             </>
           )}
