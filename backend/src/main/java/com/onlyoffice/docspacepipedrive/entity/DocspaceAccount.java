@@ -67,7 +67,7 @@ public class DocspaceAccount {
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "value", column = @Column(name = "token_value", length = 2048)),
-            @AttributeOverride(name = "issuedAt", column = @Column(name = "token_issued_at")),
+            @AttributeOverride(name = "issuedAt", column = @Column(name = "token_issued_at"))
     })
     private DocspaceToken docspaceToken;
 }

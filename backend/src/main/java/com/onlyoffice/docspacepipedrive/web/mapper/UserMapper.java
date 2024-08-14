@@ -33,7 +33,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
     @Mappings({
-        @Mapping(target = "id", source = "user.id"),
+        @Mapping(target = "id", source = "user.id")
     })
     UserResponse userToUserResponse(User user, PipedriveUser pipedriveUser, DocspaceUser docspaceUser);
 }

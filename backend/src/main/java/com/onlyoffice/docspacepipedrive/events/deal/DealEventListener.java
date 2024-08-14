@@ -104,6 +104,7 @@ public class DealEventListener {
                         )
                 );
             } catch (UserNotFoundException e) {
+                // Do nothing if the UserNotFoundException
             }
         }
 
@@ -193,7 +194,9 @@ public class DealEventListener {
         for (Long userId : userIdsAddedFollowers) {
             try {
                 addedFollowers.add(userService.findByClientIdAndUserId(currentClient.getId(), userId));
-            } catch (UserNotFoundException e) { }
+            } catch (UserNotFoundException e) {
+                // Do nothing if the UserNotFoundException
+            }
         }
 
         List<DocspaceAccount> docspaceAccounts = addedFollowers.stream()
@@ -231,7 +234,9 @@ public class DealEventListener {
         for (Long userId : userIdsRemovedFollowers) {
             try {
                 removedFollowers.add(userService.findByClientIdAndUserId(currentClient.getId(), userId));
-            } catch (UserNotFoundException e) { }
+            } catch (UserNotFoundException e) {
+                // Do nothing if UserNotFoundException
+            }
         }
 
         List<DocspaceAccount> docspaceAccounts = removedFollowers.stream()

@@ -20,12 +20,10 @@ package com.onlyoffice.docspacepipedrive.configuration;
 
 import com.onlyoffice.docspacepipedrive.security.AuthenticationEntryPointImpl;
 import com.onlyoffice.docspacepipedrive.security.provider.ClientRegistrationAuthenticationProvider;
-import com.onlyoffice.docspacepipedrive.security.provider.WebhookAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.provider.JwtAuthenticationProvider;
-
+import com.onlyoffice.docspacepipedrive.security.provider.WebhookAuthenticationProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

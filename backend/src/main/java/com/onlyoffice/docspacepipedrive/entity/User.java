@@ -69,7 +69,7 @@ public class User {
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "value", column = @Column(name = "refresh_token_value", length = 512)),
-            @AttributeOverride(name = "issuedAt", column = @Column(name = "refresh_token_issued_at")),
+            @AttributeOverride(name = "issuedAt", column = @Column(name = "refresh_token_issued_at"))
     })
     private RefreshToken refreshToken;
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)

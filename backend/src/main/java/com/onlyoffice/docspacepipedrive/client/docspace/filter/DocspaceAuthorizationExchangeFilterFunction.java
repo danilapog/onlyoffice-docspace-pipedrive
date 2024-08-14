@@ -54,9 +54,9 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
     @Override
     public Mono<ClientResponse> filter(final ClientRequest request, final ExchangeFunction next) {
         return Mono.just(configureRequest(request))
-                .flatMap((configuredRequest) -> {
+                .flatMap(configuredRequest -> {
                     return authorize(configuredRequest)
-                            .flatMap((req) -> {
+                            .flatMap(req -> {
                                 return next.exchange(req)
                                         .flatMap(clientResponse -> {
                                             if (clientResponse.statusCode().equals(HttpStatus.UNAUTHORIZED)) {
@@ -79,7 +79,7 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
         URI uri = uriBuilder.build();
 
         return ClientRequest.from(request)
-                .headers((headers) -> {
+                .headers(headers -> {
                     headers.setContentType(MediaType.APPLICATION_JSON);
                 })
                 .attributes(attributes -> {
@@ -136,7 +136,7 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
                 .bodyValue(map)
                 .retrieve()
                 .bodyToMono(Map.class)
-                .transform((responseMono) -> {
+                .transform(responseMono -> {
                     return responseMono.flatMap(responseMap -> {
                         Map<String, Object> response = (Map<String, Object>) responseMap.get("response");
                         return Mono.just((String) response.get("token"));

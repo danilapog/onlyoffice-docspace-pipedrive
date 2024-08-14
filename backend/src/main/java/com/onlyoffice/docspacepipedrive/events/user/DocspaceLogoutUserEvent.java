@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class DocspaceLogoutUserEvent extends ApplicationEvent {
     private final DocspaceAccount docspaceAccount;
+
     public DocspaceLogoutUserEvent(final Object source, final DocspaceAccount docspaceAccount) {
         super(source);
         this.docspaceAccount = docspaceAccount;

@@ -31,7 +31,7 @@ import org.mapstruct.ReportingPolicy;
 public interface SettingsMapper {
     Settings settingsRequestToSettings(SettingsRequest settingsRequest);
     @Mappings({
-            @Mapping(target = "existSystemUser", source = "existSystemUser"),
+            @Mapping(target = "existSystemUser", source = "existSystemUser")
     })
     SettingsResponse settingsToSettingsResponse(Settings settings, Boolean existSystemUser);
 }

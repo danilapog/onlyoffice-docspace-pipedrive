@@ -30,7 +30,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public final class SecurityUtils {
-    private SecurityUtils() { };
+    private SecurityUtils() {
+    }
 
     public static Client getCurrentClient() {
         User currentUser = getCurrentUser();

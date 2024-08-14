@@ -38,6 +38,12 @@ public class PipedriveUser {
     private String companyDomain;
     private String companyName;
 
+    public Boolean isSalesAdmin() {
+        return getAccess().stream()
+                .filter(access -> access.getApp().equals("sales") && access.getAdmin())
+                .toList().size() > 0;
+    }
+
     @Data
     @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
     public static class Language {
@@ -51,11 +57,5 @@ public class PipedriveUser {
         private String app;
         private Boolean admin;
         private UUID permissionSetId;
-    }
-
-    public Boolean isSalesAdmin() {
-        return getAccess().stream()
-                .filter(access -> access.getApp().equals("sales") && access.getAdmin())
-                .toList().size() > 0;
     }
 }

@@ -38,8 +38,8 @@ public class WebhookServiceImpl implements WebhookService {
 
     @Override
     public Webhook findById(final UUID id) {
-        return webhookRepository.findById(id).
-                orElseThrow(() -> new WebhookNotFoundException(id));
+        return webhookRepository.findById(id)
+                .orElseThrow(() -> new WebhookNotFoundException(id));
     }
 
     @Override
