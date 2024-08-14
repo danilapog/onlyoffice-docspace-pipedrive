@@ -72,6 +72,7 @@ public class SecurityConfiguration {
         http
                 .authorizeHttpRequests(auth -> {
                     auth
+                            .requestMatchers("/api/v1/health").permitAll()
                             .requestMatchers("/api/**").authenticated()
                             .requestMatchers(HttpMethod.DELETE, "/login/oauth2/code/{registrationId}").authenticated()
                             .anyRequest().permitAll();
