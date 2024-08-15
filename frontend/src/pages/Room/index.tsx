@@ -35,6 +35,7 @@ import { ButtonType, OnlyofficeButton } from "@components/button";
 import { OnlyofficeSpinner } from "@components/spinner";
 
 import { OnlyofficeSnackbar } from "@components/snackbar";
+import { getLocaleForDocspace } from "@utils/locale";
 
 const DOCSPACE_FRAME_ID = "docspace-frame";
 
@@ -87,7 +88,7 @@ const RoomPage: React.FC = () => {
         setConfig({
           ...config,
           id: response.roomId,
-          locale: i18next.language.split("-")[0],
+          locale: getLocaleForDocspace(i18next.language),
         });
       })
       .catch(async (e) => {
@@ -116,7 +117,7 @@ const RoomPage: React.FC = () => {
         setConfig({
           ...config,
           id: response.roomId,
-          locale: i18next.language.split("-")[0],
+          locale: getLocaleForDocspace(i18next.language),
         });
 
         await sdk.execute(Command.RESIZE, { height: 350 });
