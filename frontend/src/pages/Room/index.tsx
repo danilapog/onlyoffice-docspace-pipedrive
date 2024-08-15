@@ -38,7 +38,7 @@ import { OnlyofficeSnackbar } from "@components/snackbar";
 
 const DOCSPACE_FRAME_ID = "docspace-frame";
 
-export const RoomPage: React.FC = () => {
+const RoomPage: React.FC = () => {
   const { sdk, user, settings, setAppError } = useContext(AppContext);
 
   const [loading, setLoading] = useState(true);
@@ -213,3 +213,4 @@ export const RoomPage: React.FC = () => {
     </div>
   );
 };
+export default RoomPage;

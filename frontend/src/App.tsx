@@ -25,11 +25,11 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import { SettingsPage } from "@pages/Settings";
-import { RoomPage } from "@pages/Room";
-
 import { AppContextProvider } from "@context/AppContext";
 import { ErrorPage } from "@pages/Error";
+
+const SettingsPage = React.lazy(() => import('@pages/Settings'));
+const RoomPage = React.lazy(() => import('@pages/Room'));
 
 const LazyRoutes: React.FC = () => {
   const location = useLocation();

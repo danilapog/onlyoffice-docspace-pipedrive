@@ -30,7 +30,7 @@ type Section = {
   available: boolean;
 };
 
-export const SettingsPage: React.FC = () => {
+const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useContext(AppContext);
 
@@ -89,3 +89,4 @@ export const SettingsPage: React.FC = () => {
     </div>
   );
 };
+export default SettingsPage;
