@@ -28,8 +28,8 @@ import {
 import { AppContextProvider } from "@context/AppContext";
 import { ErrorPage } from "@pages/Error";
 
-const SettingsPage = React.lazy(() => import('@pages/Settings'));
-const RoomPage = React.lazy(() => import('@pages/Room'));
+const SettingsPage = React.lazy(() => import("@pages/Settings"));
+const RoomPage = React.lazy(() => import("@pages/Room"));
 
 const LazyRoutes: React.FC = () => {
   const location = useLocation();
