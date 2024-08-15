@@ -101,7 +101,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
             user?.isAdmin
               ? t(
                   "background.error.hint.admin.docspace-connection",
-                  "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
+                  "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
                 )
               : t(
                   "background.error.hint.docspace-connection",
@@ -124,7 +124,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           ),
           subtitle: t(
             "background.error.subtitle.docspace-authorization.help",
-            "Please, go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings",
+            "Please go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings",
           ),
           button: t("button.settings", "Settings") || "Settings",
           onClick: () =>
@@ -161,7 +161,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
                 user?.isAdmin
                   ? t(
                       "background.error.hint.admin.docspace-connection",
-                      "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
+                      "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
                     )
                   : t(
                       "background.error.hint.docspace-connection",

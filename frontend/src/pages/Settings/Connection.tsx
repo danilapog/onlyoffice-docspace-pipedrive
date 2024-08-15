@@ -74,7 +74,7 @@ export const ConnectionSettings: React.FC = () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "settings.connection.disconnection.ok",
-              "ONLYOFFICE DocSpace succesfuly disconnected",
+              "ONLYOFFICE DocSpace succesfully disconnected",
             ),
           });
           setSettings(undefined);

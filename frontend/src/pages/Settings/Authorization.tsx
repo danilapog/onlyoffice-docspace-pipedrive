@@ -198,7 +198,7 @@ export const AuthorizationSetting: React.FC = () => {
             user?.isAdmin
               ? t(
                   "background.error.hint.admin.docspace-connection",
-                  "Please, go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
+                  "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
                 )
               : t(
                   "background.error.hint.docspace-connection",
