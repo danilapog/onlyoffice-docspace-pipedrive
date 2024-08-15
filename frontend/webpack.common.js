@@ -69,8 +69,21 @@ module.exports = {
         },
     },
     output: {
-        filename: "bundle.js",
+        filename: "[name].bundle.[chunkhash].js",
         path: path.resolve(__dirname, "build"),
         clean: true,
+    },
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    chunks: 'all',
+                    minSize: 100000,
+                    maxSize: 250000,
+                }
+            }
+        }
     },
 };
