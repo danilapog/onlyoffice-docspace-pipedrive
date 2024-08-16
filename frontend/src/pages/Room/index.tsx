@@ -52,8 +52,7 @@ const RoomPage: React.FC = () => {
     theme: sdk.userSettings.theme === "dark" ? "Dark" : "Base",
     events: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      onAppReady: (e: string | Event) => {
-        window.DocSpace.SDK.frames[DOCSPACE_FRAME_ID].setIsLoaded(false); // ToDo: need add to sdk event onContentReady()
+      onContentReady: (e: string | Event) => {
         setShowDocspaceWindow(true);
         setLoading(false);
       },
