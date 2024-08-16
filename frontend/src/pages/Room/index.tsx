@@ -49,7 +49,7 @@ const RoomPage: React.FC = () => {
     mode: "manager",
     width: "100%",
     height: "100%",
-    theme: "Base",
+    theme: sdk.userSettings.theme === "dark" ? "Dark" : "Base",
     events: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onAppReady: (e: string | Event) => {
@@ -88,7 +88,7 @@ const RoomPage: React.FC = () => {
         setConfig({
           ...config,
           id: response.roomId,
-          locale: getLocaleForDocspace(i18next.language),
+          locale: getLocaleForDocspace(i18next.language)
         });
       })
       .catch(async (e) => {
