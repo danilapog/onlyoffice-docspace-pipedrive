@@ -44,9 +44,11 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
 }) => {
   const classes = cx({
     "hover:shadow-lg duration-200": !disabled,
-    "bg-green-700 text-white": type === ButtonType.Primary,
-    "bg-red-600 text-white": type === ButtonType.Danger,
-    "bg-white text-black border border-slate-300 border-solid":
+    "bg-pipedrive-color-dark-green-600 hover:bg-pipedrive-color-light-green-700 dark:hover:bg-pipedrive-color-dark-green-700 text-white":
+      type === ButtonType.Primary,
+    "bg-pipedrive-color-dark-red-600 hover:bg-pipedrive-color-light-red-700 dark:hover:bg-pipedrive-color-dark-red-700 text-white":
+      type === ButtonType.Danger,
+    "bg-white text-black dark:bg-pipedrive-color-dark-neutral-100 dark:hover:bg-pipedrive-color-dark-neutral-200 dark:text-pipedrive-color-dark-neutral-1000 border dark:border-pipedrive-color-dark-divider-strong border-solid":
       type === ButtonType.Normal,
     "min-w-[62px] h-[32px]": true,
     "w-full": fullWidth,
@@ -57,7 +59,7 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
     <button
       type="button"
       disabled={disabled}
-      className={`flex justify-center items-center p-3 text-sm lg:text-base font-bold rounded-md cursor-pointer ${classes} truncate text-ellipsis`}
+      className={`flex justify-center items-center p-3 tracking-wide text-base font-bold rounded-md cursor-pointer ${classes} truncate text-ellipsis`}
       onClick={onClick}
     >
       {text}

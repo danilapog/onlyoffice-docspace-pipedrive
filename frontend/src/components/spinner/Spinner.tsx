@@ -18,4 +18,6 @@
 
 import React from "react";
 
-export const OnlyofficeSpinner: React.FC = () => <div className="spinner" />;
+export const OnlyofficeSpinner: React.FC = () => (
+  <div className="spinner dark:bg-pipedrive-color-dark-neutral-100" />
+);

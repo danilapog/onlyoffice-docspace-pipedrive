@@ -88,7 +88,7 @@ const RoomPage: React.FC = () => {
         setConfig({
           ...config,
           id: response.roomId,
-          locale: getLocaleForDocspace(i18next.language)
+          locale: getLocaleForDocspace(i18next.language),
         });
       })
       .catch(async (e) => {

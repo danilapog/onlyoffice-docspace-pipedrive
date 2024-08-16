@@ -21,17 +21,12 @@ import cx from "classnames";
 
 type TitleProps = {
   text: string;
-  large?: boolean;
 };
 
-export const OnlyofficeTitle: React.FC<TitleProps> = ({
-  text,
-  large = false,
-}) => {
+export const OnlyofficeTitle: React.FC<TitleProps> = ({ text }) => {
   const style = cx({
-    "font-semibold text-slate-800 text-center": !!text,
-    "text-base": large,
-    "text-sm": !large,
+    "font-semibold text-center": !!text,
+    "text-lg": true,
   });
 
   return <p className={style}>{text}</p>;

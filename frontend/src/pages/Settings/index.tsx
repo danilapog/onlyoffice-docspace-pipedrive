@@ -69,10 +69,10 @@ const SettingsPage: React.FC = () => {
                 id={section.id}
                 tabIndex={0}
                 role="button"
-                className={`text-left font border-spacing-7 px-10 py-2 m-1 rounded-lg cursor-pointer ${
+                className={`text-left border-spacing-7 px-10 py-2 m-1 rounded-lg cursor-pointer ${
                   section.id === selectedSection
-                    ? "text-blue-600 font-medium bg-sky-100"
-                    : "hover:bg-stone-200"
+                    ? "text-pipedrive-color-light-blue-700 bg-sky-100 dark:text-pipedrive-color-dark-blue-800 dark:bg-pipedrive-color-dark-blue-200"
+                    : "hover:bg-stone-200 dark:hover:bg-pipedrive-color-extra-light-rgba"
                 }`}
                 onClick={() => setSelectedSection(section.id)}
                 onKeyDown={() => setSelectedSection(section.id)}

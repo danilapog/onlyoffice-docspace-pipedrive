@@ -64,9 +64,7 @@ export const OnlyofficeCheckbox: React.FC<CheckboxProps> = ({
         disabled={disabled}
       />
       <div className={istyle} />
-      <span
-        className={`font-semibold text-${labelSize} text-gray-700 py-2 ml-2`}
-      >
+      <span className={`font-semibold text-${labelSize} py-2 ml-2`}>
         {text}
       </span>
     </label>

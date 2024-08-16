@@ -25,7 +25,7 @@ type HintProps = {
 };
 
 export const OnlyofficeHint: React.FC<HintProps> = ({ children }) => (
-  <div className="p-3 bg-sky-100 w-full border rounded-lg border-blue-400 text-slate-800 text-sm">
+  <div className="p-3 bg-sky-100 w-full border rounded-lg border-blue-400 text-slate-800 text-sm dark:bg-pipedrive-color-dark-blue-100 dark:text-pipedrive-color-dark-neutral-1000">
     <div className="flex">
       <div className="p-2">
         <Info />

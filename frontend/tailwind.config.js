@@ -18,6 +18,7 @@
 
 module.exports = {
     content: ["./src/**/*.{ts,tsx}"],
+    darkMode: "class",
     theme: {
         extend: {
             width: {
@@ -35,9 +36,11 @@ module.exports = {
                 454: "454px",
                 400: "400px",
                 327: "327px",
+                320: "320px",
                 300: "300px",
                 200: "200px",
                 197: "197px",
+                180: "180px"
             },
             minWidth: {
                 xxs: "14rem",
@@ -66,6 +69,30 @@ module.exports = {
             },
             colors: {
                 onlyoffice: "#0F4071",
+
+                "pipedrive-color-light-neutral-500": "#93949a",
+                "pipedrive-color-light-neutral-1000": "#21232c",
+                "pipedrive-color-light-blue-700": "#0d68c5",
+                "pipedrive-color-light-red-700": "#c82627",
+                "pipedrive-color-light-green-700": "#077838",
+                "pipedrive-color-light-divider-strong": "rgba(33, 35, 44, .24)",
+
+                "pipedrive-color-dark-neutral-100": "#1e2029",
+                "pipedrive-color-dark-neutral-200": "#2a2c35",
+                "pipedrive-color-dark-neutral-500": "#686970",
+                "pipedrive-color-dark-neutral-1000": "#e2e2e4",
+                "pipedrive-color-dark-blue-100": "#001f4b",
+                "pipedrive-color-dark-blue-200": "#012a60",
+                "pipedrive-color-dark-blue-600": "#4073c8",
+                "pipedrive-color-dark-blue-800": "#6e9dec",
+                "pipedrive-color-dark-red-600": "#cc4543", 
+                "pipedrive-color-dark-red-700": "#e0645e",
+                "pipedrive-color-dark-green-600": "#3c824e",
+                "pipedrive-color-dark-green-700": "#5d9867",
+                "pipedrive-color-dark-divider-strong": "hsla(240, 4%, 89%, .15)",
+
+                "pipedrive-color-extra-light-rgba": "hsla(240, 4%, 89%, .06)",
+
                 "smoke-light": "rgba(0, 0, 0, 0.4)",
             },
             screens: {
@@ -76,10 +103,10 @@ module.exports = {
                 xsmall: { raw: "(max-width: 300px)" },
                 xxsmall: { raw: "(max-width: 150px)" },
             },
-        },
-        fontFamily: {
-            open: ['"Open Sans"'],
-        },
+            fontSize: {
+                base: ["14.5px", "20px"],
+            }
+        }
     },
     plugins: [],
 };

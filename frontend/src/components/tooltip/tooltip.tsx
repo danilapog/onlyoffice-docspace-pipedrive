@@ -29,7 +29,7 @@ export const OnlyofficeTooltip: React.FC<TooltipProps> = ({ text }) => (
     <Info />
     <div
       className={`absolute left-3/4 w-max max-w-80 transform invisible
-            rounded-md border shadow-md bg-white transition-all
+            border border-pipedrive-color-light-divider-strong dark:border-pipedrive-color-dark-divider-strong rounded shadow-md bg-white dark:bg-pipedrive-color-dark-neutral-100 transition-all
             duration-200 group-hover:translate-x-1 group-hover:visible`}
     >
       <div className="w-full p-4">{text}</div>

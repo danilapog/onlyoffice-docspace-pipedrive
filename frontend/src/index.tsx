@@ -20,6 +20,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 
+import { getCurrentURL } from "@utils/url";
+
 import App from "./App";
 import "./i18n";
 
@@ -28,6 +30,12 @@ import "@assets/index.css";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
+
+const { parameters } = getCurrentURL();
+
+if (parameters.get("theme") === "dark") {
+  document.documentElement.classList.add("dark");
+}
 
 const queryClient = new QueryClient();
 root.render(

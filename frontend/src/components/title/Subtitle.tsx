@@ -31,7 +31,7 @@ export const OnlyofficeSubtitle: React.FC<SubtitleProps> = ({
   center = true,
 }) => {
   const style = cx({
-    "text-slate-700 font-normal": !!text,
+    "font-normal": !!text,
     "text-center": center,
     "text-sm": !large,
     "text-base": large,

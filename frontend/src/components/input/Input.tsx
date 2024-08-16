@@ -42,18 +42,18 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
   errorText = "Please fill out this field",
   valid = true,
   disabled = false,
-  textSize = "sm",
-  labelSize = "xs",
   autocomplete = false,
   onChange,
 }) => {
   const istyle = cx({
-    "font-normal text-sm text-gray-700 appearance-none block select-auto": true,
-    "text-xs": textSize === "xs",
-    "w-full border rounded-sm h-10 px-4": true,
-    "border-gray-light": valid,
+    "appearance-none block select-auto h-8 mt-1 px-2 py-1": true,
+    "dark:bg-pipedrive-color-dark-neutral-100": true,
+    "w-full border rounded": true,
+    "border-pipedrive-color-light-divider-strong dark:border-pipedrive-color-dark-divider-strong":
+      valid,
     "border-red-600": !valid,
-    "bg-slate-200": disabled,
+    "text-pipedrive-color-light-neutral-500 dark:text-pipedrive-color-dark-neutral-500 cursor-not-allowed":
+      disabled,
   });
 
   const pstyle = cx({
@@ -62,9 +62,7 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
 
   return (
     <div>
-      <label className={`font-semibold text-${labelSize} text-gray-700 py-2`}>
-        {text}
-      </label>
+      <label className="py-2">{text}</label>
       <input
         value={value}
         placeholder={placeholder}
