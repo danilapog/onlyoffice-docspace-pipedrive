@@ -60,7 +60,7 @@ const SettingsPage: React.FC = () => {
   return (
     <div className="w-screen h-screen">
       <div className="flex flex-row">
-        <div className="basis-1/5 border-r-2 p-1">
+        <div className="min-w-52 border-r-2 p-1">
           {sections
             .filter((section) => section.available)
             .map((section) => (
@@ -81,7 +81,7 @@ const SettingsPage: React.FC = () => {
               </div>
             ))}
         </div>
-        <div className="basis-4/5 custom-scroll w-screen h-screen overflow-y-scroll overflow-x-hidden p-2">
+        <div className="custom-scroll w-screen h-screen overflow-y-scroll overflow-x-hidden p-2">
           {selectedSection === "conntection" && <ConnectionSettings />}
           {selectedSection === "authorization" && <AuthorizationSetting />}
         </div>
