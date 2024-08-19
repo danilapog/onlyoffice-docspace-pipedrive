@@ -8,7 +8,7 @@ import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
 import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 
-import { AppContext } from "@context/AppContext";
+import { AppContext, AppErrorType } from "@context/AppContext";
 
 import { putDocspaceAccount, deleteDocspaceAccount } from "@services/user";
 
@@ -21,7 +21,8 @@ const DOCSPACE_SYSTEM_FRAME_ID = "docspace-system-frame";
 
 export const AuthorizationSetting: React.FC = () => {
   const { t } = useTranslation();
-  const { user, settings, setUser, setSettings, sdk } = useContext(AppContext);
+  const { user, settings, setUser, setSettings, setAppError, sdk } =
+    useContext(AppContext);
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -80,6 +81,10 @@ export const AuthorizationSetting: React.FC = () => {
               setSettings({ ...settings, existSystemUser: false });
             }
             setUser({ ...user, docspaceAccount: null, isSystem: false });
+
+            if (!user.isAdmin && !settings?.existSystemUser) {
+              setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+            }
           }
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
