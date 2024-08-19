@@ -33,7 +33,7 @@ import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 import { AppContext } from "@context/AppContext";
 import { SettingsResponse } from "src/types/settings";
 
-const DOCSPACE_SYSTEM_FRAME_ID = "docspace-system-frame";
+const DOCSPACE_SYSTEM_FRAME_ID = "connection-docspace-system-frame";
 
 export const ConnectionSettings: React.FC = () => {
   const { t } = useTranslation();

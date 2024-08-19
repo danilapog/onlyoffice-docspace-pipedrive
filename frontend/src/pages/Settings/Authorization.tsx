@@ -17,7 +17,7 @@ import CommonError from "@assets/common-error.svg";
 import { OnlyofficeCheckbox } from "@components/checkbox";
 import { OnlyofficeTooltip } from "@components/tooltip";
 
-const DOCSPACE_SYSTEM_FRAME_ID = "docspace-system-frame";
+const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
 export const AuthorizationSetting: React.FC = () => {
   const { t } = useTranslation();
