@@ -70,10 +70,13 @@ module.exports = {
             colors: {
                 onlyoffice: "#0F4071",
 
+                "pipedrive-color-light-neutral-100": "#f5f5f6",
                 "pipedrive-color-light-neutral-500": "#93949a",
                 "pipedrive-color-light-neutral-1000": "#21232c",
                 "pipedrive-color-light-blue-700": "#0d68c5",
+                "pipedrive-color-light-red-600": "#d83c38",
                 "pipedrive-color-light-red-700": "#c82627",
+                "pipedrive-color-light-green-600": "#2d8647",
                 "pipedrive-color-light-green-700": "#077838",
                 "pipedrive-color-light-divider-strong": "rgba(33, 35, 44, .24)",
 

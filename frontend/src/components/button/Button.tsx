@@ -43,23 +43,44 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
   onClick,
 }) => {
   const classes = cx({
-    "hover:shadow-lg duration-200": !disabled,
-    "bg-pipedrive-color-dark-green-600 hover:bg-pipedrive-color-light-green-700 dark:hover:bg-pipedrive-color-dark-green-700 text-white":
-      type === ButtonType.Primary,
-    "bg-pipedrive-color-dark-red-600 hover:bg-pipedrive-color-light-red-700 dark:hover:bg-pipedrive-color-dark-red-700 text-white":
-      type === ButtonType.Danger,
-    "bg-white text-black dark:bg-pipedrive-color-dark-neutral-100 dark:hover:bg-pipedrive-color-dark-neutral-200 dark:text-pipedrive-color-dark-neutral-1000 border dark:border-pipedrive-color-dark-divider-strong border-solid":
-      type === ButtonType.Normal,
+    "flex justify-center items-center p-3": true,
+    "tracking-wide text-base font-bold text-ellipsis": true,
+    "rounded-md truncate": true,
     "min-w-[62px] h-[32px]": true,
     "w-full": fullWidth,
+    "cursor-pointer": !disabled,
     "bg-opacity-50 cursor-not-allowed": disabled,
+
+    "text-white bg-pipedrive-color-light-green-600":
+      type === ButtonType.Primary,
+    "hover:bg-pipedrive-color-light-green-700":
+      type === ButtonType.Primary && !disabled,
+    "dark:bg-pipedrive-color-dark-green-600": type === ButtonType.Primary,
+    "dark:hover:bg-pipedrive-color-dark-green-700":
+      type === ButtonType.Primary && !disabled,
+
+    "text-white bg-pipedrive-color-light-red-600": type === ButtonType.Danger,
+    "hover:bg-pipedrive-color-light-red-700":
+      type === ButtonType.Danger && !disabled,
+    "dark:bg-pipedrive-color-dark-red-600": type === ButtonType.Danger,
+    "dark:hover:bg-pipedrive-color-dark-red-700":
+      type === ButtonType.Danger && !disabled,
+
+    "border border-solid bg-white hover:bg-pipedrive-color-light-neutral-100":
+      type === ButtonType.Normal,
+    "dark:text-pipedrive-color-dark-neutral-1000": type === ButtonType.Normal,
+    "dark:border-pipedrive-color-dark-divider-strong":
+      type === ButtonType.Normal,
+    "dark:bg-pipedrive-color-dark-neutral-100": type === ButtonType.Normal,
+    "dark:hover:bg-pipedrive-color-dark-neutral-200":
+      type === ButtonType.Normal && !disabled,
   });
 
   return (
     <button
       type="button"
       disabled={disabled}
-      className={`flex justify-center items-center p-3 tracking-wide text-base font-bold rounded-md cursor-pointer ${classes} truncate text-ellipsis`}
+      className={classes}
       onClick={onClick}
     >
       {text}
