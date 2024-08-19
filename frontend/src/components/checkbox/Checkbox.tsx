@@ -21,52 +21,36 @@ import React from "react";
 import cx from "classnames";
 
 type CheckboxProps = {
+  id: string;
   text: string;
   checked?: boolean;
   disabled?: boolean;
-  labelSize?: "sm" | "xs";
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 };
 
 export const OnlyofficeCheckbox: React.FC<CheckboxProps> = ({
+  id,
   text,
   checked,
   disabled = false,
-  labelSize = "xs",
   onChange,
 }) => {
-  const istyle = cx({
-    "relative w-8 h-4 shrink-0 rounded-full": true,
-    "peer peer-checked:after:translate-x-4": true,
-    "rtl:peer-checked:after:-translate-x-full": true,
-    "after:absolute after:top-[2px] after:start-[2px]": true,
-    "after:rounded-full after:h-3 after:w-3 after:transition-all": true,
-    "bg-zinc-300": !disabled,
-    "bg-zinc-300/50": disabled,
-    "after:bg-white": !disabled,
-    "after:bg-white/50": disabled,
-    "peer-checked:bg-green-700": !disabled,
-    "peer-checked:bg-green-700/50": disabled,
+  const cursor = cx({
+    "cursor-pointer": !disabled,   
     "cursor-not-allowed": disabled,
   });
 
   return (
-    <label
-      className={`inline-flex items-center ${
-        disabled ? "cursor-not-allowed" : "cursor-pointer"
-      } `}
-    >
-      <input
+    <div className={`flex mb-4`}>
+      <input 
+        id={id}
         type="checkbox"
-        className="sr-only peer"
         checked={checked}
         onChange={onChange}
         disabled={disabled}
+        className={`w-5 h-5 text-blue-600 border-2 rounded ${cursor}`} 
       />
-      <div className={istyle} />
-      <span className={`font-semibold text-${labelSize} py-2 ml-2`}>
-        {text}
-      </span>
-    </label>
+      <label htmlFor={id} className={`ms-2 ${cursor}`}>{text}</label>
+    </div>
   );
 };

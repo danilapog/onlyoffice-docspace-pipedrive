@@ -291,6 +291,7 @@ export const AuthorizationSetting: React.FC = () => {
                 <div className="pl-5 pr-5">
                   <div className="flex">
                     <OnlyofficeCheckbox
+                      id="isSystem"
                       checked={isSystem}
                       text={t(
                         "settings.authorization.inputs.system.title",
