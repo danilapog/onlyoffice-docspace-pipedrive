@@ -236,7 +236,9 @@ export const AuthorizationSetting: React.FC = () => {
           {user?.docspaceAccount && (
             <>
               <div className="inline-flex pl-5 pr-5">
-                <Authorized />
+                <div className="p-1">
+                  <Authorized />
+                </div>
                 <span className="pl-3">
                   {t(
                     "settings.authorization.status.authorized",
