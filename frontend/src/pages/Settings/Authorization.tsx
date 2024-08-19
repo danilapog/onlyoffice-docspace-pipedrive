@@ -107,6 +107,13 @@ export const AuthorizationSetting: React.FC = () => {
 
   const onAppReady = async () => {
     if (email && password) {
+      const loginTimeout = setTimeout(async () => {
+        await sdk.execute(Command.SHOW_SNACKBAR, {
+          message: `${t("docspace.error.login", "User authentication failed")} (Timeout)`,
+        });
+        setSaving(false);
+      }, 15000);
+
       const hashSettings =
         await window.DocSpace.SDK.frames[
           DOCSPACE_SYSTEM_FRAME_ID
@@ -118,6 +125,8 @@ export const AuthorizationSetting: React.FC = () => {
       const login = await window.DocSpace.SDK.frames[
         DOCSPACE_SYSTEM_FRAME_ID
       ].login(email, passwordHash);
+
+      clearTimeout(loginTimeout);
 
       if (login.status && login.status !== 200) {
         await sdk.execute(Command.SHOW_SNACKBAR, {
