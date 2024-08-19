@@ -73,6 +73,7 @@ module.exports = {
                 "pipedrive-color-light-neutral-100": "#f5f5f6",
                 "pipedrive-color-light-neutral-500": "#93949a",
                 "pipedrive-color-light-neutral-1000": "#21232c",
+                "pipedrive-color-light-blue-200": "#e1eeff",
                 "pipedrive-color-light-blue-700": "#0d68c5",
                 "pipedrive-color-light-red-600": "#d83c38",
                 "pipedrive-color-light-red-700": "#c82627",
@@ -108,6 +109,7 @@ module.exports = {
             },
             fontSize: {
                 base: ["14.5px", "20px"],
+                xl: ["21px", "32px"]
             }
         }
     },
