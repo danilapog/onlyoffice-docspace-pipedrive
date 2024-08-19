@@ -25,7 +25,7 @@ type TitleProps = {
 
 export const OnlyofficeTitle: React.FC<TitleProps> = ({ text }) => {
   const style = cx({
-    "text-xl text-center": !!text,
+    "text-xl": !!text,
   });
 
   return <p className={style}>{text}</p>;
