@@ -22,7 +22,6 @@ import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
 import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
 import com.onlyoffice.docspacepipedrive.service.UserService;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,11 +30,13 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.text.MessageFormat;
 import java.util.Map;
 
@@ -68,10 +69,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
         Map<String, Object> body;
         try {
-            body = Jwts.parser()
-                    .setSigningKey(secret.getBytes())
-                    .parseClaimsJws(bearer.getToken())
-                    .getBody();
+            body = NimbusJwtDecoder.withSecretKey(getSecretKey())
+                    .build()
+                    .decode(bearer.getToken())
+                    .getClaims();
         } catch (Exception e) {
             log.debug("Failed to authenticate since the JWT was invalid");
             throw new InvalidBearerTokenException(e.getMessage(), e);
@@ -102,5 +103,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
         log.debug("Authenticated user");
         return result;
+    }
+
+    private SecretKeySpec getSecretKey() {
+       byte[] bytes = secret.getBytes();
+       return new SecretKeySpec(bytes, "HmacSHA256");
     }
 }

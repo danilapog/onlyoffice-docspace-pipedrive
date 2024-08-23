@@ -21,11 +21,11 @@ package com.onlyoffice.docspacepipedrive.security.util;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
-import io.jsonwebtoken.lang.Assert;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 
 @Component
