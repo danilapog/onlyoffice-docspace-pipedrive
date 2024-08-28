@@ -36,21 +36,23 @@ export const OnlyofficeCheckbox: React.FC<CheckboxProps> = ({
   onChange,
 }) => {
   const cursor = cx({
-    "cursor-pointer": !disabled,   
+    "cursor-pointer": !disabled,
     "cursor-not-allowed": disabled,
   });
 
   return (
-    <div className={`flex mb-4`}>
-      <input 
+    <div className="flex mb-4">
+      <input
         id={id}
         type="checkbox"
         checked={checked}
         onChange={onChange}
         disabled={disabled}
-        className={`w-5 h-5 text-blue-600 border-2 rounded ${cursor}`} 
+        className={`w-5 h-5 text-blue-600 border-2 rounded ${cursor}`}
       />
-      <label htmlFor={id} className={`ms-2 ${cursor}`}>{text}</label>
+      <label htmlFor={id} className={`ms-2 ${cursor}`}>
+        {text}
+      </label>
     </div>
   );
 };
