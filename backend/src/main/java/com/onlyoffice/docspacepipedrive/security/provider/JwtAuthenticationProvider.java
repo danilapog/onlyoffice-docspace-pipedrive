@@ -78,8 +78,8 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             throw new InvalidBearerTokenException(e.getMessage(), e);
         }
 
-        Long clientId = Long.valueOf((Integer) body.get(clientNameAttribute));
-        Long userId = Long.valueOf((Integer) body.get(userNameAttribute));
+        Long clientId = (Long) body.get(clientNameAttribute);
+        Long userId = (Long) body.get(userNameAttribute);
 
         User user;
         try {
