@@ -22,7 +22,7 @@
   "button.change": "Изменить",
   "button.cancel": "Отменить",
   "button.save": "Сохранить",
-  "docspace.error.unreached": "Не удается войти в ONLYOFFICE DocSpace",
+  "docspace.error.unreached": "ONLYOFFICE DocSpace недоступен",
   "docspace.error.login": "Не удалось идентифицировать пользователя",
   "docspace.error.loading": "Ошибка загрузки ONLYOFFICE DocSpace",
   "docspace.error.csp": "Текущий домен не установлен в настройках Политики безопасности контента (CSP). Пожалуйста, добавьте его через раздел Инструменты разработчика.",
