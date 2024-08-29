@@ -29,13 +29,14 @@ import {
 import { AppContext, AppErrorType } from "@context/AppContext";
 
 import { createRoom, getRoom } from "@services/room";
-import { getCurrentURL } from "@utils/url";
+import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 
 import { ButtonType, OnlyofficeButton } from "@components/button";
 import { OnlyofficeSpinner } from "@components/spinner";
 
 import { OnlyofficeSnackbar } from "@components/snackbar";
 import { getLocaleForDocspace } from "@utils/locale";
+import { AxiosError } from "axios";
 
 const DOCSPACE_FRAME_ID = "docspace-frame";
 
@@ -127,12 +128,27 @@ const RoomPage: React.FC = () => {
           ),
         });
       })
-      .catch(async () => {
+      .catch(async (e) => {
+        let message = t(
+          "room.creating.error",
+          "Failed to create ONLYOFFICE DocSpace room!",
+        );
+        let link;
+
+        if (e instanceof AxiosError && e?.response?.status === 402) {
+          message = t(
+            "docspace.error.payment",
+            "Creating this room is not possible since the limit is reached for the number of rooms included in your current plan.",
+          );
+          link = {
+            url: `${stripTrailingSlash(settings?.url || "")}/portal-settings/payments/portal-payments`,
+            label: t("docspace.link.payments", "Upgrade plan"),
+          };
+        }
+
         await sdk.execute(Command.SHOW_SNACKBAR, {
-          message: t(
-            "room.creating.error",
-            "Failed to create ONLYOFFICE DocSpace room!",
-          ),
+          message,
+          link,
         });
         setLoading(false);
       });
