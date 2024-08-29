@@ -57,6 +57,7 @@ const RoomPage: React.FC = () => {
       onContentReady: (e: string | Event) => {
         setShowDocspaceWindow(true);
         setLoading(false);
+        sdk.execute(Command.RESIZE, { height: 680 });
       },
       onAppError: (e: string | Event) => {
         setAppError(AppErrorType.COMMON_ERROR);
@@ -91,7 +92,6 @@ const RoomPage: React.FC = () => {
           id: response.roomId,
           locale: getLocaleForDocspace(i18next.language),
         });
-        await sdk.execute(Command.RESIZE, { height: 680 });
       })
       .catch(async (e) => {
         if (e?.response?.status === 404) {
@@ -123,7 +123,6 @@ const RoomPage: React.FC = () => {
         });
         setLoading(true);
 
-        await sdk.execute(Command.RESIZE, { height: 680 });
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
             "room.creating.ok",
