@@ -19,7 +19,6 @@
 import React, { useState, useContext } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
-import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
 
 import { ButtonType, OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
@@ -32,8 +31,7 @@ import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 
 import { AppContext } from "@context/AppContext";
 import { SettingsResponse } from "src/types/settings";
-
-const DOCSPACE_SYSTEM_FRAME_ID = "connection-docspace-system-frame";
+import { getCSPSettings } from "@services/docspace";
 
 export const ConnectionSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -49,6 +47,67 @@ export const ConnectionSettings: React.FC = () => {
   const handleConnect = async () => {
     if (address) {
       setConnecting(true);
+      getCSPSettings(stripTrailingSlash(address))
+        .then(async (cspSettings) => {
+          const allowedDomains = cspSettings.domains.filter(
+            (domain) =>
+              stripTrailingSlash(domain) === stripTrailingSlash(url) ||
+              stripTrailingSlash(domain) ===
+                new URL(document.location.href).origin,
+          );
+
+          if (allowedDomains.length < 2) {
+            await sdk.execute(Command.SHOW_SNACKBAR, {
+              message: t(
+                "docspace.error.csp",
+                "The current domain is not set in the Content Security Policy (CSP) settings. Please add it via the Developer Tools section.",
+              ),
+              link: {
+                url: `${stripTrailingSlash(
+                  address || "",
+                )}/portal-settings/developer-tools/javascript-sdk`,
+                label: t(
+                  "docspace.link.developer-tools",
+                  "Developer Tools section",
+                ),
+              },
+            });
+            setConnecting(false);
+            return;
+          }
+
+          postSettings(sdk, stripTrailingSlash(address))
+            .then(async (response: SettingsResponse) => {
+              setSettings(response);
+              await sdk.execute(Command.SHOW_SNACKBAR, {
+                message: t(
+                  "settings.connection.saving.ok",
+                  "ONLYOFFICE DocSpace settings have been saved",
+                ),
+              });
+            })
+            .catch(async () => {
+              await sdk.execute(Command.SHOW_SNACKBAR, {
+                message: t(
+                  "settings.connection.saving.error.undefined",
+                  "Could not save ONLYOFFICE DocSpace settings",
+                ),
+              });
+            })
+            .finally(() => {
+              setConnecting(false);
+              setChanging(false);
+            });
+        })
+        .catch(async () => {
+          await sdk.execute(Command.SHOW_SNACKBAR, {
+            message: t(
+              "docspace.error.unreached",
+              "ONLYOFFICE DocSpace cannot be reached",
+            ),
+          });
+          setConnecting(false);
+        });
     } else {
       setShowValidationMessage(true);
     }
@@ -94,70 +153,6 @@ export const ConnectionSettings: React.FC = () => {
           setDisconnecting(false);
         });
     }
-  };
-
-  const onAppReady = async () => {
-    if (address) {
-      postSettings(sdk, stripTrailingSlash(address))
-        .then(async (response: SettingsResponse) => {
-          setSettings(response);
-          await sdk.execute(Command.SHOW_SNACKBAR, {
-            message: t(
-              "settings.connection.saving.ok",
-              "ONLYOFFICE DocSpace settings have been saved",
-            ),
-          });
-        })
-        .catch(async () => {
-          await sdk.execute(Command.SHOW_SNACKBAR, {
-            message: t(
-              "settings.connection.saving.error.undefined",
-              "Could not save ONLYOFFICE DocSpace settings",
-            ),
-          });
-        })
-        .finally(() => {
-          setConnecting(false);
-          setChanging(false);
-        });
-    }
-  };
-
-  const onAppError = async (errorMessage: string) => {
-    if (
-      errorMessage ===
-      "The current domain is not set in the Content Security Policy (CSP) settings."
-    ) {
-      await sdk.execute(Command.SHOW_SNACKBAR, {
-        message: t(
-          "docspace.error.csp",
-          "The current domain is not set in the Content Security Policy (CSP) settings. Please add it via the Developer Tools section.",
-        ),
-        link: {
-          url: `${stripTrailingSlash(
-            address || "",
-          )}/portal-settings/developer-tools/javascript-sdk`,
-          label: t("docspace.link.developer-tools", "Developer Tools section"),
-        },
-      });
-    } else {
-      await sdk.execute(Command.SHOW_SNACKBAR, {
-        message: errorMessage,
-      });
-    }
-
-    delete window.DocSpace;
-    setConnecting(false);
-  };
-
-  const onLoadComponentError = async () => {
-    await sdk.execute(Command.SHOW_SNACKBAR, {
-      message: t(
-        "docspace.error.unreached",
-        "ONLYOFFICE DocSpace cannot be reached",
-      ),
-    });
-    setConnecting(false);
   };
 
   return (
@@ -280,24 +275,6 @@ export const ConnectionSettings: React.FC = () => {
           )}
         </div>
       </div>
-      {connecting && address && (
-        <div style={{ display: "none" }}>
-          <DocSpace
-            url={address ?? ""}
-            config={
-              {
-                frameId: DOCSPACE_SYSTEM_FRAME_ID,
-                mode: "system",
-                events: {
-                  onAppReady,
-                  onAppError,
-                } as unknown,
-              } as TFrameConfig
-            }
-            onLoadComponentError={onLoadComponentError}
-          />
-        </div>
-      )}
     </>
   );
 };
