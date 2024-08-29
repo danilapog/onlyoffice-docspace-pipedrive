@@ -44,6 +44,7 @@ const RoomPage: React.FC = () => {
   const { sdk, user, settings, setAppError } = useContext(AppContext);
 
   const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
   const [showDocspaceWindow, setShowDocspaceWindow] = useState(false);
   const [config, setConfig] = useState<TFrameConfig>({
     frameId: DOCSPACE_FRAME_ID,
@@ -111,7 +112,7 @@ const RoomPage: React.FC = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleCreateRoom = () => {
-    setLoading(true);
+    setCreating(true);
 
     createRoom(sdk, Number(parameters.get("selectedIds")))
       .then(async (response) => {
@@ -120,6 +121,7 @@ const RoomPage: React.FC = () => {
           id: response.roomId,
           locale: getLocaleForDocspace(i18next.language),
         });
+        setLoading(true);
 
         await sdk.execute(Command.RESIZE, { height: 680 });
         await sdk.execute(Command.SHOW_SNACKBAR, {
@@ -151,7 +153,7 @@ const RoomPage: React.FC = () => {
           message,
           link,
         });
-        setLoading(false);
+        setCreating(false);
       });
   };
 
@@ -206,6 +208,7 @@ const RoomPage: React.FC = () => {
             <OnlyofficeButton
               text={t("button.create.room", "Create room")}
               type={ButtonType.Primary}
+              loading={creating}
               onClick={handleCreateRoom}
             />
           </div>

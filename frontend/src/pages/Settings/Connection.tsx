@@ -55,8 +55,6 @@ export const ConnectionSettings: React.FC = () => {
   };
 
   const handleDisconnect = async () => {
-    setDisconnecting(true);
-
     const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
       title: t("button.disconnect", "Disconnect"),
       description:
@@ -69,6 +67,7 @@ export const ConnectionSettings: React.FC = () => {
     });
 
     if (confirmed) {
+      setDisconnecting(true);
       deleteSettings(sdk)
         .then(async () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
@@ -94,8 +93,6 @@ export const ConnectionSettings: React.FC = () => {
         .finally(() => {
           setDisconnecting(false);
         });
-    } else {
-      setDisconnecting(false);
     }
   };
 
@@ -241,7 +238,7 @@ export const ConnectionSettings: React.FC = () => {
             <OnlyofficeButton
               text={t("button.connect", "Connect")}
               type={ButtonType.Primary}
-              disabled={connecting}
+              loading={connecting}
               onClick={handleConnect}
             />
           )}
@@ -258,7 +255,7 @@ export const ConnectionSettings: React.FC = () => {
               <OnlyofficeButton
                 text={t("button.disconnect", "Disconnect")}
                 type={ButtonType.Danger}
-                disabled={disconnecting}
+                loading={disconnecting}
                 onClick={handleDisconnect}
               />
             </>
@@ -276,7 +273,7 @@ export const ConnectionSettings: React.FC = () => {
               <OnlyofficeButton
                 text={t("button.save", "Save")}
                 type={ButtonType.Primary}
-                disabled={connecting}
+                loading={connecting}
                 onClick={handleConnect}
               />
             </>

@@ -262,7 +262,7 @@ export const AuthorizationSetting: React.FC = () => {
                 <OnlyofficeButton
                   text={t("button.logout", "Log out")}
                   type={ButtonType.Primary}
-                  disabled={deleting}
+                  loading={deleting}
                   onClick={handleLogout}
                 />
               </div>
@@ -315,7 +315,7 @@ export const AuthorizationSetting: React.FC = () => {
                 <OnlyofficeButton
                   text={t("button.login", "Login")}
                   type={ButtonType.Primary}
-                  disabled={saving}
+                  loading={saving}
                   onClick={handleLogin}
                 />
               </div>
