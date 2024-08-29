@@ -83,12 +83,13 @@ const RoomPage: React.FC = () => {
     }
 
     getRoom(sdk, Number(parameters.get("selectedIds")))
-      .then((response) => {
+      .then(async (response) => {
         setConfig({
           ...config,
           id: response.roomId,
           locale: getLocaleForDocspace(i18next.language),
         });
+        await sdk.execute(Command.RESIZE, { height: 680 });
       })
       .catch(async (e) => {
         if (e?.response?.status === 404) {
@@ -119,7 +120,7 @@ const RoomPage: React.FC = () => {
           locale: getLocaleForDocspace(i18next.language),
         });
 
-        await sdk.execute(Command.RESIZE, { height: 350 });
+        await sdk.execute(Command.RESIZE, { height: 680 });
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
             "room.creating.ok",
