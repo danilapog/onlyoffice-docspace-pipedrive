@@ -22,9 +22,13 @@ import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollower;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Room;
+import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.events.deal.AddRoomToPipedriveDealEvent;
+import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
+import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.RoomMapper;
@@ -40,6 +44,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
 
 
 @RestController
@@ -51,6 +57,7 @@ public class RoomController {
     private final RoomMapper roomMapper;
     private final PipedriveClient pipedriveClient;
     private final DocspaceClient docspaceClient;
+    private final DocspaceActionManager docspaceActionManager;
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/{dealId}")
@@ -93,5 +100,35 @@ public class RoomController {
         }
 
         return ResponseEntity.ok(roomMapper.roomToRoomResponse(createdRoom));
+    }
+
+    @PostMapping("/{dealId}/request-access")
+    public ResponseEntity<Void> requestAccess(@AuthenticationPrincipal User currentUser,
+                                     @AuthenticationPrincipal(expression = "client") Client currentClient,
+                                     @PathVariable Long dealId) {
+        Room room = roomService.findByClientIdAndDealId(currentClient.getId(), dealId);
+
+        List<PipedriveDealFollower> dealFollowers = pipedriveClient.getDealFollowers(dealId);
+
+        boolean currentUserIsDealFollower = dealFollowers.stream()
+                .filter(dealFollower -> dealFollower.getUserId().equals(currentUser.getUserId()))
+                .findFirst()
+                .isPresent();
+
+        SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
+            public Void doWork() {
+                if (currentUserIsDealFollower) {
+                    docspaceActionManager.inviteListDocspaceAccountsToRoom(
+                            room.getRoomId(),
+                            Collections.singletonList(currentUser.getDocspaceAccount())
+                    );
+                } else {
+                    docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
+                }
+                return null;
+            }
+        }, currentClient.getSystemUser());
+
+        return ResponseEntity.ok().build();
     }
 }

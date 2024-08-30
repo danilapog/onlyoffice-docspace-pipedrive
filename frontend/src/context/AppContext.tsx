@@ -42,6 +42,7 @@ export enum AppErrorType {
   DOCSPACE_AUTHORIZATION,
   DOCSPACE_ROOM_NOT_FOUND,
   DOCSPACE_UNREACHABLE,
+  DOCSPACE_ROOM_NO_ACCESS,
 }
 
 export interface IAppContext {
@@ -51,7 +52,7 @@ export interface IAppContext {
   settings: SettingsResponse | undefined;
   setSettings: (value: SettingsResponse | undefined) => void;
   appError: AppErrorType | undefined;
-  setAppError: (value: AppErrorType) => void;
+  setAppError: (value: AppErrorType | undefined) => void;
 }
 
 export const AppContext = React.createContext<IAppContext>({} as IAppContext);
