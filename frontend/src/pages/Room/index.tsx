@@ -66,6 +66,11 @@ const RoomPage: React.FC = () => {
         // eslint-disable-next-line no-console
         console.error(e);
       },
+      onNoAccess: (e: string | Event) => {
+        sdk.execute(Command.RESIZE, { height: 350 });
+        setAppError(AppErrorType.DOCSPACE_ROOM_NO_ACCESS);
+        setLoading(false);
+      }
     } as TFrameEvents,
   } as TFrameConfig);
 
@@ -121,6 +126,7 @@ const RoomPage: React.FC = () => {
           id: response.roomId,
           locale: getLocaleForDocspace(i18next.language),
         });
+        sdk.execute(Command.RESIZE, { height: 350 });
         setLoading(true);
 
         await sdk.execute(Command.SHOW_SNACKBAR, {

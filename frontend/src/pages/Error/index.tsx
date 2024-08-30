@@ -32,16 +32,19 @@ import DenniedError from "@assets/dennied-error.svg";
 import UnreachableError from "@assets/unreachable-error.svg";
 
 import { Command, View } from "@pipedrive/app-extensions-sdk";
+import { requestAccessToRoom } from "@services/room";
+import { getCurrentURL } from "@utils/url";
 
 type ErrorPageProps = {
   children?: JSX.Element | JSX.Element[];
 };
 
 export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
-  const [errorProps, setErrorProps] = useState<ErrorProps>();
+  const [errorProps, setErrorProps] = useState<ErrorProps | undefined>();
 
   const { t } = useTranslation();
-  const { sdk, user, appError } = useContext(AppContext);
+  const { parameters } = getCurrentURL();
+  const { sdk, user, appError, setAppError } = useContext(AppContext);
 
   useEffect(() => {
     switch (appError) {
@@ -146,6 +149,41 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
         });
         break;
       }
+      case AppErrorType.DOCSPACE_ROOM_NO_ACCESS: {
+        setErrorProps({
+          Icon: <DenniedError className="mb-5" />,
+          title: t(
+            "background.error.title.no-room-access",
+            "Sorry, you don't have access to this room",
+          ),
+          subtitle: t(
+            "background.error.subtitle.no-room-access",
+            "Please try to request access",
+          ),
+          button: t("button.request-access", "Request access") || "Request access",
+          onClick: () => {
+            requestAccessToRoom(sdk, Number(parameters.get("selectedIds")))
+              .then(async () => {
+                await sdk.execute(Command.SHOW_SNACKBAR, {
+                  message: t(
+                    "room.request-access.ok",
+                    "You have been successfully granted access to the ONLYOFFICE DocSpace room",
+                  ),
+                });
+                setAppError(undefined);
+              })
+              .catch(async () => {
+                await sdk.execute(Command.SHOW_SNACKBAR, {
+                  message: t(
+                    "room.request-access.error",
+                    "Error getting access to the ONLYOFFICE DocSpace room",
+                  ),
+                });
+              });
+          }
+        });
+        break;
+      }
       case AppErrorType.DOCSPACE_UNREACHABLE: {
         setErrorProps({
           Icon: <UnreachableError className="mb-5" />,
@@ -176,6 +214,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
         break;
       }
       default: {
+        setErrorProps(undefined);
         break;
       }
     }
