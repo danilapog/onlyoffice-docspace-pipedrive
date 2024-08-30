@@ -66,11 +66,12 @@ const RoomPage: React.FC = () => {
         // eslint-disable-next-line no-console
         console.error(e);
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onNoAccess: (e: string | Event) => {
         sdk.execute(Command.RESIZE, { height: 350 });
         setAppError(AppErrorType.DOCSPACE_ROOM_NO_ACCESS);
         setLoading(false);
-      }
+      },
     } as TFrameEvents,
   } as TFrameConfig);
 

@@ -160,7 +160,8 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
             "background.error.subtitle.no-room-access",
             "Please try to request access",
           ),
-          button: t("button.request-access", "Request access") || "Request access",
+          button:
+            t("button.request-access", "Request access") || "Request access",
           onClick: () => {
             requestAccessToRoom(sdk, Number(parameters.get("selectedIds")))
               .then(async () => {
@@ -180,7 +181,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
                   ),
                 });
               });
-          }
+          },
         });
         break;
       }
@@ -218,7 +219,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
         break;
       }
     }
-  }, [sdk, appError, t, user]);
+  }, [sdk, appError, t, user, parameters, setAppError]);
 
   return (
     <>

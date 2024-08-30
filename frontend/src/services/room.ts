@@ -66,7 +66,10 @@ export const createRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
   return response.data;
 };
 
-export const requestAccessToRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
+export const requestAccessToRoom = async (
+  sdk: AppExtensionsSDK,
+  dealId: number,
+) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
