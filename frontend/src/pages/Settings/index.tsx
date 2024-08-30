@@ -60,7 +60,7 @@ const SettingsPage: React.FC = () => {
   return (
     <div className="w-screen h-screen">
       <div className="flex flex-row">
-        <div className="min-w-52 border-r-2 p-1">
+        <div className="min-w-52 border-r-2 p-1 dark:border-pipedrive-color-dark-divider-medium">
           {sections
             .filter((section) => section.available)
             .map((section) => (

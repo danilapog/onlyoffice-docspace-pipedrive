@@ -93,6 +93,7 @@ module.exports = {
                 "pipedrive-color-dark-red-700": "#e0645e",
                 "pipedrive-color-dark-green-600": "#3c824e",
                 "pipedrive-color-dark-green-700": "#5d9867",
+                "pipedrive-color-dark-divider-medium": "hsla(240, 4%, 89%, .15)",
                 "pipedrive-color-dark-divider-strong": "hsla(240, 4%, 89%, .15)",
 
                 "pipedrive-color-extra-light-rgba": "hsla(240, 4%, 89%, .06)",
