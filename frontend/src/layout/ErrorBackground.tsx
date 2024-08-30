@@ -16,9 +16,9 @@
  *
  */
 
-import React, { useState } from "react";
+import React from "react";
 
-import { ButtonType, OnlyofficeButton } from "@components/button";
+import { ButtonType, OnlyofficeButton, ButtonProps } from "@components/button";
 import { OnlyofficeSubtitle } from "@components/title";
 import { OnlyofficeError } from "@components/error/Error";
 
@@ -26,8 +26,7 @@ export type ErrorProps = {
   Icon: JSX.Element | JSX.Element[];
   title: string;
   subtitle: string;
-  button?: string;
-  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
+  button?: ButtonProps;
 };
 
 export const OnlyofficeBackgroundError: React.FC<ErrorProps> = ({
@@ -35,34 +34,21 @@ export const OnlyofficeBackgroundError: React.FC<ErrorProps> = ({
   title,
   subtitle,
   button,
-  onClick,
-}) => {
-  const [loading, setLoading] = useState(false);
-
-  return (
-    <div className="w-full h-full flex justify-center flex-col items-center overflow-hidden">
-      <div className="flex justify-center items-center overflow-hidden min-h-40">
-        {Icon}
-      </div>
-      <div>
-        <OnlyofficeError text={title} />
-      </div>
-      <div className="w-1/2 pt-2">
-        <OnlyofficeSubtitle text={subtitle} />
-      </div>
-      {onClick && button && (
-        <div className="pt-5 z-[100]">
-          <OnlyofficeButton
-            type={ButtonType.Primary}
-            text={button}
-            loading={loading}
-            onClick={(e) => {
-              setLoading(true);
-              onClick(e);
-            }}
-          />
-        </div>
-      )}
+}) => (
+  <div className="w-full h-full flex justify-center flex-col items-center overflow-hidden">
+    <div className="flex justify-center items-center overflow-hidden min-h-40">
+      {Icon}
     </div>
-  );
-};
+    <div>
+      <OnlyofficeError text={title} />
+    </div>
+    <div className="w-1/2 pt-2">
+      <OnlyofficeSubtitle text={subtitle} />
+    </div>
+    {button && (
+      <div className="pt-5 z-[100]">
+        <OnlyofficeButton type={ButtonType.Primary} {...button} />
+      </div>
+    )}
+  </div>
+);

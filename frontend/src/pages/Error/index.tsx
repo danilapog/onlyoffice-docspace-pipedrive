@@ -41,6 +41,7 @@ type ErrorPageProps = {
 
 export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
   const [errorProps, setErrorProps] = useState<ErrorProps | undefined>();
+  const [processingRequestAccess, setProcessingRequestAccess] = useState(false);
 
   const { t } = useTranslation();
   const { parameters } = getCurrentURL();
@@ -70,12 +71,14 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
             "background.error.subtitle.token-expired",
             "Something went wrong. Please re-authorize the app.",
           ),
-          button: t("button.reauthorize", "Re-authorize") || "Re-authorize",
-          onClick: () =>
-            window.open(
-              `${process.env.BACKEND_URL}/oauth2/authorization/pipedrive`,
-              "_blank",
-            ),
+          button: {
+            text: t("button.reauthorize", "Re-authorize") || "Re-authorize",
+            onClick: () =>
+              window.open(
+                `${process.env.BACKEND_URL}/oauth2/authorization/pipedrive`,
+                "_blank",
+              ),
+          },
         });
         break;
       }
@@ -111,10 +114,12 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
                   "Please contact the administrator.",
                 )
           }`,
-          button: t("button.settings", "Settings") || "Settings",
-          onClick: user?.isAdmin
-            ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
-            : undefined,
+          button: {
+            text: t("button.settings", "Settings") || "Settings",
+            onClick: user?.isAdmin
+              ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
+              : undefined,
+          },
         });
         break;
       }
@@ -129,9 +134,11 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
             "background.error.subtitle.docspace-authorization.help",
             "Please go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings",
           ),
-          button: t("button.settings", "Settings") || "Settings",
-          onClick: () =>
-            sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
+          button: {
+            text: t("button.settings", "Settings") || "Settings",
+            onClick: () =>
+              sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
+          },
         });
         break;
       }
@@ -160,27 +167,32 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
             "background.error.subtitle.no-room-access",
             "Please try to request access",
           ),
-          button:
-            t("button.request-access", "Request access") || "Request access",
-          onClick: () => {
-            requestAccessToRoom(sdk, Number(parameters.get("selectedIds")))
-              .then(async () => {
-                await sdk.execute(Command.SHOW_SNACKBAR, {
-                  message: t(
-                    "room.request-access.ok",
-                    "You have been successfully granted access to the ONLYOFFICE DocSpace room",
-                  ),
-                });
-                setAppError(undefined);
-              })
-              .catch(async () => {
-                await sdk.execute(Command.SHOW_SNACKBAR, {
-                  message: t(
-                    "room.request-access.error",
-                    "Error getting access to the ONLYOFFICE DocSpace room",
-                  ),
-                });
-              });
+          button: {
+            text:
+              t("button.request-access", "Request access") || "Request access",
+            loading: processingRequestAccess,
+            onClick: () => {
+              setProcessingRequestAccess(true);
+              requestAccessToRoom(sdk, Number(parameters.get("selectedIds")))
+                .then(async () => {
+                  await sdk.execute(Command.SHOW_SNACKBAR, {
+                    message: t(
+                      "room.request-access.ok",
+                      "You have been successfully granted access to the ONLYOFFICE DocSpace room",
+                    ),
+                  });
+                  setAppError(undefined);
+                })
+                .catch(async () => {
+                  await sdk.execute(Command.SHOW_SNACKBAR, {
+                    message: t(
+                      "room.request-access.error",
+                      "Error getting access to the ONLYOFFICE DocSpace room",
+                    ),
+                  });
+                })
+                .finally(() => setProcessingRequestAccess(false));
+            },
           },
         });
         break;
@@ -207,10 +219,12 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
                       "Please contact the administrator.",
                     )
               }`,
-          button: t("button.settings", "Settings") || "Settings",
-          onClick: user?.isAdmin
-            ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
-            : undefined,
+          button: {
+            text: t("button.settings", "Settings") || "Settings",
+            onClick: user?.isAdmin
+              ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
+              : undefined,
+          },
         });
         break;
       }
@@ -219,7 +233,15 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
         break;
       }
     }
-  }, [sdk, appError, t, user, parameters, setAppError]);
+  }, [
+    sdk,
+    appError,
+    t,
+    user,
+    parameters,
+    setAppError,
+    processingRequestAccess,
+  ]);
 
   return (
     <>
@@ -229,7 +251,6 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           title={errorProps.title || ""}
           subtitle={errorProps.subtitle || ""}
           button={errorProps.button}
-          onClick={errorProps.onClick}
         />
       )}
       {!errorProps && children}

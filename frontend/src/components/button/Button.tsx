@@ -25,7 +25,7 @@ export enum ButtonType {
   Danger,
 }
 
-type ButtonProps = {
+export type ButtonProps = {
   text: string;
   disabled?: boolean;
   loading?: boolean;

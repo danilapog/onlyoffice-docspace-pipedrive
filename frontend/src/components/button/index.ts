@@ -17,3 +17,4 @@
  */
 
 export { OnlyofficeButton, ButtonType } from "./Button";
+export type { ButtonProps } from "./Button";
