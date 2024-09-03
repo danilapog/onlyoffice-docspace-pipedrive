@@ -276,7 +276,7 @@ export const AuthorizationSetting: React.FC = () => {
                   valid={showValidationMessage ? !!email : true}
                   value={email}
                   disabled={saving}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value.trim())}
                 />
               </div>
               <div className="pl-5 pr-5 pb-2">
