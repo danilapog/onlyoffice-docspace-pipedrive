@@ -39,6 +39,8 @@ import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -49,6 +51,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.ForwardedHeaderFilter;
+
+import javax.crypto.spec.SecretKeySpec;
 
 
 @Configuration
@@ -63,6 +67,8 @@ public class SecurityConfiguration {
     private String encryptPassword;
     @Value("${spring.security.oauth2.client.registration.pipedrive.client-secret}")
     private String encryptSalt;
+    @Value("${spring.security.oauth2.client.registration.pipedrive.client-secret}")
+    private String jwtSecretKey;
 
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http,
@@ -173,6 +179,11 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withSecretKey(getJwtSecretKey()).build();
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
@@ -180,5 +191,10 @@ public class SecurityConfiguration {
     @Bean
     public TextEncryptor textEncryptor() {
         return Encryptors.text(encryptPassword, encryptSalt);
+    }
+
+    private SecretKeySpec getJwtSecretKey() {
+        byte[] bytes = jwtSecretKey.getBytes();
+        return new SecretKeySpec(bytes, "HmacSHA256");
     }
 }

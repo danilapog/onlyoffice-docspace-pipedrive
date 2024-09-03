@@ -30,13 +30,12 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import javax.crypto.spec.SecretKeySpec;
 import java.text.MessageFormat;
 import java.util.Map;
 
@@ -46,10 +45,9 @@ import java.util.Map;
 @Slf4j
 public class JwtAuthenticationProvider implements AuthenticationProvider {
     private final UserService userService;
+    private final JwtDecoder jwtDecoder;
     private MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
-    @Value("${spring.security.oauth2.client.registration.pipedrive.client-secret}")
-    private String secret;
     @Value("${spring.security.jwt.client-name-attribute}")
     private String clientNameAttribute;
     @Value("${spring.security.jwt.user-name-attribute}")
@@ -69,10 +67,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
         Map<String, Object> body;
         try {
-            body = NimbusJwtDecoder.withSecretKey(getSecretKey())
-                    .build()
-                    .decode(bearer.getToken())
-                    .getClaims();
+            body = jwtDecoder.decode(bearer.getToken()).getClaims();
         } catch (Exception e) {
             log.debug("Failed to authenticate since the JWT was invalid");
             throw new InvalidBearerTokenException(e.getMessage(), e);
@@ -103,10 +98,5 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
         log.debug("Authenticated user");
         return result;
-    }
-
-    private SecretKeySpec getSecretKey() {
-       byte[] bytes = secret.getBytes();
-       return new SecretKeySpec(bytes, "HmacSHA256");
     }
 }
