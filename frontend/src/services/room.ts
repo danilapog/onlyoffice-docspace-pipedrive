@@ -26,7 +26,7 @@ export const getRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
-    retries: 3,
+    retries: 2,
     retryCondition: (error) => error.status !== 200,
     retryDelay: (count) => count * 50,
     shouldResetTimeout: true,
@@ -39,7 +39,7 @@ export const getRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${pctx.token}`,
     },
-    timeout: 3000,
+    timeout: 10000,
   });
 
   return response.data;
@@ -48,10 +48,6 @@ export const getRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
 export const createRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
-  axiosRetry(client, {
-    retries: 2,
-    retryCondition: (error) => error.status === 429,
-  });
 
   const response = await client<RoomResponse>({
     method: "POST",
@@ -60,7 +56,7 @@ export const createRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${pctx.token}`,
     },
-    timeout: 10000,
+    timeout: 30000,
   });
 
   return response.data;
@@ -75,6 +71,8 @@ export const requestAccessToRoom = async (
   axiosRetry(client, {
     retries: 1,
     retryCondition: (error) => error.status === 429,
+    retryDelay: (count) => count * 50,
+    shouldResetTimeout: true,
   });
 
   const response = await client<RoomResponse>({
@@ -84,7 +82,7 @@ export const requestAccessToRoom = async (
       "Content-Type": "application/json",
       Authorization: `Bearer ${pctx.token}`,
     },
-    timeout: 7000,
+    timeout: 15000,
   });
 
   return response.data;

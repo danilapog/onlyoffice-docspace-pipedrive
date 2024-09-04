@@ -84,7 +84,7 @@ export const deleteSettings = async (sdk: AppExtensionsSDK) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${pctx.token}`,
     },
-    timeout: 10000,
+    timeout: 15000,
   });
 
   return response.data;

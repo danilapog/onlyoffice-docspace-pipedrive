@@ -54,8 +54,10 @@ export const putDocspaceAccount = async (
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
-    retries: 2,
+    retries: 1,
     retryCondition: (error) => error.status === 429,
+    retryDelay: (count) => count * 50,
+    shouldResetTimeout: true,
   });
 
   await client({
@@ -69,7 +71,7 @@ export const putDocspaceAccount = async (
       userName,
       passwordHash,
     },
-    timeout: 10000,
+    timeout: 20000,
   });
 };
 
@@ -77,8 +79,10 @@ export const deleteDocspaceAccount = async (sdk: AppExtensionsSDK) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
-    retries: 2,
+    retries: 1,
     retryCondition: (error) => error.status === 429,
+    retryDelay: (count) => count * 50,
+    shouldResetTimeout: true,
   });
 
   await client({
@@ -88,6 +92,6 @@ export const deleteDocspaceAccount = async (sdk: AppExtensionsSDK) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${pctx.token}`,
     },
-    timeout: 4000,
+    timeout: 10000,
   });
 };

@@ -35,7 +35,7 @@ export const getCSPSettings = async (url: string) => {
     headers: {
       "Content-Type": "application/json",
     },
-    timeout: 3000,
+    timeout: 10000,
   });
 
   return response.data.response;
