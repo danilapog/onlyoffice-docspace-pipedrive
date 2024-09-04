@@ -72,6 +72,20 @@ const RoomPage: React.FC = () => {
         setAppError(AppErrorType.DOCSPACE_ROOM_NO_ACCESS);
         setLoading(false);
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      onNotFound: (e: Event) => {
+        if (user?.docspaceAccount?.canCreateRoom) {
+          setConfig({
+            ...config,
+            id: null,
+          });
+          sdk.execute(Command.RESIZE, { height: 150 });
+        } else {
+          setAppError(AppErrorType.DOCSPACE_ROOM_NOT_FOUND);
+        }
+
+        setLoading(false);
+      },
     } as TFrameEvents,
   } as TFrameConfig);
 
@@ -169,7 +183,7 @@ const RoomPage: React.FC = () => {
     setAppError(AppErrorType.DOCSPACE_UNREACHABLE);
   };
 
-  const onUnSuccessLogin = () => {
+  const onUnsuccessLogin = () => {
     setAppError(AppErrorType.DOCSPACE_AUTHORIZATION);
     setLoading(false);
   };
@@ -232,7 +246,7 @@ const RoomPage: React.FC = () => {
             email={user?.docspaceAccount?.userName || "undefined"}
             onLoadComponentError={onLoadComponentError}
             onRequestPasswordHash={onRequestPasswordHash}
-            onUnSuccessLogin={onUnSuccessLogin}
+            onUnsuccessLogin={onUnsuccessLogin}
           />
         </div>
       )}
