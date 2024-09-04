@@ -51,6 +51,8 @@ export const postSettings = async (sdk: AppExtensionsSDK, url: string) => {
   axiosRetry(client, {
     retries: 1,
     retryCondition: (error) => error.status === 429,
+    retryDelay: (count) => count * 50,
+    shouldResetTimeout: true,
   });
 
   const response = await client({
@@ -75,6 +77,8 @@ export const deleteSettings = async (sdk: AppExtensionsSDK) => {
   axiosRetry(client, {
     retries: 1,
     retryCondition: (error) => error.status === 429,
+    retryDelay: (count) => count * 50,
+    shouldResetTimeout: true,
   });
 
   const response = await client({
