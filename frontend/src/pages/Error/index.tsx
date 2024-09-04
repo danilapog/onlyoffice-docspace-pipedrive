@@ -234,18 +234,11 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
         break;
       }
     }
-  }, [
-    sdk,
-    appError,
-    t,
-    user,
-    setAppError,
-    processingRequestAccess,
-  ]);
+  }, [sdk, appError, t, user, setAppError, processingRequestAccess]);
 
   return (
     <>
-      {appError && errorProps && (
+      {appError !== undefined && errorProps && (
         <OnlyofficeBackgroundError
           Icon={errorProps.Icon}
           title={errorProps.title || ""}
@@ -253,7 +246,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           button={errorProps.button}
         />
       )}
-      {!appError && children}
+      {appError === undefined && children}
     </>
   );
 };
