@@ -44,10 +44,11 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
   const [processingRequestAccess, setProcessingRequestAccess] = useState(false);
 
   const { t } = useTranslation();
-  const { parameters } = getCurrentURL();
   const { sdk, user, appError, setAppError } = useContext(AppContext);
 
   useEffect(() => {
+    const { parameters } = getCurrentURL();
+
     switch (appError) {
       case AppErrorType.COMMON_ERROR: {
         setErrorProps({
@@ -238,14 +239,13 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
     appError,
     t,
     user,
-    parameters,
     setAppError,
     processingRequestAccess,
   ]);
 
   return (
     <>
-      {errorProps && (
+      {appError && errorProps && (
         <OnlyofficeBackgroundError
           Icon={errorProps.Icon}
           title={errorProps.title || ""}
@@ -253,7 +253,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           button={errorProps.button}
         />
       )}
-      {!errorProps && children}
+      {!appError && children}
     </>
   );
 };
