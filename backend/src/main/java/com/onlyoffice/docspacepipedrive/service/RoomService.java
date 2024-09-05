@@ -23,5 +23,6 @@ import com.onlyoffice.docspacepipedrive.entity.Room;
 public interface RoomService {
     Room findByClientIdAndDealId(Long clientId, Long dealId);
     Room create(Long clientId, Room room);
+    Room update(Long clientId, Room room);
     void deleteAllByClientId(Long clientId);
 }

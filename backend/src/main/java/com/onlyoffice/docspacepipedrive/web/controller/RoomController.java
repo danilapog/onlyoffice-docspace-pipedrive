@@ -27,6 +27,7 @@ import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.events.deal.AddRoomToPipedriveDealEvent;
+import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
@@ -89,7 +90,12 @@ public class RoomController {
                 .dealId(pipedriveDeal.getId())
                 .build();
 
-        Room createdRoom = roomService.create(currentClient.getId(), room);
+        Room createdRoom;
+        try {
+            createdRoom = roomService.update(currentClient.getId(), room);
+        } catch (RoomNotFoundException e) {
+            createdRoom = roomService.create(currentClient.getId(), room);
+        }
 
         try {
             eventPublisher.publishEvent(
