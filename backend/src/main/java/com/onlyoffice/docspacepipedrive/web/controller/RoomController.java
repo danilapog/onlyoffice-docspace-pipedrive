@@ -78,9 +78,9 @@ public class RoomController {
 
         DocspaceRoom docspaceRoom = docspaceClient.createRoom(
                 MessageFormat.format(
-                        "Pipedrive - {0} - {1}",
-                        currentClient.getCompanyName(),
-                        pipedriveDeal.getTitle()
+                        "{0} - Pipedrive ({1})",
+                        pipedriveDeal.getTitle(),
+                        currentClient.getCompanyName()
                 ),
                 2
         );
