@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
 import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
@@ -30,6 +30,12 @@ export const AuthorizationSetting: React.FC = () => {
   const [email, setEmail] = useState<string | undefined>("");
   const [password, setPassword] = useState<string | undefined>("");
   const [isSystem, setIsSystem] = useState<boolean>(!settings?.existSystemUser);
+
+  useEffect(() => {
+    return () => {
+      delete window?.DocSpace;
+    }
+  }, []);
 
   const handleLogin = async (event: React.SyntheticEvent) => {
     event.preventDefault();
