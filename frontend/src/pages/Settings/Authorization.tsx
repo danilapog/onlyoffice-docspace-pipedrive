@@ -3,7 +3,7 @@ import { useTranslation, Trans } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
 import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
 
-import { ButtonType, OnlyofficeButton } from "@components/button";
+import { ButtonColor, OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
 import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
@@ -261,7 +261,7 @@ export const AuthorizationSetting: React.FC = () => {
               <div className="flex justify-start items-center mt-4 ml-5">
                 <OnlyofficeButton
                   text={t("button.logout", "Log out")}
-                  type={ButtonType.Primary}
+                  color={ButtonColor.PRIMARY}
                   loading={deleting}
                   onClick={handleLogout}
                 />
@@ -314,7 +314,7 @@ export const AuthorizationSetting: React.FC = () => {
               <div className="flex justify-start items-center mt-4 ml-5">
                 <OnlyofficeButton
                   text={t("button.login", "Login")}
-                  type={ButtonType.Primary}
+                  color={ButtonColor.PRIMARY}
                   loading={saving}
                   onClick={handleLogin}
                 />

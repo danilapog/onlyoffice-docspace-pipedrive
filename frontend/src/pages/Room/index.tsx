@@ -31,7 +31,7 @@ import { AppContext, AppErrorType } from "@context/AppContext";
 import { createRoom, getRoom } from "@services/room";
 import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 
-import { ButtonType, OnlyofficeButton } from "@components/button";
+import { ButtonColor, OnlyofficeButton } from "@components/button";
 import { OnlyofficeSpinner } from "@components/spinner";
 
 import { OnlyofficeSnackbar } from "@components/snackbar";
@@ -227,7 +227,7 @@ const RoomPage: React.FC = () => {
             </div>
             <OnlyofficeButton
               text={t("button.create.room", "Create room")}
-              type={ButtonType.Primary}
+              color={ButtonColor.PRIMARY}
               loading={creating}
               onClick={handleCreateRoom}
             />

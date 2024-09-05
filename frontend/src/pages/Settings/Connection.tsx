@@ -20,7 +20,7 @@ import React, { useState, useContext } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
 
-import { ButtonType, OnlyofficeButton } from "@components/button";
+import { ButtonColor, OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
 import { OnlyofficeHint } from "@components/hint";
@@ -232,7 +232,7 @@ export const ConnectionSettings: React.FC = () => {
           {!settings?.url && (
             <OnlyofficeButton
               text={t("button.connect", "Connect")}
-              type={ButtonType.Primary}
+              color={ButtonColor.PRIMARY}
               loading={connecting}
               onClick={handleConnect}
             />
@@ -241,7 +241,7 @@ export const ConnectionSettings: React.FC = () => {
             <>
               <OnlyofficeButton
                 text={t("button.change", "Change")}
-                type={ButtonType.Primary}
+                color={ButtonColor.PRIMARY}
                 disabled={disconnecting}
                 onClick={() => {
                   setChanging(true);
@@ -249,7 +249,7 @@ export const ConnectionSettings: React.FC = () => {
               />
               <OnlyofficeButton
                 text={t("button.disconnect", "Disconnect")}
-                type={ButtonType.Danger}
+                color={ButtonColor.NEGATIVE}
                 loading={disconnecting}
                 onClick={handleDisconnect}
               />
@@ -267,7 +267,7 @@ export const ConnectionSettings: React.FC = () => {
               />
               <OnlyofficeButton
                 text={t("button.save", "Save")}
-                type={ButtonType.Primary}
+                color={ButtonColor.PRIMARY}
                 loading={connecting}
                 onClick={handleConnect}
               />

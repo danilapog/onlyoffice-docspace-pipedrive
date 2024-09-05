@@ -16,5 +16,5 @@
  *
  */
 
-export { OnlyofficeButton, ButtonType } from "./Button";
+export { OnlyofficeButton, ButtonColor } from "./Button";
 export type { ButtonProps } from "./Button";

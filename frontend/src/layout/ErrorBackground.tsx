@@ -18,7 +18,7 @@
 
 import React from "react";
 
-import { ButtonType, OnlyofficeButton, ButtonProps } from "@components/button";
+import { ButtonColor, OnlyofficeButton, ButtonProps } from "@components/button";
 import { OnlyofficeSubtitle } from "@components/title";
 import { OnlyofficeError } from "@components/error/Error";
 
@@ -47,7 +47,7 @@ export const OnlyofficeBackgroundError: React.FC<ErrorProps> = ({
     </div>
     {button && (
       <div className="pt-5 z-[100]">
-        <OnlyofficeButton type={ButtonType.Primary} {...button} />
+        <OnlyofficeButton color={ButtonColor.PRIMARY} {...button} />
       </div>
     )}
   </div>

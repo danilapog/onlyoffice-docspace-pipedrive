@@ -19,17 +19,18 @@
 import React from "react";
 import cx from "classnames";
 
-export enum ButtonType {
-  Normal,
-  Primary,
-  Danger,
+export enum ButtonColor {
+  PRIMARY,
+  SECONDARY,
+  NEGATIVE,
 }
 
 export type ButtonProps = {
   text: string;
   disabled?: boolean;
   loading?: boolean;
-  type?: ButtonType;
+  type?: "submit" | "reset" | "button" | undefined;
+  color?: ButtonColor;
   fullWidth?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
@@ -37,8 +38,9 @@ export type ButtonProps = {
 export const OnlyofficeButton: React.FC<ButtonProps> = ({
   text,
   loading = false,
+  type = "button",
   disabled = loading || false,
-  type = ButtonType.Normal,
+  color = ButtonColor.SECONDARY,
   fullWidth = false,
   onClick,
 }) => {
@@ -53,33 +55,33 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
     "bg-opacity-50 cursor-not-allowed": disabled,
 
     "text-white bg-pipedrive-color-light-green-600":
-      type === ButtonType.Primary,
+      color === ButtonColor.PRIMARY,
     "hover:bg-pipedrive-color-light-green-700":
-      type === ButtonType.Primary && !disabled,
-    "dark:bg-pipedrive-color-dark-green-600": type === ButtonType.Primary,
+      color === ButtonColor.PRIMARY && !disabled,
+    "dark:bg-pipedrive-color-dark-green-600": color === ButtonColor.PRIMARY,
     "dark:hover:bg-pipedrive-color-dark-green-700":
-      type === ButtonType.Primary && !disabled,
+      color === ButtonColor.PRIMARY && !disabled,
 
-    "text-white bg-pipedrive-color-light-red-600": type === ButtonType.Danger,
+    "text-white bg-pipedrive-color-light-red-600": color === ButtonColor.NEGATIVE,
     "hover:bg-pipedrive-color-light-red-700":
-      type === ButtonType.Danger && !disabled,
-    "dark:bg-pipedrive-color-dark-red-600": type === ButtonType.Danger,
+      color === ButtonColor.NEGATIVE && !disabled,
+    "dark:bg-pipedrive-color-dark-red-600": color === ButtonColor.NEGATIVE,
     "dark:hover:bg-pipedrive-color-dark-red-700":
-      type === ButtonType.Danger && !disabled,
+      color === ButtonColor.NEGATIVE && !disabled,
 
     "border border-solid bg-white hover:bg-pipedrive-color-light-neutral-100":
-      type === ButtonType.Normal,
-    "dark:text-pipedrive-color-dark-neutral-1000": type === ButtonType.Normal,
+      color === ButtonColor.SECONDARY,
+    "dark:text-pipedrive-color-dark-neutral-1000": color === ButtonColor.SECONDARY,
     "dark:border-pipedrive-color-dark-divider-strong":
-      type === ButtonType.Normal,
-    "dark:bg-pipedrive-color-dark-neutral-100": type === ButtonType.Normal,
+      color === ButtonColor.SECONDARY,
+    "dark:bg-pipedrive-color-dark-neutral-100": color === ButtonColor.SECONDARY,
     "dark:hover:bg-pipedrive-color-dark-neutral-200":
-      type === ButtonType.Normal && !disabled,
+      color === ButtonColor.SECONDARY && !disabled,
   });
 
   return (
     <button
-      type="button"
+      type={type}
       disabled={disabled}
       className={classes}
       onClick={onClick}
