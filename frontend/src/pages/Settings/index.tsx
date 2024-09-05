@@ -75,7 +75,10 @@ const SettingsPage: React.FC = () => {
                     : "hover:bg-stone-200 dark:hover:bg-pipedrive-color-extra-light-rgba"
                 }`}
                 onClick={() => setSelectedSection(section.id)}
-                onKeyDown={() => setSelectedSection(section.id)}
+                onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (event.key === "Enter")
+                    setSelectedSection(section.id)
+                }}
               >
                 {section.title}
               </div>
