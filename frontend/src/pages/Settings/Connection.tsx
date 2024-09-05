@@ -44,7 +44,8 @@ export const ConnectionSettings: React.FC = () => {
   const [showValidationMessage, setShowValidationMessage] = useState(false);
   const [address, setAddress] = useState<string>(settings?.url || "");
 
-  const handleConnect = async () => {
+  const handleConnect = async (event: React.SyntheticEvent) => {
+    event.preventDefault();
     if (address) {
       setConnecting(true);
       getCSPSettings(stripTrailingSlash(address))
@@ -215,65 +216,69 @@ export const ConnectionSettings: React.FC = () => {
         )}
       </div>
       <div className="max-w-[320px]">
-        <div className="pl-5 pr-5 pb-2">
-          <OnlyofficeInput
-            text={t(
-              "settings.connection.inputs.address",
-              "ONLYOFFICE DocSpace address",
-            )}
-            placeholder="https://"
-            valid={showValidationMessage ? !!address : true}
-            disabled={(connecting || !!settings?.url) && !changing}
-            value={address}
-            onChange={(e) => setAddress(e.target.value.trim())}
-          />
-        </div>
-        <div className="flex justify-start items-center mt-4 ml-5 gap-2">
-          {!settings?.url && (
-            <OnlyofficeButton
-              text={t("button.connect", "Connect")}
-              color={ButtonColor.PRIMARY}
-              loading={connecting}
-              onClick={handleConnect}
+        <form onSubmit={handleConnect}>
+          <div className="pl-5 pr-5 pb-2">
+            <OnlyofficeInput
+              text={t(
+                "settings.connection.inputs.address",
+                "ONLYOFFICE DocSpace address",
+              )}
+              placeholder="https://"
+              valid={showValidationMessage ? !!address : true}
+              disabled={(connecting || !!settings?.url) && !changing}
+              value={address}
+              onChange={(e) => setAddress(e.target.value.trim())}
             />
-          )}
-          {!!settings?.url && !changing && (
-            <>
+          </div>
+          <div className="flex justify-start items-center mt-4 ml-5 gap-2">
+            {!settings?.url && (
               <OnlyofficeButton
-                text={t("button.change", "Change")}
-                color={ButtonColor.PRIMARY}
-                disabled={disconnecting}
-                onClick={() => {
-                  setChanging(true);
-                }}
-              />
-              <OnlyofficeButton
-                text={t("button.disconnect", "Disconnect")}
-                color={ButtonColor.NEGATIVE}
-                loading={disconnecting}
-                onClick={handleDisconnect}
-              />
-            </>
-          )}
-          {changing && (
-            <>
-              <OnlyofficeButton
-                text={t("button.cancel", "Cancel")}
-                disabled={connecting}
-                onClick={() => {
-                  setChanging(false);
-                  setAddress(settings?.url || "");
-                }}
-              />
-              <OnlyofficeButton
-                text={t("button.save", "Save")}
+                text={t("button.connect", "Connect")}
+                type="submit"
                 color={ButtonColor.PRIMARY}
                 loading={connecting}
                 onClick={handleConnect}
               />
-            </>
-          )}
-        </div>
+            )}
+            {!!settings?.url && !changing && (
+              <>
+                <OnlyofficeButton
+                  text={t("button.change", "Change")}
+                  color={ButtonColor.PRIMARY}
+                  disabled={disconnecting}
+                  onClick={() => {
+                    setChanging(true);
+                  }}
+                />
+                <OnlyofficeButton
+                  text={t("button.disconnect", "Disconnect")}
+                  color={ButtonColor.NEGATIVE}
+                  loading={disconnecting}
+                  onClick={handleDisconnect}
+                />
+              </>
+            )}
+            {changing && (
+              <>
+                <OnlyofficeButton
+                  text={t("button.cancel", "Cancel")}
+                  disabled={connecting}
+                  onClick={() => {
+                    setChanging(false);
+                    setAddress(settings?.url || "");
+                  }}
+                />
+                <OnlyofficeButton
+                  text={t("button.save", "Save")}
+                  type="submit"
+                  color={ButtonColor.PRIMARY}
+                  loading={connecting}
+                  onClick={handleConnect}
+                />
+              </>
+            )}
+          </div>
+        </form>
       </div>
     </>
   );

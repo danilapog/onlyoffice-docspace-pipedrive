@@ -31,7 +31,8 @@ export const AuthorizationSetting: React.FC = () => {
   const [password, setPassword] = useState<string | undefined>("");
   const [isSystem, setIsSystem] = useState<boolean>(!settings?.existSystemUser);
 
-  const handleLogin = async () => {
+  const handleLogin = async (event: React.SyntheticEvent) => {
+    event.preventDefault();
     if (email && password) {
       if (isSystem) {
         const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
@@ -270,55 +271,58 @@ export const AuthorizationSetting: React.FC = () => {
           )}
           {!user?.docspaceAccount && (
             <div className="max-w-[320px]">
-              <div className="pl-5 pr-5 pb-2">
-                <OnlyofficeInput
-                  text={t("settings.authorization.inputs.email", "Email")}
-                  valid={showValidationMessage ? !!email : true}
-                  value={email}
-                  disabled={saving}
-                  onChange={(e) => setEmail(e.target.value.trim())}
-                />
-              </div>
-              <div className="pl-5 pr-5 pb-2">
-                <OnlyofficeInput
-                  text={t("settings.authorization.inputs.password", "Password")}
-                  valid={showValidationMessage ? !!password : true}
-                  value={password}
-                  type="password"
-                  disabled={saving}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              {user?.isAdmin && (
-                <div className="pl-5 pr-5">
-                  <div className="flex">
-                    <OnlyofficeCheckbox
-                      id="isSystem"
-                      checked={isSystem}
-                      text={t(
-                        "settings.authorization.inputs.system.title",
-                        "Use this account with System user (DocSpace Admin role required)",
-                      )}
-                      disabled={!settings?.existSystemUser}
-                      onChange={() => setIsSystem(!isSystem)}
-                    />
-                    <OnlyofficeTooltip
-                      text={t(
-                        "settings.authorization.inputs.system.help",
-                        "If you click on this switch, the plugin will perform actions from your DocSpace account",
-                      )}
-                    />
-                  </div>
+              <form onSubmit={handleLogin}>
+                <div className="pl-5 pr-5 pb-2">
+                  <OnlyofficeInput
+                    text={t("settings.authorization.inputs.email", "Email")}
+                    valid={showValidationMessage ? !!email : true}
+                    value={email}
+                    disabled={saving}
+                    onChange={(e) => setEmail(e.target.value.trim())}
+                  />
                 </div>
-              )}
-              <div className="flex justify-start items-center mt-4 ml-5">
-                <OnlyofficeButton
-                  text={t("button.login", "Login")}
-                  color={ButtonColor.PRIMARY}
-                  loading={saving}
-                  onClick={handleLogin}
-                />
-              </div>
+                <div className="pl-5 pr-5 pb-2">
+                  <OnlyofficeInput
+                    text={t("settings.authorization.inputs.password", "Password")}
+                    valid={showValidationMessage ? !!password : true}
+                    value={password}
+                    type="password"
+                    disabled={saving}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+                {user?.isAdmin && (
+                  <div className="pl-5 pr-5">
+                    <div className="flex">
+                      <OnlyofficeCheckbox
+                        id="isSystem"
+                        checked={isSystem}
+                        text={t(
+                          "settings.authorization.inputs.system.title",
+                          "Use this account with System user (DocSpace Admin role required)",
+                        )}
+                        disabled={!settings?.existSystemUser}
+                        onChange={() => setIsSystem(!isSystem)}
+                      />
+                      <OnlyofficeTooltip
+                        text={t(
+                          "settings.authorization.inputs.system.help",
+                          "If you click on this switch, the plugin will perform actions from your DocSpace account",
+                        )}
+                      />
+                    </div>
+                  </div>
+                )}
+                <div className="flex justify-start items-center mt-4 ml-5">
+                  <OnlyofficeButton
+                    text={t("button.login", "Login")}
+                    type="submit"
+                    color={ButtonColor.PRIMARY}
+                    loading={saving}
+                    onClick={handleLogin}
+                  />
+                </div>
+              </form>
             </div>
           )}
         </>
