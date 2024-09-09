@@ -53,6 +53,7 @@ export interface IAppContext {
   setSettings: (value: SettingsResponse | undefined) => void;
   appError: AppErrorType | undefined;
   setAppError: (value: AppErrorType | undefined) => void;
+  reloadAppContext: () => void;
 }
 
 export const AppContext = React.createContext<IAppContext>({} as IAppContext);
@@ -63,6 +64,12 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const [settings, setSettings] = useState<SettingsResponse>();
   const [loading, setLoading] = useState(true);
   const [appError, setAppError] = useState<AppErrorType | undefined>();
+  const [reload, setReload] = useState<boolean>(false);
+
+  const reloadAppContext = () => {
+    setReload(!reload);
+    setLoading(true);
+  }
 
   const appContextProviderValue = useMemo(
     () =>
@@ -74,6 +81,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         setSettings,
         appError,
         setAppError,
+        reloadAppContext,
       }) as IAppContext,
     [sdk, user, setUser, settings, setSettings, appError, setAppError],
   );
@@ -115,7 +123,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         // eslint-disable-next-line no-console
         (e) => console.error(e),
       );
-  }, []);
+  }, [reload]);
 
   return (
     <>

@@ -35,7 +35,7 @@ import { getCSPSettings } from "@services/docspace";
 
 export const ConnectionSettings: React.FC = () => {
   const { t } = useTranslation();
-  const { user, setUser, settings, setSettings, sdk } = useContext(AppContext);
+  const { user, setUser, settings, setSettings, sdk, reloadAppContext } = useContext(AppContext);
   const { url } = getCurrentURL();
 
   const [connecting, setConnecting] = useState(false);
@@ -86,6 +86,10 @@ export const ConnectionSettings: React.FC = () => {
                   "ONLYOFFICE DocSpace settings have been saved",
                 ),
               });
+
+              if (changing) {
+                reloadAppContext();
+              }
             })
             .catch(async () => {
               await sdk.execute(Command.SHOW_SNACKBAR, {
