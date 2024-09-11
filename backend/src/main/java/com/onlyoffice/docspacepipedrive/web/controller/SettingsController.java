@@ -125,7 +125,7 @@ public class SettingsController {
             throw new PipedriveAccessDeniedException(currentUser.getUserId());
         }
 
-        settingsService.deleteById(currentClient.getSettings().getId());
+        settingsService.clear(currentClient.getSettings().getId());
         roomService.deleteAllByClientId(currentClient.getId());
 
         List<User> users = userService.findAllByClientId(currentClient.getId());

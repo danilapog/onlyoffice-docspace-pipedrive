@@ -71,7 +71,12 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public void deleteById(final Long id) {
-        settingsRepository.deleteById(id);
+    public void clear(final Long clientId) {
+        Settings existedSetting = findByClientId(clientId);
+
+        existedSetting.setUrl(null);
+        existedSetting.setSharedGroupId(null);
+
+        settingsRepository.save(existedSetting);
     }
 }
