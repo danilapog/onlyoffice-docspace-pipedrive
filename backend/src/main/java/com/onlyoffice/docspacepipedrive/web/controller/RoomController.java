@@ -66,6 +66,8 @@ public class RoomController {
             @AuthenticationPrincipal(expression = "client") Client currentClient,
             @PathVariable Long dealId
     ) {
+        pipedriveClient.getDeal(dealId);
+
         return ResponseEntity.ok(
                 roomMapper.roomToRoomResponse(roomService.findByClientIdAndDealId(currentClient.getId(), dealId))
         );
