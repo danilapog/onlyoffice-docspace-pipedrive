@@ -18,6 +18,7 @@
 
 package com.onlyoffice.docspacepipedrive.entity;
 
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -53,6 +54,11 @@ public class Settings {
     @ToString.Exclude
     private Client client;
 
+    public String getUrl() {
+        return Optional.ofNullable(url).orElseThrow(
+                () -> new DocspaceUrlNotFoundException(this.client.getId())
+        );
+    }
     public UUID getSharedGroupId() {
         return Optional.ofNullable(sharedGroupId).orElseThrow(
                 () -> new SharedGroupIdNotFoundException(this.client.getId())

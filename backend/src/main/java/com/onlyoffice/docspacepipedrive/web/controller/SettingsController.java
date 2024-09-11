@@ -23,6 +23,7 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
@@ -75,12 +76,16 @@ public class SettingsController {
             settings = new Settings();
         }
 
-        return ResponseEntity.ok(
-                settingsMapper.settingsToSettingsResponse(
-                        settings,
-                        currentClient.existSystemUser()
-                )
-        );
+        SettingsResponse settingsResponse = new SettingsResponse();
+        settingsResponse.setExistSystemUser(currentClient.existSystemUser());
+
+        try {
+            settingsResponse.setUrl(settings.getUrl());
+        } catch (DocspaceUrlNotFoundException e) {
+            settingsResponse.setUrl("");
+        }
+
+        return ResponseEntity.ok(settingsResponse);
     }
 
     @PostMapping
@@ -98,12 +103,16 @@ public class SettingsController {
                 settingsMapper.settingsRequestToSettings(request)
         );
 
-        return ResponseEntity.ok(
-                settingsMapper.settingsToSettingsResponse(
-                        savedSettings,
-                        currentClient.existSystemUser()
-                )
-        );
+        SettingsResponse settingsResponse = new SettingsResponse();
+        settingsResponse.setExistSystemUser(currentClient.existSystemUser());
+
+        try {
+            settingsResponse.setUrl(savedSettings.getUrl());
+        } catch (DocspaceUrlNotFoundException e) {
+            settingsResponse.setUrl("");
+        }
+
+        return ResponseEntity.ok(settingsResponse);
     }
 
     @DeleteMapping

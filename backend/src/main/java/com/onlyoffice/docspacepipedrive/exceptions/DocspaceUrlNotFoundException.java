@@ -16,18 +16,16 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.web.mapper;
+package com.onlyoffice.docspacepipedrive.exceptions;
 
-import com.onlyoffice.docspacepipedrive.entity.Settings;
-import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
-import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.ReportingPolicy;
+import java.text.MessageFormat;
 
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface SettingsMapper {
-    Settings settingsRequestToSettings(SettingsRequest settingsRequest);
+public class DocspaceUrlNotFoundException extends RuntimeException {
+    public DocspaceUrlNotFoundException(final Long clientId) {
+        super(MessageFormat.format(
+                "DocSpace URL not found for Client ID({0}).",
+                clientId.toString()
+        ));
+    }
 }
