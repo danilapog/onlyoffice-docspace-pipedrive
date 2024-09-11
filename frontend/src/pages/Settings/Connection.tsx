@@ -25,7 +25,7 @@ import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
 import { OnlyofficeHint } from "@components/hint";
 
-import { deleteSettings, postSettings } from "@services/settings";
+import { deleteSettings, putSettings } from "@services/settings";
 
 import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 
@@ -77,7 +77,7 @@ export const ConnectionSettings: React.FC = () => {
             return;
           }
 
-          postSettings(sdk, stripTrailingSlash(address))
+          putSettings(sdk, stripTrailingSlash(address))
             .then(async (response: SettingsResponse) => {
               setSettings(response);
               await sdk.execute(Command.SHOW_SNACKBAR, {
