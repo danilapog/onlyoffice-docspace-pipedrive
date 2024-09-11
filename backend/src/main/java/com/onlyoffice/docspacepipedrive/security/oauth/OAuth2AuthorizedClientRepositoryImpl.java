@@ -19,10 +19,12 @@
 package com.onlyoffice.docspacepipedrive.security.oauth;
 
 import com.onlyoffice.docspacepipedrive.entity.Client;
+import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.user.AccessToken;
 import com.onlyoffice.docspacepipedrive.entity.user.RefreshToken;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
+import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,6 +43,7 @@ import org.springframework.stereotype.Service;
 public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedClientRepository {
     private final ClientService clientService;
     private final UserService userService;
+    private final SettingsService settingsService;
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Override
@@ -92,10 +95,11 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
                 .url("")
                 .build();
 
-        if (clientService.existById(client.getId())) {
-            clientService.update(client);
-        } else {
+        if (!clientService.existById(client.getId())) {
             clientService.create(client);
+            settingsService.put(client.getId(),
+                    Settings.builder().build()
+            );
         }
 
         User user = User.builder()
