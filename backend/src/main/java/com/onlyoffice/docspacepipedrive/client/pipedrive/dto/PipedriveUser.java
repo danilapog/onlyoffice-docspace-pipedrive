@@ -21,6 +21,7 @@ package com.onlyoffice.docspacepipedrive.client.pipedrive.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class PipedriveUser {
                 .toList().size() > 0;
     }
 
+    @AllArgsConstructor
     @Data
     @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
     public static class Language {
