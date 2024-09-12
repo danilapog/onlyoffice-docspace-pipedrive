@@ -21,11 +21,13 @@ package com.onlyoffice.docspacepipedrive.service.impl;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccountAlreadyExistsException;
 import com.onlyoffice.docspacepipedrive.repository.DocspaceAccountRepository;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +55,11 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
         docspaceAccount.setUser(user);
         user.setDocspaceAccount(docspaceAccount);
 
-        return docspaceAccountRepository.save(docspaceAccount);
+        try {
+            return docspaceAccountRepository.save(docspaceAccount);
+        } catch (DuplicateKeyException e) {
+            throw new DocspaceAccountAlreadyExistsException(user.getUserId(), user.getClient().getId());
+        }
     }
 
     @Override
