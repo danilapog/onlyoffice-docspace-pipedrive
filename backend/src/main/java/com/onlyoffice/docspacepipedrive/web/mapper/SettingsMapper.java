@@ -20,10 +20,7 @@ package com.onlyoffice.docspacepipedrive.web.mapper;
 
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
-import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 
 
