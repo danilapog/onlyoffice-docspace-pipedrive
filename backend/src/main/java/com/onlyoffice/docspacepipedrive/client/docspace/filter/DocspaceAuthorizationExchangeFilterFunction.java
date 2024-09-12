@@ -21,6 +21,7 @@ package com.onlyoffice.docspacepipedrive.client.docspace.filter;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAuthorizationException;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,7 @@ import org.springframework.web.util.UriBuilderFactory;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -107,8 +109,19 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
 
     private Mono<ClientRequest> reauthorize(final ClientRequest request) {
         User user = (User) request.attribute(User.class.getName()).get();
+        DocspaceAccount docspaceAccount = user.getDocspaceAccount();
 
-        return login(user).map(token -> {
+        if (docspaceAccount == null) {
+            throw new DocspaceAuthorizationException(
+                    MessageFormat.format(
+                            "DocspaceAccount for User with USER_ID({0}) and CLIENT_ID({1}) not found.",
+                            user.getUserId(),
+                            user.getClient().getId()
+                    )
+            );
+        }
+
+        return login(user.getClient().getSettings().getUrl(), docspaceAccount).map(token -> {
             return docspaceAccountService.saveToken(
                     user.getId(),
                     token
@@ -125,14 +138,14 @@ public class DocspaceAuthorizationExchangeFilterFunction implements ExchangeFilt
         });
     }
 
-    private Mono<String> login(final User user) {
+    private Mono<String> login(final String url, final DocspaceAccount docspaceAccount) {
         Map<String, String> map = new HashMap<>();
 
-        map.put("userName", user.getDocspaceAccount().getEmail());
-        map.put("passwordHash", user.getDocspaceAccount().getPasswordHash());
+        map.put("userName", docspaceAccount.getEmail());
+        map.put("passwordHash", docspaceAccount.getPasswordHash());
 
         return webClient.post()
-                .uri(user.getClient().getSettings().getUrl() + "/api/2.0/authentication")
+                .uri(url + "/api/2.0/authentication")
                 .bodyValue(map)
                 .retrieve()
                 .bodyToMono(Map.class)
