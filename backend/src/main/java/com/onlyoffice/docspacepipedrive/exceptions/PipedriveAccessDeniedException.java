@@ -25,6 +25,11 @@ import java.text.MessageFormat;
 
 public class PipedriveAccessDeniedException extends AccessDeniedException {
     public PipedriveAccessDeniedException(final Long userId) {
-        super(MessageFormat.format("Pipedrive user with ID ({0}) is not permitted to this operation.", userId));
+        super(
+                MessageFormat.format(
+                        "Pipedrive user with ID ({0}) is not permitted to this operation.",
+                        userId.toString()
+                )
+        );
     }
 }
