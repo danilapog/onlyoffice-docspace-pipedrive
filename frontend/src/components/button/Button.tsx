@@ -83,6 +83,7 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
 
   return (
     <button
+      // eslint-disable-next-line react/button-has-type
       type={type}
       disabled={disabled}
       className={classes}
