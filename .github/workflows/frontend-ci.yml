@@ -1,0 +1,38 @@
+name: CI for frontend
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, reopened]
+    branches: [master, develop]
+    paths:
+      - 'frontend/**/*.ts'
+      - 'frontend/**/*.tsx'
+  push:
+    branches: [master, develop]
+    paths:
+      - 'frontend/**/*.ts'
+      - 'frontend/**/*.tsx'
+
+jobs:
+  lint:
+    name: Lint 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: |
+          cd ${{ github.workspace }}/frontend
+          npm install
+
+      - name: Run Code Style Checks
+        run: |
+          cd ${{ github.workspace }}/frontend
+          npm run eslint
