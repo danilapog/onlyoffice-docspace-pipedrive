@@ -25,6 +25,7 @@
   "homepage": "https://github.com/ONLYOFFICE/onlyoffice-docspace-pipedrive#readme",
   "scripts": {
     "start:dev": "webpack serve --config webpack.development.js",
+    "eslint": "eslint \"**/*.{ts,tsx}\"",
     "eslint:fix": "eslint \"**/*.{ts,tsx}\" --fix",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch --passWithNoTests",
