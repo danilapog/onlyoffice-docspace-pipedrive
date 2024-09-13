@@ -16,4 +16,9 @@
 
     <suppress files="src[\\/]main[\\/]java[\\/]com[\\/]onlyoffice[\\/]docspacepipedrive[\\/]entity[\\/].*" checks="MagicNumber"/>
     <suppress files="src[\\/]main[\\/]java[\\/]com[\\/]onlyoffice[\\/]docspacepipedrive[\\/]client[\\/]pipedrive[\\/].*" checks="HiddenField"/>
+
+    <!-- TESTS -->
+    <suppress files="src[\\/]test[\\/]java[\\/]com[\\/]onlyoffice[\\/].*" checks="MethodName"/>
+    <suppress files="src[\\/]test[\\/]java[\\/]com[\\/]onlyoffice[\\/].*" checks="MagicNumber"/>
+    <suppress files="src[\\/]test[\\/]java[\\/]com[\\/]onlyoffice[\\/].*" checks="VisibilityModifier"/>
 </suppressions>

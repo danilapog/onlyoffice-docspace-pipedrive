@@ -1,0 +1,174 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "url": "/v1/users/me" ,
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "equalTo": "Bearer access_token_10000_10000"
+          }
+        }
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "success": true,
+          "data": {
+            "id": 10000,
+            "name": "Test User 10000",
+            "email": "test.user10000@test.com",
+            "timezone_name": "Europe/Helsinki",
+            "timezone_offset": "+03:00",
+            "default_currency": "USD",
+            "access": [
+              {
+                "app": "sales",
+                "admin": true,
+                "permission_set_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+              }
+            ],
+            "company_id": 10000,
+            "company_name": "Test - Sandbox",
+            "company_domain": "test-sandbox",
+            "language": {
+              "language_code": "en",
+              "country_code": "US"
+            }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/v1/users/me" ,
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "equalTo": "Bearer access_token_10000_10001"
+          }
+        }
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "success": true,
+          "data": {
+            "id": 10001,
+            "name": "Test User 10001",
+            "email": "test.user.10001.@test.com",
+            "timezone_name": "Europe/Helsinki",
+            "timezone_offset": "+03:00",
+            "default_currency": "USD",
+            "access": [
+              {
+                "app": "sales",
+                "admin": false,
+                "permission_set_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+              }
+            ],
+            "company_id": 10000,
+            "company_name": "Test - Sandbox",
+            "company_domain": "test-sandbox",
+            "language": {
+              "language_code": "en",
+              "country_code": "US"
+            }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/v1/deals/1" ,
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "success": true,
+          "data": {
+            "id": 1,
+            "title": "Deal 1",
+            "visibleTo": 3,
+            "followersCount": 1
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/v1/deals/2" ,
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "success": true,
+          "data": {
+            "id": 1,
+            "title": "Deal 2",
+            "visibleTo": 3,
+            "followersCount": 1
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/v1/deals/3" ,
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 403
+      }
+    },
+    {
+      "request": {
+        "url": "/v1/deals/4" ,
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "success": true,
+          "data": {
+            "id": 4,
+            "title": "Deal 4",
+            "visibleTo": 3,
+            "followersCount": 1
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/v1/webhooks" ,
+        "method": "POST"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "success": true,
+          "data": {
+          }
+        }
+      }
+    }
+  ]
+}
