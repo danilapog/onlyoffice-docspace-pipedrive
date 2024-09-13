@@ -66,25 +66,32 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const [appError, setAppError] = useState<AppErrorType | undefined>();
   const [reload, setReload] = useState<boolean>(false);
 
-  const reloadAppContext = () => {
-    setReload(!reload);
-    setLoading(true);
-  };
+  const appContextProviderValue = useMemo(() => {
+    const reloadAppContext = () => {
+      setReload(!reload);
+      setLoading(true);
+    };
 
-  const appContextProviderValue = useMemo(
-    () =>
-      ({
-        sdk,
-        user,
-        setUser,
-        settings,
-        setSettings,
-        appError,
-        setAppError,
-        reloadAppContext,
-      }) as IAppContext,
-    [sdk, user, setUser, settings, setSettings, appError, setAppError],
-  );
+    return {
+      sdk,
+      user,
+      setUser,
+      settings,
+      setSettings,
+      appError,
+      setAppError,
+      reloadAppContext,
+    } as IAppContext;
+  }, [
+    sdk,
+    user,
+    setUser,
+    settings,
+    setSettings,
+    appError,
+    setAppError,
+    reload,
+  ]);
 
   useEffect(() => {
     new AppExtensionsSDK()
