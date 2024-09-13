@@ -76,8 +76,7 @@ const SettingsPage: React.FC = () => {
                 }`}
                 onClick={() => setSelectedSection(section.id)}
                 onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (event.key === "Enter")
-                    setSelectedSection(section.id)
+                  if (event.key === "Enter") setSelectedSection(section.id);
                 }}
               >
                 {section.title}

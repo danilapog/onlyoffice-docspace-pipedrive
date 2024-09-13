@@ -31,11 +31,12 @@ export const AuthorizationSetting: React.FC = () => {
   const [password, setPassword] = useState<string | undefined>("");
   const [isSystem, setIsSystem] = useState<boolean>(!settings?.existSystemUser);
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       delete window?.DocSpace;
-    }
-  }, []);
+    },
+    [],
+  );
 
   const handleLogin = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -289,7 +290,10 @@ export const AuthorizationSetting: React.FC = () => {
                 </div>
                 <div className="pl-5 pr-5 pb-2">
                   <OnlyofficeInput
-                    text={t("settings.authorization.inputs.password", "Password")}
+                    text={t(
+                      "settings.authorization.inputs.password",
+                      "Password",
+                    )}
                     valid={showValidationMessage ? !!password : true}
                     value={password}
                     type="password"

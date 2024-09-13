@@ -62,7 +62,8 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
     "dark:hover:bg-pipedrive-color-dark-green-700":
       color === ButtonColor.PRIMARY && !disabled,
 
-    "text-white bg-pipedrive-color-light-red-600": color === ButtonColor.NEGATIVE,
+    "text-white bg-pipedrive-color-light-red-600":
+      color === ButtonColor.NEGATIVE,
     "hover:bg-pipedrive-color-light-red-700":
       color === ButtonColor.NEGATIVE && !disabled,
     "dark:bg-pipedrive-color-dark-red-600": color === ButtonColor.NEGATIVE,
@@ -71,7 +72,8 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
 
     "border border-solid bg-white hover:bg-pipedrive-color-light-neutral-100":
       color === ButtonColor.SECONDARY,
-    "dark:text-pipedrive-color-dark-neutral-1000": color === ButtonColor.SECONDARY,
+    "dark:text-pipedrive-color-dark-neutral-1000":
+      color === ButtonColor.SECONDARY,
     "dark:border-pipedrive-color-dark-divider-strong":
       color === ButtonColor.SECONDARY,
     "dark:bg-pipedrive-color-dark-neutral-100": color === ButtonColor.SECONDARY,
