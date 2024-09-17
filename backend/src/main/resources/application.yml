@@ -6,6 +6,11 @@ pipedrive:
   base-url: https://app.pipedrive.com
   base-api-url: https://api.pipedrive.com
 
+db:
+  encryption:
+    password: ${DB_ENCRYPTION_PASSWORD} || ${PIPEDRIVE_CLIENT_ID}
+    salt: ${DB_ENCRYPTION_SALT} || ${PIPEDRIVE_CLIENT_SECRET}
+
 spring:
   security:
     oauth2:

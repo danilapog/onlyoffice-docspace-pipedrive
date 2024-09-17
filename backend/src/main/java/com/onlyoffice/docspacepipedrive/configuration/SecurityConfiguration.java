@@ -65,9 +65,9 @@ public class SecurityConfiguration {
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
-    @Value("${spring.security.oauth2.client.registration.pipedrive.client-id}")
+    @Value("${db.encryption.password}")
     private String encryptPassword;
-    @Value("${spring.security.oauth2.client.registration.pipedrive.client-secret}")
+    @Value("${db.encryption.salt}")
     private String encryptSalt;
     @Value("${spring.security.oauth2.client.registration.pipedrive.client-secret}")
     private String jwtSecretKey;
