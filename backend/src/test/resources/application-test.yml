@@ -1,0 +1,41 @@
+app:
+  base-url: http://localhost:8080/
+  frontend-url: http://localhost:3000/
+
+pipedrive:
+  base-url: https://app.pipedrive.com
+  base-api-url: https://api.pipedrive.com
+
+db:
+  encryption:
+    password: a5456fg671c4h56b
+    salt: 51a4110d4ebc7966aba6edaf53a51c4c0f5492c4
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          pipedrive:
+            provider: pipedrive
+            client-id: a5456fg671c4h56b
+            client-secret: 51a4110d4ebc7966aba6edaf53a51c4c0f5492c4
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          pipedrive:
+            authorization-uri: https://oauth.pipedrive.com/oauth/authorize
+            token-uri: https://oauth.pipedrive.com/oauth/token
+    jwt:
+      client-name-attribute: companyId
+      user-name-attribute: userId
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    hikari:
+      schema: public
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS public
+      connection-timeout: 10000
+  liquibase:
+    changelog: classpath://db/changelog/db.changelog-master.xml

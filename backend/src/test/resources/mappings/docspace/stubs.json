@@ -1,0 +1,127 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "url": "/api/2.0/people/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": {
+            "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+            "email": "docspace.user1@onlyoffice.com",
+            "isOwner": true,
+            "isAdmin": true,
+            "isRoomAdmin": true
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPathPattern": "/api/2.0/people/email",
+        "queryParameters": {
+          "email": {
+            "equalTo": "docspace.user1@onlyoffice.com"
+          }
+        },
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": {
+            "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+            "email": "docspace.user1@onlyoffice.com",
+            "isOwner": true,
+            "isAdmin": true,
+            "isRoomAdmin": true
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPathPattern": "/api/2.0/people/email",
+        "queryParameters": {
+          "email": {
+            "equalTo": "docspace.user2@onlyoffice.com"
+          }
+        },
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": {
+            "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2",
+            "email": "docspace.user1@onlyoffice.com",
+            "isOwner": false,
+            "isAdmin": false,
+            "isRoomAdmin": true
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/api/2.0/authentication",
+        "method": "POST"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": {
+            "token": "docspace_token"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/api/2.0/files/rooms",
+        "method": "POST"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": {
+            "id": 10001
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/api/2.0/group/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+        "method": "PUT"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": {
+          }
+        }
+      }
+    }
+  ]
+}
