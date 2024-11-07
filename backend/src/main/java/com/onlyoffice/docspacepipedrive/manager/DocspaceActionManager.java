@@ -246,14 +246,4 @@ public class DocspaceActionManager {
         }
     }
 
-    public void addTagToRoom(final Long roomId, final String tagName) {
-        List<String> tagNames = docspaceClient.getTags();
-
-        if (!tagNames.contains(tagName)) {
-            docspaceClient.createTag(tagName);
-        }
-
-        docspaceClient.addTagsToRoom(roomId, Collections.singletonList(tagName));
-    }
-
 }
