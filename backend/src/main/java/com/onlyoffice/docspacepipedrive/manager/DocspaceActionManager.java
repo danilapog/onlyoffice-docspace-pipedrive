@@ -157,7 +157,7 @@ public class DocspaceActionManager {
         DocspaceRoomInvitation docspaceRoomInvitation =
                 new DocspaceRoomInvitation(
                         sharedGroupId,
-                        DocspaceAccess.EDITING
+                        DocspaceAccess.COLLABORATOR
                 );
 
         DocspaceRoomInvitationRequest docspaceRoomInvitationRequest = DocspaceRoomInvitationRequest.builder()
