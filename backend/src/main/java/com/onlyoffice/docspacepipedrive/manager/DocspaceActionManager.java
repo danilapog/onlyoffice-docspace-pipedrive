@@ -196,23 +196,11 @@ public class DocspaceActionManager {
     }
 
     public void inviteListDocspaceAccountsToRoom(final Long roomId, final List<DocspaceAccount> docspaceAccounts) {
-        List<UUID> docspaceUnpaidUsers = docspaceClient.findUsers(2) //employeeType 2 = User
-                .stream()
-                .map(docspaceUser -> {
-                    return docspaceUser.getId();
-                })
-                .toList();
-
         List<DocspaceRoomInvitation> invitations = docspaceAccounts.stream()
                 .map(docspaceAccount -> {
-                    DocspaceAccess docspaceAccess = DocspaceAccess.COLLABORATOR;
-                    if (docspaceUnpaidUsers.contains(docspaceAccount.getUuid())) {
-                        docspaceAccess = DocspaceAccess.EDITING;
-                    }
-
                     return new DocspaceRoomInvitation(
                             docspaceAccount.getUuid(),
-                            docspaceAccess
+                            DocspaceAccess.COLLABORATOR
                     );
                 })
                 .toList();
