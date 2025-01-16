@@ -42,7 +42,8 @@
             "email": "docspace.user1@onlyoffice.com",
             "isOwner": true,
             "isAdmin": true,
-            "isRoomAdmin": true
+            "isRoomAdmin": true,
+            "isVisitor": false
           }
         }
       }
