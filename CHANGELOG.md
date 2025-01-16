@@ -1,5 +1,13 @@
 # Change Log
 
+##
+## Changed
+DocSpace 3.0:
+- invite a "Shared Group" to a room attached to a deal with the "Content Creator" rights
+- invite deal followers to a room attached to a deal with the "Content Creator" rights
+- DocSpace Users with role Guest can not authorize in plugin
+- using API for create room with tags
+
 ## 1.0.0
 ## Added
 - settings page
