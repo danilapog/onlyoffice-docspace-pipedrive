@@ -34,4 +34,5 @@ public class PipedriveWebhook {
     private String eventObject;
     private String httpAuthUser;
     private String httpAuthPassword;
+    private String version;
 }
