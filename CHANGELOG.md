@@ -1,6 +1,9 @@
 # Change Log
 
 ##
+## Added
+- ability to select room type when creating
+
 ## Changed
 - support DocSpace 3.0
 - invite a "Shared Group" to a room attached to a deal with the "Content Creator" rights
