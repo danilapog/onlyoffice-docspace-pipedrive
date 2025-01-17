@@ -54,6 +54,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class RoomController {
+    private static final String INTEGRATION_TAG_NAME = "Pipedrive Integration";
+
     private final RoomService roomService;
     private final RoomMapper roomMapper;
     private final PipedriveClient pipedriveClient;
@@ -84,7 +86,8 @@ public class RoomController {
                         pipedriveDeal.getTitle(),
                         currentClient.getCompanyName()
                 ),
-                2
+                2,
+                Collections.singletonList(INTEGRATION_TAG_NAME)
         );
 
         Room room = Room.builder()

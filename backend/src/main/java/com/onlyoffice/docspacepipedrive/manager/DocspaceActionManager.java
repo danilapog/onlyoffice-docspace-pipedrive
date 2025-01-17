@@ -157,7 +157,7 @@ public class DocspaceActionManager {
         DocspaceRoomInvitation docspaceRoomInvitation =
                 new DocspaceRoomInvitation(
                         sharedGroupId,
-                        DocspaceAccess.EDITING
+                        DocspaceAccess.COLLABORATOR
                 );
 
         DocspaceRoomInvitationRequest docspaceRoomInvitationRequest = DocspaceRoomInvitationRequest.builder()
@@ -196,23 +196,11 @@ public class DocspaceActionManager {
     }
 
     public void inviteListDocspaceAccountsToRoom(final Long roomId, final List<DocspaceAccount> docspaceAccounts) {
-        List<UUID> docspaceUnpaidUsers = docspaceClient.findUsers(2) //employeeType 2 = User
-                .stream()
-                .map(docspaceUser -> {
-                    return docspaceUser.getId();
-                })
-                .toList();
-
         List<DocspaceRoomInvitation> invitations = docspaceAccounts.stream()
                 .map(docspaceAccount -> {
-                    DocspaceAccess docspaceAccess = DocspaceAccess.COLLABORATOR;
-                    if (docspaceUnpaidUsers.contains(docspaceAccount.getUuid())) {
-                        docspaceAccess = DocspaceAccess.EDITING;
-                    }
-
                     return new DocspaceRoomInvitation(
                             docspaceAccount.getUuid(),
-                            docspaceAccess
+                            DocspaceAccess.COLLABORATOR
                     );
                 })
                 .toList();
@@ -244,16 +232,6 @@ public class DocspaceActionManager {
 
             docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
         }
-    }
-
-    public void addTagToRoom(final Long roomId, final String tagName) {
-        List<String> tagNames = docspaceClient.getTags();
-
-        if (!tagNames.contains(tagName)) {
-            docspaceClient.createTag(tagName);
-        }
-
-        docspaceClient.addTagsToRoom(roomId, Collections.singletonList(tagName));
     }
 
 }
