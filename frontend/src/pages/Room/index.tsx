@@ -31,14 +31,36 @@ import { AppContext, AppErrorType } from "@context/AppContext";
 import { createRoom, getRoom } from "@services/room";
 import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 
-import { ButtonColor, OnlyofficeButton } from "@components/button";
 import { OnlyofficeSpinner } from "@components/spinner";
 
 import { OnlyofficeSnackbar } from "@components/snackbar";
 import { getLocaleForDocspace } from "@utils/locale";
 import { AxiosError } from "axios";
+import {
+  DropdownButtonColor,
+  OnlyofficeDropdownButton,
+} from "@components/dropdownButton";
+import { DropdownButtonOptions } from "@components/dropdownButton/DropdownButton";
 
 const DOCSPACE_FRAME_ID = "docspace-frame";
+const DOCSPACE_ROOM_TYPES = [
+  {
+    id: 2,
+    name: "collaboration",
+  },
+  {
+    id: 6,
+    name: "public",
+  },
+  {
+    id: 8,
+    name: "vdr",
+  },
+  {
+    id: 5,
+    name: "custom",
+  },
+];
 
 const RoomPage: React.FC = () => {
   const { sdk, user, settings, setAppError } = useContext(AppContext);
@@ -79,7 +101,6 @@ const RoomPage: React.FC = () => {
             ...config,
             id: null,
           });
-          sdk.execute(Command.RESIZE, { height: 150 });
         } else {
           setAppError(AppErrorType.DOCSPACE_ROOM_NOT_FOUND);
         }
@@ -131,10 +152,10 @@ const RoomPage: React.FC = () => {
       });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleCreateRoom = () => {
+  const handleCreateRoom = (roomType: string) => {
     setCreating(true);
 
-    createRoom(sdk, Number(parameters.get("selectedIds")))
+    createRoom(sdk, Number(parameters.get("selectedIds")), Number(roomType))
       .then(async (response) => {
         setConfig({
           ...config,
@@ -188,6 +209,15 @@ const RoomPage: React.FC = () => {
     setLoading(false);
   };
 
+  const getCreateRoomOptions = () =>
+    DOCSPACE_ROOM_TYPES.reduce((createRoomOptions, roomType) => {
+      createRoomOptions.push({
+        id: String(roomType.id),
+        label: t(`docspace.room.type.${roomType.name}`, roomType.name),
+      });
+      return createRoomOptions;
+    }, new Array<DropdownButtonOptions>());
+
   return (
     <div className="w-full h-full flex flex-col">
       {loading && (
@@ -222,13 +252,24 @@ const RoomPage: React.FC = () => {
             <div className="w-full pb-4">
               {t(
                 "room.create.description",
-                "Create ONLYOFFICE DocSpace room to easily collaborate on documents in this deal",
+                "Create ONLYOFFICE DocSpace room to work with documents related to this deal. You will not be able to change the room type.",
               )}
+              <a
+                className="font-semibold
+                  text-pipedrive-color-light-blue-600
+                  dark:text-pipedrive-color-dark-blue-600"
+                target="_blank"
+                href="https://helpcenter.onlyoffice.com/userguides/docspace-creating-rooms.aspx"
+                rel="noreferrer"
+              >
+                {` ${t("t", "Learn more")}.`}
+              </a>
             </div>
-            <OnlyofficeButton
+            <OnlyofficeDropdownButton
               text={t("button.create.room", "Create room")}
-              color={ButtonColor.PRIMARY}
+              color={DropdownButtonColor.PRIMARY}
               loading={creating}
+              options={getCreateRoomOptions()}
               onClick={handleCreateRoom}
             />
           </div>
