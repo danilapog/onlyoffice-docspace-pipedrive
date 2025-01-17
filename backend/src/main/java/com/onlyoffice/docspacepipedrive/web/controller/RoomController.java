@@ -31,6 +31,7 @@ import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
+import com.onlyoffice.docspacepipedrive.web.dto.room.RoomRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
 import com.onlyoffice.docspacepipedrive.web.mapper.RoomMapper;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -77,7 +79,8 @@ public class RoomController {
 
     @PostMapping("/{dealId}")
     public ResponseEntity<RoomResponse> create(@AuthenticationPrincipal(expression = "client") Client currentClient,
-                                               @PathVariable Long dealId) {
+                                               @PathVariable Long dealId,
+                                               @RequestBody RoomRequest request) {
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
 
         DocspaceRoom docspaceRoom = docspaceClient.createRoom(
@@ -86,7 +89,7 @@ public class RoomController {
                         pipedriveDeal.getTitle(),
                         currentClient.getCompanyName()
                 ),
-                2,
+                request.getRoomType(),
                 Collections.singletonList(INTEGRATION_TAG_NAME)
         );
 
