@@ -24,6 +24,7 @@ import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceMembers;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceResponse;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitationRequest;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomType;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
@@ -136,7 +137,7 @@ public class DocspaceClient {
         return docspaceUsers;
     }
 
-    public DocspaceRoom createRoom(final String title, final Integer roomType, final List<String> tags) {
+    public DocspaceRoom createRoom(final String title, final DocspaceRoomType roomType, final List<String> tags) {
         Map<String, Object> map = new HashMap<>();
 
         map.put("title", title);

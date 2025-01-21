@@ -19,13 +19,16 @@
 package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.AbstractControllerTest;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomType;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
+import com.onlyoffice.docspacepipedrive.web.dto.room.RoomRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 import java.text.MessageFormat;
 import java.util.Map;
@@ -101,6 +104,8 @@ public class RoomControllerTest extends AbstractControllerTest {
                         .header("Authorization",
                                 getAuthorizationHeaderForUser(testUserSalesAdmin)
                         )
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(new RoomRequest(DocspaceRoomType.EDITING_ROOM)))
                 )
                 .andExpect(status().isOk())
                 .andReturn()
@@ -126,6 +131,8 @@ public class RoomControllerTest extends AbstractControllerTest {
                         .header("Authorization",
                                 getAuthorizationHeaderForUser(testUserSalesAdmin)
                         )
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(new RoomRequest(DocspaceRoomType.EDITING_ROOM)))
                 )
                 .andExpect(status().isForbidden())
                 .andReturn()
@@ -147,6 +154,8 @@ public class RoomControllerTest extends AbstractControllerTest {
                         .header("Authorization",
                                 getAuthorizationHeaderForUser(testUserSalesAdmin)
                         )
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(new RoomRequest(DocspaceRoomType.EDITING_ROOM)))
                 )
                 .andExpect(status().isForbidden())
                 .andReturn()

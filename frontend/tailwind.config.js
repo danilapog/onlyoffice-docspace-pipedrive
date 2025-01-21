@@ -74,6 +74,7 @@ module.exports = {
                 "pipedrive-color-light-neutral-500": "#93949a",
                 "pipedrive-color-light-neutral-1000": "#21232c",
                 "pipedrive-color-light-blue-200": "#e1eeff",
+                "pipedrive-color-light-blue-600": "#2b74da",
                 "pipedrive-color-light-blue-700": "#0d68c5",
                 "pipedrive-color-light-red-600": "#d83c38",
                 "pipedrive-color-light-red-700": "#c82627",
