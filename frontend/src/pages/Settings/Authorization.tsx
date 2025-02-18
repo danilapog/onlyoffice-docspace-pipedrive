@@ -1,7 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
-import { DocSpace, TFrameConfig } from "@onlyoffice/docspace-react";
+import { DocSpace } from "@onlyoffice/docspace-react";
+import { TFrameConfig } from "@onlyoffice/docspace-sdk-js/dist/types/types";
+import SDKInstance from "@onlyoffice/docspace-sdk-js/dist/types/instance";
 
 import { ButtonColor, OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
@@ -32,12 +34,7 @@ export const AuthorizationSetting: React.FC = () => {
   const [password, setPassword] = useState<string | undefined>("");
   const [isSystem, setIsSystem] = useState<boolean>(!settings?.existSystemUser);
 
-  useEffect(
-    () => () => {
-      delete window?.DocSpace;
-    },
-    [],
-  );
+  let docspaceInstance: SDKInstance;
 
   const handleLogin = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -115,7 +112,7 @@ export const AuthorizationSetting: React.FC = () => {
   };
 
   const onAppReady = async () => {
-    if (email && password) {
+    if (email && password && docspaceInstance) {
       const loginTimeout = setTimeout(async () => {
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: `${t("docspace.error.login", "User authentication failed")} (Timeout)`,
@@ -123,17 +120,15 @@ export const AuthorizationSetting: React.FC = () => {
         setSaving(false);
       }, 15000);
 
-      const hashSettings =
-        await window.DocSpace.SDK.frames[
-          DOCSPACE_SYSTEM_FRAME_ID
-        ].getHashSettings();
-      const passwordHash = await window.DocSpace.SDK.frames[
-        DOCSPACE_SYSTEM_FRAME_ID
-      ].createHash(password, hashSettings);
+      const hashSettings = await docspaceInstance.getHashSettings();
+      const passwordHash = (await docspaceInstance.createHash(
+        password,
+        hashSettings,
+      )) as unknown as string;
 
-      const login = await window.DocSpace.SDK.frames[
-        DOCSPACE_SYSTEM_FRAME_ID
-      ].login(email, passwordHash);
+      const login = (await docspaceInstance.login(email, passwordHash)) as {
+        status: number;
+      };
 
       clearTimeout(loginTimeout);
 
@@ -203,17 +198,11 @@ export const AuthorizationSetting: React.FC = () => {
     await sdk.execute(Command.SHOW_SNACKBAR, {
       message: t("docspace.error.loading", "Error loading ONLYOFFICE DocSpace"),
     });
-    delete window.DocSpace;
-    setSaving(false);
-  };
 
-  const onLoadComponentError = async () => {
-    await sdk.execute(Command.SHOW_SNACKBAR, {
-      message: t(
-        "docspace.error.unreached",
-        "ONLYOFFICE DocSpace cannot be reached",
-      ),
-    });
+    if (docspaceInstance) {
+      docspaceInstance.destroyFrame();
+    }
+
     setSaving(false);
   };
 
@@ -377,7 +366,9 @@ export const AuthorizationSetting: React.FC = () => {
                 } as unknown,
               } as TFrameConfig
             }
-            onLoadComponentError={onLoadComponentError}
+            onSetDocspaceInstance={(instance) => {
+              docspaceInstance = instance;
+            }}
           />
         </div>
       )}
