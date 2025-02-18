@@ -3,6 +3,7 @@
 ##
 ## Added
 - ability to select room type when creating
+- using @onlyoffice/docspace-sdk-js
 
 ## Changed
 - support DocSpace 3.0
