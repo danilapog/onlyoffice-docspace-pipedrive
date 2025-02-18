@@ -20,11 +20,11 @@ import React, { useContext, useEffect, useState } from "react";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
+import { DocSpace } from "@onlyoffice/docspace-react";
 import {
-  DocSpace,
   TFrameConfig,
   TFrameEvents,
-} from "@onlyoffice/docspace-react";
+} from "@onlyoffice/docspace-sdk-js/dist/types/types";
 
 import { AppContext, AppErrorType } from "@context/AppContext";
 
@@ -200,10 +200,6 @@ const RoomPage: React.FC = () => {
 
   const onRequestPasswordHash = () => user?.docspaceAccount?.passwordHash || "";
 
-  const onLoadComponentError = () => {
-    setAppError(AppErrorType.DOCSPACE_UNREACHABLE);
-  };
-
   const onUnsuccessLogin = () => {
     setAppError(AppErrorType.DOCSPACE_AUTHORIZATION);
     setLoading(false);
@@ -285,7 +281,6 @@ const RoomPage: React.FC = () => {
             url={settings.url}
             config={config}
             email={user?.docspaceAccount?.userName || "undefined"}
-            onLoadComponentError={onLoadComponentError}
             onRequestPasswordHash={onRequestPasswordHash}
             onUnsuccessLogin={onUnsuccessLogin}
           />
