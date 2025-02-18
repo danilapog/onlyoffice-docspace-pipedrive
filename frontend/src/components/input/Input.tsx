@@ -28,8 +28,6 @@ type InputProps = {
   errorText?: string;
   valid?: boolean;
   disabled?: boolean;
-  textSize?: "sm" | "xs";
-  labelSize?: "sm" | "xs";
   autocomplete?: boolean;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 };
