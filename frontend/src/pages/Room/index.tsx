@@ -19,7 +19,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
-import { Command } from "@pipedrive/app-extensions-sdk";
+import { Command, Modal } from "@pipedrive/app-extensions-sdk";
 import {
   DocSpace,
   TFrameConfig,
@@ -52,6 +52,7 @@ const RoomPage: React.FC = () => {
     width: "100%",
     height: "100%",
     theme: sdk.userSettings.theme === "dark" ? "Dark" : "Base",
+    downloadToEvent: true,
     events: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onContentReady: (e: string | Event) => {
@@ -86,6 +87,17 @@ const RoomPage: React.FC = () => {
 
         setLoading(false);
       },
+      onDownload:  (e: string | Event) => {
+        const url = new URL(e as string);
+        
+        sdk.execute(Command.OPEN_MODAL, {
+          type: Modal.CUSTOM_MODAL,
+          action_id: "f09a0a47-49ed-4a65-b0bb-5bcde6b66a95",
+          data: {
+            id: url.searchParams.get("fileid") || "",
+          },
+        });
+      }
     } as TFrameEvents,
   } as TFrameConfig);
 

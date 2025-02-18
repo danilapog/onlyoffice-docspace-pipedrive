@@ -66,5 +66,9 @@
   "settings.connection.hint.csp.pipedrive-adress": "Pipedrive portal address",
   "settings.connection.hint.csp.docspace-adress": "ONLYOFFICE DocSpace app",
   "settings.connection.inputs.address": "ONLYOFFICE DocSpace address",
-  "settings.connection.menu-item": "Connection"
+  "settings.connection.menu-item": "Connection",
+  "pipedrive.entity.deal": "Deal",
+  "pipedrive.entity.person": "Person",
+  "pipedrive.entity.organization": "Organization",
+  "pipedrive.entity.product": "Products"
 }

@@ -21,6 +21,7 @@ package com.onlyoffice.docspacepipedrive.client.pipedrive;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollower;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollowerEvent;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveField;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveResponse;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
@@ -29,6 +30,7 @@ import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationE
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
@@ -63,6 +65,21 @@ public class PipedriveClient {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<PipedriveDeal>>() { })
                 .map(PipedriveResponse<PipedriveDeal>::getData)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new PipedriveWebClientResponseException(e));
+                })
+                .block();
+    }
+
+    public Map<String, Object> getDealAsJson(final Long id) {
+        return pipedriveWebClient.get()
+                .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
+                        .path("/v1/deals/{id}")
+                        .build(id)
+                )
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<Map<String, Object>>>() { })
+                .map(PipedriveResponse<Map<String, Object>>::getData)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new PipedriveWebClientResponseException(e));
                 })
@@ -204,6 +221,24 @@ public class PipedriveClient {
                 )
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() { })
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new PipedriveWebClientResponseException(e));
+                })
+                .onErrorResume(OAuth2AuthorizationException.class, e -> {
+                    return Mono.error(new PipedriveOAuth2AuthorizationException(e));
+                })
+                .block();
+    }
+
+    public List<PipedriveField> getFields(final String entityName) {
+        return pipedriveWebClient.get()
+                .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
+                        .path("/v1/{entityName}Fields")
+                        .build(entityName)
+                )
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<List<PipedriveField>>>() { })
+                .map(PipedriveResponse<List<PipedriveField>>::getData)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new PipedriveWebClientResponseException(e));
                 })
