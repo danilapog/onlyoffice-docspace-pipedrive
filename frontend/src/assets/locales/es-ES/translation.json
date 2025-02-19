@@ -61,7 +61,7 @@
   "settings.authorization.inputs.system.help": "Al hacer clic en este botón, el plugin realizará acciones desde su cuenta de DocSpace",
   "settings.authorization.menu-item": "Autorización",
   "settings.connection.saving.error.forbidden.not-admin": "El usuario especificado no es un administrador de ONLYOFFICE DocSpace",
-  "settings.connection.saving.error.forbidden.guest": "",
+  "settings.connection.saving.error.forbidden.guest": "El usuario especificado no debe ser Invitado",
   "settings.connection.saving.error.undefined": "No se ha podido guardar los ajustes de ONLYOFFICE DocSpace",
   "settings.connection.saving.ok": "Los ajustes de ONLYOFFICE DocSpace se han guardado",
   "settings.connection.disconnection.description": "¿Está seguro que quiere desconectar ONLYOFFICE DocSpace? Esto resultará en que todas las conexiones entre Acuerdos y salas de DocSpace se perderán. Y también todos los datos de autorización de usuario se eliminarán.",

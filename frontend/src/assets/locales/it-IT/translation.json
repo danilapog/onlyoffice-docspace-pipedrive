@@ -61,7 +61,7 @@
   "settings.authorization.inputs.system.help": "Se clicchi su questo interruttore, il plugin eseguirà azioni dal tuo account DocSpace",
   "settings.authorization.menu-item": "Autorizzazione",
   "settings.connection.saving.error.forbidden.not-admin": "L'utente specificato non è un amministratore di ONLYOFFICE DocSpace",
-  "settings.connection.saving.error.forbidden.guest": "",
+  "settings.connection.saving.error.forbidden.guest": "L'utente specificato non deve essere Ospite",
   "settings.connection.saving.error.undefined": "Impossibile salvare le impostazioni di ONLYOFFICE DocSpace",
   "settings.connection.saving.ok": "Le impostazioni di ONLYOFFICE DocSpace sono state salvate",
   "settings.connection.disconnection.description": "Sei sicuro di voler disconnettere ONLYOFFICE DocSpace? Questo comporterà la perdita di tutte le connessioni tra Deals e le stanze DocSpace. Inoltre, tutti i dati di autorizzazione utente saranno eliminati.",
