@@ -61,7 +61,7 @@
   "settings.authorization.inputs.system.help": "このスイッチをクリックすると、プラグインがDocSpaceアカウントからのアクションを実行します",
   "settings.authorization.menu-item": "認証",
   "settings.connection.saving.error.forbidden.not-admin": "指定されたユーザーはONLYOFFICE DocSpace管理者ではありません",
-  "settings.connection.saving.error.forbidden.guest": "",
+  "settings.connection.saving.error.forbidden.guest": "指定したユーザーはゲストユーザーにできません",
   "settings.connection.saving.error.undefined": "ONLYOFFICE DocSpace設定を保存できませんでした",
   "settings.connection.saving.ok": "ONLYOFFICE DocSpace設定が保存されました",
   "settings.connection.disconnection.description": "ONLYOFFICE DocSpaceの接続を切断してもよろしいですか? これは、DealsとDocSpaceルーム間のすべての接続が失われることを意味します。また、すべてのユーザー認証データも削除されます。",
