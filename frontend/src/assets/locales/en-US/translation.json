@@ -61,7 +61,7 @@
   "settings.authorization.inputs.system.help": "If you click on this switch, the plugin will perform actions from your DocSpace account",
   "settings.authorization.menu-item": "Authorization",
   "settings.connection.saving.error.forbidden.not-admin": "The specified user is not a ONLYOFFICE DocSpace administrator",
-  "settings.connection.saving.error.forbidden.guest": "",
+  "settings.connection.saving.error.forbidden.guest": "The specified user should not be Guest",
   "settings.connection.saving.error.undefined": "Could not save ONLYOFFICE DocSpace settings",
   "settings.connection.saving.ok": "ONLYOFFICE DocSpace settings have been saved",
   "settings.connection.disconnection.description": "Are you sure you want to disconnect ONLYOFFICE DocSpace? This will result in all connections between Deals and DocSpace rooms being lost. And also all user authorization data will be deleted.",

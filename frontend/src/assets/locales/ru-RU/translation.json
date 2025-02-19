@@ -61,7 +61,7 @@
   "settings.authorization.inputs.system.help": "Если вы нажмете на этот переключатель, плагин будет выполнять действия из вашей учетной записи DocSpace",
   "settings.authorization.menu-item": "Авторизация",
   "settings.connection.saving.error.forbidden.not-admin": "Указанный пользователь не является администратором ONLYOFFICE DocSpace",
-  "settings.connection.saving.error.forbidden.guest": "",
+  "settings.connection.saving.error.forbidden.guest": "Указанный пользователь не должен являться Гостем",
   "settings.connection.saving.error.undefined": "Не удалось сохранить настройки ONLYOFFICE DocSpace",
   "settings.connection.saving.ok": "Настройки ONLYOFFICE DocSpace сохранены",
   "settings.connection.disconnection.description": "Вы уверены, что хотите отключить ONLYOFFICE DocSpace? Это приведет к потере всех соединений между сделками и комнатами DocSpace. Также будут удалены все данные авторизации пользователей",
