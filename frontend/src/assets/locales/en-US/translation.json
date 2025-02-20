@@ -49,7 +49,7 @@
   "settings.authorization.login.system.confirm": "Do you agree to connect your DocSpace account? The app will use it to perform actions.",
   "settings.authorization.deleting.system.confirm": "Are you sure you want to log out? You are a System User and this action will result in the ONLYOFFICE DocSpace functionality being limited.",
   "settings.authorization.deleting.ok": "ONLYOFFICE DocSpace authorization has been successfully deleted",
-  "settings.authorization.hint.login.message": "",
+  "settings.authorization.hint.login.message": "DocSpace users with the <semibold>{{role}}</semibold> type can't log into Pipedrive",
   "settings.authorization.saving.ok": "ONLYOFFICE DocSpace authorization has been successfully saved",
   "settings.authorization.saving.error": "Could not save ONLYOFFICE DocSpace authorization",
   "settings.authorization.title": "Login to ONLYOFFICE DocSpace account",
