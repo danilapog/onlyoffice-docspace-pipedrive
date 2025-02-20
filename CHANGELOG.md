@@ -1,6 +1,6 @@
 # Change Log
 
-##
+## 1.1.0
 ## Added
 - ability to select room type when creating
 - using @onlyoffice/docspace-sdk-js
