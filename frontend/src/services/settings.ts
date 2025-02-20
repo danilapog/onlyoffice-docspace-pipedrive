@@ -25,7 +25,7 @@ import { SettingsResponse } from "src/types/settings";
 export const getSettings = async (sdk: AppExtensionsSDK) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
-  axiosRetry(client, {
+  axiosRetry(client as any, {
     retries: 2,
     retryCondition: (error) => error.status !== 200,
     retryDelay: (count) => count * 50,
@@ -48,7 +48,7 @@ export const getSettings = async (sdk: AppExtensionsSDK) => {
 export const putSettings = async (sdk: AppExtensionsSDK, url: string) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
-  axiosRetry(client, {
+  axiosRetry(client as any, {
     retries: 1,
     retryCondition: (error) => error.status === 429,
     retryDelay: (count) => count * 50,
@@ -74,7 +74,7 @@ export const putSettings = async (sdk: AppExtensionsSDK, url: string) => {
 export const deleteSettings = async (sdk: AppExtensionsSDK) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
-  axiosRetry(client, {
+  axiosRetry(client as any, {
     retries: 1,
     retryCondition: (error) => error.status === 429,
     retryDelay: (count) => count * 50,
