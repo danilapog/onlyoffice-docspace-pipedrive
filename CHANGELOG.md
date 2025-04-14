@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.1
+## Changed
+- the version for webhooks is clearly specified as 1.0
+
 ## 1.0.0
 ## Added
 - settings page
