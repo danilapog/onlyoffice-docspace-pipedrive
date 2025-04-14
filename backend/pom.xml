@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.onlyoffice</groupId>
 	<artifactId>docspace-pipedrive</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>docspace-pipedrive</name>
 	<description>DocSpace integration into Pipedrive</description>
 	<properties>
