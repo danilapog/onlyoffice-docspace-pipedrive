@@ -12,6 +12,10 @@
 - DocSpace Users with role Guest can not authorize in plugin
 - using API for create room with tags
 
+## 1.0.1
+## Changed
+- the version for webhooks is clearly specified as 1.0
+
 ## 1.0.0
 ## Added
 - settings page
