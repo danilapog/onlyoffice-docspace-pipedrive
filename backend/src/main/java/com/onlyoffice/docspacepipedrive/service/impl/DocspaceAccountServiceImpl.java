@@ -79,13 +79,7 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     @Override
     @Transactional
     public void deleteById(final Long id) {
-        User user = userService.findById(id);
-
         docspaceAccountRepository.deleteById(id);
-
-        if (user.isSystemUser()) {
-            clientService.unsetSystemUser(user.getClient().getId());
-        }
     }
 
     @Override
