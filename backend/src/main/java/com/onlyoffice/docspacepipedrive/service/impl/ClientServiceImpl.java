@@ -62,20 +62,7 @@ public class ClientServiceImpl implements ClientService {
             existedClient.setCompanyName(client.getCompanyName());
         }
 
-        if (client.existSystemUser()) {
-            existedClient.setSystemUser(client.getSystemUser());
-        }
-
         return clientRepository.save(existedClient);
-    }
-
-    @Override
-    public void unsetSystemUser(final Long clientId) {
-        Client client = findById(clientId);
-
-        client.setSystemUser(null);
-
-        clientRepository.save(client);
     }
 
     @Override

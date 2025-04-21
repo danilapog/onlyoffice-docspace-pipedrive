@@ -28,7 +28,6 @@ import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationE
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsValidationException;
-import com.onlyoffice.docspacepipedrive.exceptions.SystemUserNotFoundException;
 import com.onlyoffice.docspacepipedrive.web.dto.ErrorResponse;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -109,18 +108,6 @@ public class ExceptionHandlerController {
                                 HttpStatus.FORBIDDEN.value(),
                                 e.getLocalizedMessage(),
                                 ErrorResponse.Provider.DOCSPACE
-                        )
-                );
-    }
-
-    @ExceptionHandler(SystemUserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> systemUserNotFoundException(SystemUserNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(
-                        new ErrorResponse(
-                                HttpStatus.FORBIDDEN.value(),
-                                e.getLocalizedMessage(),
-                                ErrorResponse.Provider.INTEGRATION_APP
                         )
                 );
     }

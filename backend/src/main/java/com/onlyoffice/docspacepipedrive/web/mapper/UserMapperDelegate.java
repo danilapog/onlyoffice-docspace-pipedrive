@@ -33,7 +33,6 @@ public abstract class UserMapperDelegate implements UserMapper {
         UserResponse userResponse = new UserResponse();
 
         userResponse.setId(pipedriveUser.getId());
-        userResponse.setIsSystem(user.isSystemUser());
         userResponse.setName(pipedriveUser.getName());
         userResponse.setIsAdmin(!pipedriveUser.getAccess().stream()
                 .filter(access -> access.getApp().equals("sales") && access.getAdmin())
