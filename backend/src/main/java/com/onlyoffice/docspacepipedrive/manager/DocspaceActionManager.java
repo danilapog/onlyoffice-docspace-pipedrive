@@ -21,6 +21,7 @@ package com.onlyoffice.docspacepipedrive.manager;
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAccess;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceApiKey;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceCSPSettings;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceMembers;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitation;
@@ -288,4 +289,23 @@ public class DocspaceActionManager {
         apiKey.setOwnerId(docspaceUser.getId());
         return settings;
     }
+
+    public DocspaceCSPSettings addDomainsToCSPSettings(final List<String> domains) {
+        DocspaceCSPSettings docspaceCSPSettings = applicationDocspaceClient.getCSPSettings();
+
+        List<String> allowedDomains = docspaceCSPSettings.getDomains();
+
+        List<String> notAllowedDomains = domains.stream()
+                .filter(domain -> !allowedDomains.contains(domain))
+                .toList();
+
+        if (!notAllowedDomains.isEmpty()) {
+            allowedDomains.addAll(notAllowedDomains);
+
+            return applicationDocspaceClient.updateCSPSettings(allowedDomains);
+        }
+
+        return docspaceCSPSettings;
+    }
+
 }
