@@ -2,6 +2,27 @@
   "mappings": [
     {
       "request": {
+        "url": "/api/2.0/people/@self",
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": {
+            "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+            "email": "docspace.user1@onlyoffice.com",
+            "isOwner": true,
+            "isAdmin": true,
+            "isRoomAdmin": true
+          }
+        }
+      }
+    },
+    {
+      "request": {
         "url": "/api/2.0/people/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
         "method": "GET"
       },
@@ -123,6 +144,62 @@
           }
         }
       }
+    },
+    {
+      "request": {
+        "url": "/api/2.0/keys",
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": [
+            {
+              "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa",
+              "key": "sk-api-key-test",
+              "keyPostfix": "test",
+              "permissions": [],
+              "isActive": true
+            }
+          ]
+        }
+      }
+    },{
+      "request": {
+        "url": "/api/2.0/security/csp",
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": {
+            "domains": []
+          }
+        }
+      }
+    },{
+      "request": {
+        "url": "/api/2.0/security/csp",
+        "method": "POST"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": {
+            "domains": []
+          }
+        }
+      }
     }
+
   ]
 }
