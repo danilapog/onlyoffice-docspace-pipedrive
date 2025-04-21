@@ -24,21 +24,18 @@ import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
+import com.onlyoffice.docspacepipedrive.events.settings.SettingsDeleteEvent;
+import com.onlyoffice.docspacepipedrive.events.settings.SettingsUpdateEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
-import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
-import com.onlyoffice.docspacepipedrive.service.ClientService;
-import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
-import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
-import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,10 +45,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -63,13 +56,9 @@ public class SettingsController {
     private static final int API_KEY_SUFFIX_LENGTH = 4;
 
     private final SettingsService settingsService;
-    private final ClientService clientService;
-    private final RoomService roomService;
-    private final UserService userService;
-    private final DocspaceAccountService docspaceAccountService;
     private final PipedriveClient pipedriveClient;
     private final DocspaceActionManager docspaceActionManager;
-    private final PipedriveActionManager pipedriveActionManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
     public ResponseEntity<SettingsResponse> get(@AuthenticationPrincipal(expression = "client") Client currentClient) {
@@ -118,6 +107,8 @@ public class SettingsController {
                 settings
         );
 
+        eventPublisher.publishEvent(new SettingsUpdateEvent(this, savedSettings));
+
         SettingsResponse settingsResponse = new SettingsResponse();
         settingsResponse.setApiKey(formatApiKey(savedSettings.getApiKey().getValue()));
 
@@ -141,37 +132,8 @@ public class SettingsController {
         }
 
         settingsService.clear(currentClient.getId());
-        roomService.deleteAllByClientId(currentClient.getId());
 
-        List<User> users = userService.findAllByClientId(currentClient.getId());
-
-        List<Long> docspaceAccountIds = users.stream()
-                .filter(user -> user.getDocspaceAccount() != null)
-                .map(user -> user.getId())
-                .collect(Collectors.toList());
-
-        docspaceAccountService.deleteAllByIdInBatch(docspaceAccountIds);
-
-        if (currentClient.existSystemUser()) {
-            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-                public Void doWork() {
-                    try {
-                        pipedriveActionManager.removeWebhooks();
-                    } catch (Exception e) {
-                        log.warn(
-                                MessageFormat.format(
-                                        "An attempt execute action REMOVE_WEBHOOKS failed with the error: {1}",
-                                        e.getMessage()
-                                )
-                        );
-                    }
-
-                    return null;
-                }
-            }, currentClient.getSystemUser());
-
-            clientService.unsetSystemUser(currentClient.getId());
-        }
+        eventPublisher.publishEvent(new SettingsDeleteEvent(this));
 
         return ResponseEntity.noContent().build();
     }
