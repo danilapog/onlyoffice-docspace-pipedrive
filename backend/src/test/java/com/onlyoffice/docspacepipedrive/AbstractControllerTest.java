@@ -182,7 +182,6 @@ public abstract class AbstractControllerTest {
                 TestUtils.createDocspaceAccount(1L)
         );
 
-        testClient.setSystemUser(testUserSalesAdmin);
         testClient = clientService.update(testClient);
     }
 
