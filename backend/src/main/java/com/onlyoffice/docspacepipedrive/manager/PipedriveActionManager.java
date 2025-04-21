@@ -19,11 +19,13 @@
 package com.onlyoffice.docspacepipedrive.manager;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
+import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveWebhook;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
 import com.onlyoffice.docspacepipedrive.security.util.RandomPasswordGenerator;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.service.WebhookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,7 @@ public class PipedriveActionManager {
     private static final int WEBHOOK_PASSWORD_LENGTH = 32;
     private final PipedriveClient pipedriveClient;
     private final WebhookService webhookService;
+    private final UserService userService;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -114,5 +117,20 @@ public class PipedriveActionManager {
         } finally {
             webhookService.deleteById(webhook.getId());
         }
+    }
+
+    public User findDealAdmin(final Long clientId) {
+        List<PipedriveUser> pipedriveUsers = pipedriveClient.getUsers();
+        List<User> users = userService.findAllByClientId(clientId);
+
+        List<Long> salesAdminIds = pipedriveUsers.stream()
+                .filter(PipedriveUser::isSalesAdmin)
+                .map(PipedriveUser::getId)
+                .toList();
+
+        return users.stream()
+                .filter(user -> salesAdminIds.contains(user.getUserId()))
+                .findFirst()
+                .orElse(null);
     }
 }
