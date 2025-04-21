@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-public class SettingsRequest {
-    private String url;
-    private String apiKey;
+public class SettingsErrorResponse {
+    private String errorCode;
+    private String message;
 }

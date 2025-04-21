@@ -23,9 +23,11 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
+import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
@@ -35,7 +37,6 @@ import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
-import com.onlyoffice.docspacepipedrive.web.mapper.SettingsMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -58,13 +59,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class SettingsController {
+    private static final int API_KEY_PREFIX_LENGTH = 3;
+    private static final int API_KEY_SUFFIX_LENGTH = 4;
+
     private final SettingsService settingsService;
     private final ClientService clientService;
     private final RoomService roomService;
     private final UserService userService;
     private final DocspaceAccountService docspaceAccountService;
-    private final SettingsMapper settingsMapper;
     private final PipedriveClient pipedriveClient;
+    private final DocspaceActionManager docspaceActionManager;
     private final PipedriveActionManager pipedriveActionManager;
 
     @GetMapping
@@ -77,10 +81,10 @@ public class SettingsController {
         }
 
         SettingsResponse settingsResponse = new SettingsResponse();
-        settingsResponse.setExistSystemUser(currentClient.existSystemUser());
 
         try {
             settingsResponse.setUrl(settings.getUrl());
+            settingsResponse.setApiKey(formatApiKey(settings.getApiKey().getValue()));
         } catch (DocspaceUrlNotFoundException e) {
             settingsResponse.setUrl("");
         }
@@ -98,13 +102,24 @@ public class SettingsController {
             throw new PipedriveAccessDeniedException(currentUser.getUserId());
         }
 
+        ApiKey apiKey = ApiKey.builder()
+                .value(request.getApiKey())
+                .build();
+
+        Settings settings = docspaceActionManager.validateSettings(
+                Settings.builder()
+                        .url(request.getUrl())
+                        .apiKey(apiKey)
+                        .build()
+        );
+
         Settings savedSettings = settingsService.put(
                 currentClient.getId(),
-                settingsMapper.settingsRequestToSettings(request)
+                settings
         );
 
         SettingsResponse settingsResponse = new SettingsResponse();
-        settingsResponse.setExistSystemUser(currentClient.existSystemUser());
+        settingsResponse.setApiKey(formatApiKey(savedSettings.getApiKey().getValue()));
 
         try {
             settingsResponse.setUrl(savedSettings.getUrl());
@@ -159,5 +174,12 @@ public class SettingsController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    private String formatApiKey(final String apiKey) {
+        String prefix = apiKey.substring(0, API_KEY_PREFIX_LENGTH);
+        String suffix = apiKey.substring(apiKey.length() - API_KEY_SUFFIX_LENGTH);
+
+        return prefix + "***" + suffix;
     }
 }

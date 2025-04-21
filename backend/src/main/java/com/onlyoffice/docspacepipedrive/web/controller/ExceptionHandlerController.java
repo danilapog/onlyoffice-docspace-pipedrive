@@ -27,8 +27,10 @@ import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedExceptio
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
+import com.onlyoffice.docspacepipedrive.exceptions.SettingsValidationException;
 import com.onlyoffice.docspacepipedrive.exceptions.SystemUserNotFoundException;
 import com.onlyoffice.docspacepipedrive.web.dto.ErrorResponse;
+import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -155,6 +157,18 @@ public class ExceptionHandlerController {
                                 HttpStatus.FORBIDDEN.value(),
                                 e.getLocalizedMessage(),
                                 ErrorResponse.Provider.INTEGRATION_APP
+                        )
+                );
+    }
+
+    @ExceptionHandler(SettingsValidationException.class)
+    public ResponseEntity<SettingsErrorResponse> settingsValidationException(
+            SettingsValidationException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(
+                        new SettingsErrorResponse(
+                                e.getErrorCode().toString(),
+                                e.getErrorCode().getMessage()
                         )
                 );
     }
