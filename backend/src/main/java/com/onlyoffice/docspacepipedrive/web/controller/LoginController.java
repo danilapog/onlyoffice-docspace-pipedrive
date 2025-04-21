@@ -18,8 +18,6 @@
 
 package com.onlyoffice.docspacepipedrive.web.controller;
 
-import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.login.UninstallRequest;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +45,6 @@ public class LoginController {
 
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final UserService userService;
-    private final ClientService clientService;
 
     @GetMapping("/oauth2/code/pipedrive")
     public RedirectView loginByOAuth2CodePipedrive() {
@@ -74,12 +71,6 @@ public class LoginController {
     @DeleteMapping("oauth2/code/pipedrive")
     @Transactional
     public void uninstall(@RequestBody UninstallRequest request) {
-        User user = userService.findByClientIdAndUserId(request.getCompanyId(), request.getUserId());
-
-        if (user.isSystemUser()) {
-            clientService.unsetSystemUser(request.getCompanyId());
-        }
-
         userService.deleteByUserIdAndClientId(request.getUserId(), request.getCompanyId());
     }
 }
