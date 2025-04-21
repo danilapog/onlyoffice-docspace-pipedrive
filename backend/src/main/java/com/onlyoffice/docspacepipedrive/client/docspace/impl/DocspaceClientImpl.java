@@ -18,6 +18,7 @@
 
 package com.onlyoffice.docspacepipedrive.client.docspace.impl;
 
+import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAuthentication;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceMembers;
@@ -31,7 +32,6 @@ import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseExce
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -44,12 +44,13 @@ import java.util.Map;
 import java.util.UUID;
 
 
-@Component
 @RequiredArgsConstructor
-public class DocspaceClientImpl {
+public class DocspaceClientImpl implements DocspaceClient {
     private static final int PAGINATION_COUNT = 100;
-    private final WebClient docspaceWebClient;
 
+    private final WebClient webClient;
+
+    @Override
     public DocspaceAuthentication login(final String userName, final String passwordHash) {
         User user = SecurityUtils.getCurrentUser();
 
@@ -70,8 +71,9 @@ public class DocspaceClientImpl {
                 .block();
     }
 
+    @Override
     public DocspaceUser getUser(final String email) {
-        return docspaceWebClient.get()
+        return webClient.get()
                 .uri(uriBuilder -> {
                     return uriBuilder.path("/api/2.0/people/email")
                             .queryParam("email", email)
@@ -86,8 +88,9 @@ public class DocspaceClientImpl {
                 .block();
     }
 
+    @Override
     public DocspaceUser getUser(final UUID id) {
-        return docspaceWebClient.get()
+        return webClient.get()
                 .uri(uriBuilder -> {
                     return uriBuilder.path("/api/2.0/people/{id}")
                             .build(id);
@@ -101,6 +104,7 @@ public class DocspaceClientImpl {
                 .block();
     }
 
+    @Override
     public List<DocspaceUser> findUsers(final Integer employeeType) {
         List<DocspaceUser> docspaceUsers = new ArrayList<>();
 
@@ -109,7 +113,7 @@ public class DocspaceClientImpl {
         Integer count = PAGINATION_COUNT;
 
         while (moreItemInCollection) {
-             DocspaceResponse<List<DocspaceUser>> response = docspaceWebClient.get()
+             DocspaceResponse<List<DocspaceUser>> response = webClient.get()
                     .uri(UriComponentsBuilder.fromUriString("")
                             .path("/api/2.0/people/simple/filter")
                             .queryParam("employeeType", employeeType)
@@ -137,6 +141,7 @@ public class DocspaceClientImpl {
         return docspaceUsers;
     }
 
+    @Override
     public DocspaceRoom createRoom(final String title, final DocspaceRoomType roomType, final List<String> tags) {
         Map<String, Object> map = new HashMap<>();
 
@@ -144,7 +149,7 @@ public class DocspaceClientImpl {
         map.put("roomType", roomType);
         map.put("tags", tags);
 
-        return docspaceWebClient.post()
+        return webClient.post()
                 .uri("/api/2.0/files/rooms")
                 .bodyValue(map)
                 .retrieve()
@@ -156,9 +161,10 @@ public class DocspaceClientImpl {
                 .block();
     }
 
+    @Override
     public DocspaceMembers shareRoom(final Long roomId,
                                      final DocspaceRoomInvitationRequest docspaceRoomInvitationRequest) {
-        return docspaceWebClient.put()
+        return webClient.put()
                 .uri(uriBuilder -> {
                     return uriBuilder.path("api/2.0/files/rooms/{roomId}/share")
                             .build(roomId);
@@ -173,6 +179,7 @@ public class DocspaceClientImpl {
                 .block();
     }
 
+    @Override
     public DocspaceGroup createGroup(final String name, final UUID owner, final List<UUID> members) {
         Map<String, Object> map = new HashMap<>();
 
@@ -180,7 +187,7 @@ public class DocspaceClientImpl {
         map.put("groupManager", owner);
         map.put("members", members);
 
-        return docspaceWebClient.post()
+        return webClient.post()
                 .uri("/api/2.0/group")
                 .bodyValue(map)
                 .retrieve()
@@ -192,6 +199,7 @@ public class DocspaceClientImpl {
                 .block();
     }
 
+    @Override
     public DocspaceGroup updateGroup(final UUID groupId, final String groupName, final UUID groupManager,
                                      final List<UUID> membersToAdd, final List<UUID> membersToRemove) {
         Map<String, Object> map = new HashMap<>();
@@ -209,7 +217,7 @@ public class DocspaceClientImpl {
             map.put("membersToRemove", membersToRemove);
         }
 
-        return docspaceWebClient.put()
+        return webClient.put()
                 .uri(uriBuilder -> {
                     return uriBuilder.path("/api/2.0/group/{groupId}")
                             .build(groupId);

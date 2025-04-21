@@ -18,7 +18,9 @@
 
 package com.onlyoffice.docspacepipedrive.configuration;
 
+import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.filter.DocspaceAuthorizationExchangeFilterFunction;
+import com.onlyoffice.docspacepipedrive.client.docspace.impl.DocspaceClientImpl;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,13 +32,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class ClientConfiguration {
     @Bean
-    WebClient docspaceWebClient(final DocspaceAccountService docspaceAccountService) {
+    DocspaceClient docspaceClient(final DocspaceAccountService docspaceAccountService) {
         DocspaceAuthorizationExchangeFilterFunction docspaceAuthorizationExchangeFilterFunction =
                 new DocspaceAuthorizationExchangeFilterFunction(docspaceAccountService);
 
-        return WebClient.builder()
+        WebClient webClient = WebClient.builder()
                 .filter(docspaceAuthorizationExchangeFilterFunction)
                 .build();
+
+        return new DocspaceClientImpl(webClient);
     }
 
     @Bean

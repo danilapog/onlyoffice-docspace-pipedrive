@@ -18,9 +18,9 @@
 
 package com.onlyoffice.docspacepipedrive.web.controller;
 
+import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAuthentication;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
-import com.onlyoffice.docspacepipedrive.client.docspace.impl.DocspaceClientImpl;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.Client;
@@ -62,7 +62,7 @@ public class UserController {
     private final DocspaceAccountService docspaceAccountService;
     private final UserMapper userMapper;
     private final PipedriveClient pipedriveClient;
-    private final DocspaceClientImpl docspaceClient;
+    private final DocspaceClient docspaceClient;
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
