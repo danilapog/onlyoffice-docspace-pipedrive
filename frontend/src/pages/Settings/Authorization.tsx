@@ -3,7 +3,7 @@ import { useTranslation, Trans } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
 import { DocSpace } from "@onlyoffice/docspace-react";
 import { TFrameConfig } from "@onlyoffice/docspace-sdk-js/dist/types/types";
-import SDKInstance from "@onlyoffice/docspace-sdk-js/dist/types/instance";
+import { SDKInstance } from "@onlyoffice/docspace-sdk-js/dist/types/instance";
 
 import { ButtonColor, OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";

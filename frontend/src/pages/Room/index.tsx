@@ -74,6 +74,7 @@ const RoomPage: React.FC = () => {
     width: "100%",
     height: "100%",
     theme: sdk.userSettings.theme === "dark" ? "Dark" : "Base",
+    showHeader: false,
     events: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onContentReady: (e: string | Event) => {
