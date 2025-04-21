@@ -52,6 +52,13 @@ public class PipedriveActionManager {
     }
 
     @Transactional
+    public void deleteWebhooks(final List<Webhook> webhooks) {
+        for (Webhook webhook : webhooks) {
+            deleteWebhook(webhook);
+        }
+    }
+
+    @Transactional
     public void removeWebhooks() {
         User currentUser = SecurityUtils.getCurrentUser();
 
@@ -92,5 +99,20 @@ public class PipedriveActionManager {
 
         savedWebhook.setWebhookId(pipedriveWebhook.getId());
         webhookService.save(savedWebhook);
+    }
+
+    private void deleteWebhook(final Webhook webhook) {
+        try {
+            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
+                public Void doWork() {
+                    pipedriveClient.deleteWebhook(webhook.getWebhookId());
+                    return null;
+                }
+            }, webhook.getUser());
+        } catch (Exception e) {
+            log.warn("Error deleting webhook in Pipedrive (WebhookID: {})", webhook.getWebhookId(), e);
+        } finally {
+            webhookService.deleteById(webhook.getId());
+        }
     }
 }
