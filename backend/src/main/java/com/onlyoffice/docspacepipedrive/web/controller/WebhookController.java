@@ -28,9 +28,9 @@ import com.onlyoffice.docspacepipedrive.events.deal.AddFollowersToPipedriveDealE
 import com.onlyoffice.docspacepipedrive.events.deal.AddVisibleEveryoneForPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.deal.RemoveFollowersFromPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.deal.RemoveVisibleEveryoneForPipedriveDealEvent;
+import com.onlyoffice.docspacepipedrive.events.user.UserOwnerWebhooksIsLostEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.webhook.WebhookRequest;
@@ -128,38 +128,7 @@ public class WebhookController {
                 .orElse(null) != null;
 
         if (isOwnerWebhookIsNotSalesAdmin) {
-            try {
-                User newWebhookOwner = findNewWebhookOwner(currentClient.getId());
-
-                if (newWebhookOwner == null) {
-                    log.warn("No sales admin found for clientId: {}", currentClient.getId());
-                    return;
-                }
-
-                SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-                    public Void doWork() {
-                        pipedriveActionManager.initWebhooks();
-                        return null;
-                    }
-                }, newWebhookOwner);
-            } finally {
-                pipedriveActionManager.deleteWebhooks(currentUser.getWebhooks());
-            }
+            eventPublisher.publishEvent(new UserOwnerWebhooksIsLostEvent(this, currentUser));
         }
-    }
-
-    private User findNewWebhookOwner(Long clientId) {
-        List<PipedriveUser> pipedriveUsers = pipedriveClient.getUsers();
-        List<User> users = userService.findAllByClientId(clientId);
-
-        List<Long> salesAdminIds = pipedriveUsers.stream()
-                .filter(PipedriveUser::isSalesAdmin)
-                .map(PipedriveUser::getId)
-                .toList();
-
-        return users.stream()
-                .filter(user -> salesAdminIds.contains(user.getUserId()))
-                .findFirst()
-                .orElse(null);
     }
 }

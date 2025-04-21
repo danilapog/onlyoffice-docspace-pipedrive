@@ -18,7 +18,11 @@
 
 package com.onlyoffice.docspacepipedrive.events.user;
 
+import com.onlyoffice.docspacepipedrive.entity.Client;
+import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
+import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
+import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -30,6 +34,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class UserEventListener {
     private final DocspaceActionManager docspaceActionManager;
+    private final PipedriveActionManager pipedriveActionManager;
 
     @EventListener
     public void listen(final DocspaceLoginUserEvent event) {
@@ -44,6 +49,30 @@ public class UserEventListener {
             );
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
+        }
+    }
+
+    @EventListener
+    public void listen(final UserOwnerWebhooksIsLostEvent event) {
+        User user = event.getUser();
+        Client client = user.getClient();
+
+        try {
+            User newWebhookOwner = pipedriveActionManager.findDealAdmin(client.getId());
+
+            if (newWebhookOwner == null) {
+                log.warn("No sales admin found for clientId: {}", client.getId());
+                return;
+            }
+
+            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
+                public Void doWork() {
+                    pipedriveActionManager.initWebhooks();
+                    return null;
+                }
+            }, newWebhookOwner);
+        } finally {
+            pipedriveActionManager.deleteWebhooks(user.getWebhooks());
         }
     }
 }
