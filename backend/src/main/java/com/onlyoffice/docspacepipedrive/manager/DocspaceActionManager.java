@@ -20,14 +20,20 @@ package com.onlyoffice.docspacepipedrive.manager;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAccess;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceApiKey;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceMembers;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitation;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitationRequest;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
+import com.onlyoffice.docspacepipedrive.exceptions.ErrorCode;
+import com.onlyoffice.docspacepipedrive.exceptions.SettingsValidationException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIsNotPresentInResponse;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
@@ -37,11 +43,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -50,6 +59,7 @@ import java.util.UUID;
 @Slf4j
 public class DocspaceActionManager {
     private final DocspaceClient docspaceClient;
+    private final DocspaceClient applicationDocspaceClient;
     private final SettingsService settingsService;
     private final UserService userService;
 
@@ -234,4 +244,55 @@ public class DocspaceActionManager {
         }
     }
 
+    public Settings validateSettings(final Settings settings) {
+        Client client = SecurityUtils.getCurrentClient();
+        Settings clientSettings = client.getSettings();
+        ApiKey apiKey = settings.getApiKey();
+
+        clientSettings.setUrl(settings.getUrl());
+        clientSettings.setApiKey(settings.getApiKey());
+
+        List<DocspaceApiKey> docspaceApiKeys = new ArrayList<>();
+        try {
+            docspaceApiKeys = applicationDocspaceClient.getApiKeys();
+        } catch (WebClientRequestException e) {
+            log.warn("Error while getting DocSpace API keys", e);
+
+            throw new SettingsValidationException(ErrorCode.DOCSPACE_CAN_NOT_BE_REACHED);
+        } catch (DocspaceWebClientResponseException e) {
+            log.warn("Error while getting DocSpace API keys", e);
+
+            throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
+        }
+
+        DocspaceApiKey docspaceApiKey = docspaceApiKeys.stream()
+                .filter(key -> apiKey.getValue().endsWith(
+                        key.getKeyPostfix())
+                )
+                .findFirst()
+                .orElse(null);
+
+        if (Objects.isNull(docspaceApiKey)) {
+            throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
+        }
+
+        List<String> scopes = docspaceApiKey.getPermissions();
+        if (Objects.nonNull(scopes) && !scopes.isEmpty()
+                && docspaceApiKey.getIsActive()
+                && (!scopes.contains("accounts.self:read")
+                    || !scopes.contains("accounts:write")
+                    || !scopes.contains("rooms:write")
+                )
+        ) {
+            throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
+        }
+
+        DocspaceUser docspaceUser = applicationDocspaceClient.getUser();
+        if (!docspaceUser.getIsAdmin()) {
+            throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN);
+        }
+
+        apiKey.setOwnerId(docspaceUser.getId());
+        return settings;
+    }
 }
