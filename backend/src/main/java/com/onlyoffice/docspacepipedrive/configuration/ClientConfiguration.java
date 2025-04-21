@@ -19,6 +19,7 @@
 package com.onlyoffice.docspacepipedrive.configuration;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
+import com.onlyoffice.docspacepipedrive.client.docspace.filter.DocspaceAuthorizationApiKeyExchangeFilterFunction;
 import com.onlyoffice.docspacepipedrive.client.docspace.filter.DocspaceAuthorizationExchangeFilterFunction;
 import com.onlyoffice.docspacepipedrive.client.docspace.impl.DocspaceClientImpl;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
@@ -38,6 +39,18 @@ public class ClientConfiguration {
 
         WebClient webClient = WebClient.builder()
                 .filter(docspaceAuthorizationExchangeFilterFunction)
+                .build();
+
+        return new DocspaceClientImpl(webClient);
+    }
+
+    @Bean
+    DocspaceClient applicationDocspaceClient() {
+        DocspaceAuthorizationApiKeyExchangeFilterFunction docspaceAuthorizationApiKeyExchangeFilterFunction =
+                new DocspaceAuthorizationApiKeyExchangeFilterFunction();
+
+        WebClient webClient = WebClient.builder()
+                .filter(docspaceAuthorizationApiKeyExchangeFilterFunction)
                 .build();
 
         return new DocspaceClientImpl(webClient);
