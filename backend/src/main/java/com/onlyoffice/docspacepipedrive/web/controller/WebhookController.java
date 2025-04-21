@@ -31,8 +31,9 @@ import com.onlyoffice.docspacepipedrive.events.deal.RemoveVisibleEveryoneForPipe
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
-import com.onlyoffice.docspacepipedrive.service.ClientService;
+import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
+import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.webhook.WebhookRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ import java.util.List;
 public class WebhookController {
     private final PipedriveClient pipedriveClient;
     private final RoomService roomService;
-    private final ClientService clientService;
+    private final UserService userService;
     private final PipedriveActionManager pipedriveActionManager;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -116,21 +117,16 @@ public class WebhookController {
         List<PipedriveUser> currentUsers = request.getCurrent();
         List<PipedriveUser> previousUsers = request.getPrevious();
 
-        if (!currentUser.isSystemUser()) {
-            pipedriveActionManager.removeWebhooks();
-            throw new PipedriveAccessDeniedException(currentUser.getUserId());
-        }
-
-        boolean unsetSystemUser = currentUsers.stream()
+        boolean isOwnerWebhookIsNotSalesAdmin = currentUsers.stream()
                 .filter(pipedriveUser -> pipedriveUser.getId().equals(currentUser.getUserId()))
                 .filter(pipedriveUser -> !pipedriveUser.isSalesAdmin())
                 .filter(pipedriveUser -> {
                     return previousUsers.stream()
                             .filter(previousUser -> previousUser.getId().equals(pipedriveUser.getId()))
                             .filter(previousUser -> previousUser.getAccess().stream()
-                                        .filter(access -> access.getAdmin())
-                                        .findFirst()
-                                        .orElse(null) != null
+                                    .filter(access -> access.getAdmin())
+                                    .findFirst()
+                                    .orElse(null) != null
                             )
                             .findFirst()
                             .orElse(null) != null;
@@ -138,9 +134,39 @@ public class WebhookController {
                 .findFirst()
                 .orElse(null) != null;
 
-        if (unsetSystemUser) {
-            clientService.unsetSystemUser(currentClient.getId());
-            pipedriveActionManager.removeWebhooks();
+        if (isOwnerWebhookIsNotSalesAdmin) {
+            try {
+                User newWebhookOwner = findNewWebhookOwner(currentClient.getId());
+
+                if (newWebhookOwner == null) {
+                    log.warn("No sales admin found for clientId: {}", currentClient.getId());
+                    return;
+                }
+
+                SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
+                    public Void doWork() {
+                        pipedriveActionManager.initWebhooks();
+                        return null;
+                    }
+                }, newWebhookOwner);
+            } finally {
+                pipedriveActionManager.deleteWebhooks(currentUser.getWebhooks());
+            }
         }
+    }
+
+    private User findNewWebhookOwner(Long clientId) {
+        List<PipedriveUser> pipedriveUsers = pipedriveClient.getUsers();
+        List<User> users = userService.findAllByClientId(clientId);
+
+        List<Long> salesAdminIds = pipedriveUsers.stream()
+                .filter(PipedriveUser::isSalesAdmin)
+                .map(PipedriveUser::getId)
+                .toList();
+
+        return users.stream()
+                .filter(user -> salesAdminIds.contains(user.getUserId()))
+                .findFirst()
+                .orElse(null);
     }
 }
