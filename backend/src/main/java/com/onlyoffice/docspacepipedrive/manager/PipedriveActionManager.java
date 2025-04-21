@@ -21,6 +21,7 @@ package com.onlyoffice.docspacepipedrive.manager;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveWebhook;
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
 import com.onlyoffice.docspacepipedrive.security.util.RandomPasswordGenerator;
@@ -47,6 +48,18 @@ public class PipedriveActionManager {
 
     @Value("${app.base-url}")
     private String baseUrl;
+
+    public boolean isWebhooksInstalled() {
+        Client currentClient = SecurityUtils.getCurrentClient();
+
+        return webhookService.existsByClientIdAndName(
+                currentClient.getId(),
+                "deal.updated"
+        ) && webhookService.existsByClientIdAndName(
+                currentClient.getId(),
+                "user.updated"
+        );
+    }
 
     @Transactional
     public void initWebhooks() {

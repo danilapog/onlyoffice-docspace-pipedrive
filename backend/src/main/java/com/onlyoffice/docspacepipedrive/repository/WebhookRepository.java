@@ -28,5 +28,6 @@ import java.util.UUID;
 
 @Repository
 public interface WebhookRepository extends JpaRepository<Webhook, UUID> {
+    Boolean existsByUser_Client_IdAndName(Long clientId, String name);
     List<Webhook> findAllByUserId(Long userId);
 }

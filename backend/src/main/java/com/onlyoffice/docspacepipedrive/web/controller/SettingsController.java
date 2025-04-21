@@ -30,6 +30,7 @@ import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
+import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
@@ -58,6 +59,7 @@ public class SettingsController {
     private final SettingsService settingsService;
     private final PipedriveClient pipedriveClient;
     private final DocspaceActionManager docspaceActionManager;
+    private final PipedriveActionManager pipedriveActionManager;
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
@@ -74,6 +76,7 @@ public class SettingsController {
         try {
             settingsResponse.setUrl(settings.getUrl());
             settingsResponse.setApiKey(formatApiKey(settings.getApiKey().getValue()));
+            settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled());
         } catch (DocspaceUrlNotFoundException e) {
             settingsResponse.setUrl("");
         }
@@ -110,10 +113,11 @@ public class SettingsController {
         eventPublisher.publishEvent(new SettingsUpdateEvent(this, savedSettings));
 
         SettingsResponse settingsResponse = new SettingsResponse();
-        settingsResponse.setApiKey(formatApiKey(savedSettings.getApiKey().getValue()));
 
         try {
             settingsResponse.setUrl(savedSettings.getUrl());
+            settingsResponse.setApiKey(formatApiKey(savedSettings.getApiKey().getValue()));
+            settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled());
         } catch (DocspaceUrlNotFoundException e) {
             settingsResponse.setUrl("");
         }

@@ -29,4 +29,5 @@ import lombok.NoArgsConstructor;
 public class SettingsResponse {
     private String url;
     private String apiKey;
+    private Boolean isWebhooksInstalled;
 }
