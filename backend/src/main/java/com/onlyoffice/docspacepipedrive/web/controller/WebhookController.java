@@ -28,7 +28,6 @@ import com.onlyoffice.docspacepipedrive.events.deal.AddFollowersToPipedriveDealE
 import com.onlyoffice.docspacepipedrive.events.deal.AddVisibleEveryoneForPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.deal.RemoveFollowersFromPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.deal.RemoveVisibleEveryoneForPipedriveDealEvent;
-import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
@@ -59,16 +58,10 @@ public class WebhookController {
     private final ApplicationEventPublisher eventPublisher;
 
     @PostMapping("/deal")
-    public void updatedDeal(@AuthenticationPrincipal User currentUser,
-                            @AuthenticationPrincipal(expression = "client") Client currentClient,
+    public void updatedDeal(@AuthenticationPrincipal(expression = "client") Client currentClient,
                             @RequestBody WebhookRequest<PipedriveDeal> request) {
         PipedriveDeal currentDeal = request.getCurrent();
         PipedriveDeal previousDeal = request.getPrevious();
-
-        if (!currentUser.isSystemUser()) {
-            pipedriveActionManager.removeWebhooks();
-            throw new PipedriveAccessDeniedException(currentUser.getUserId());
-        }
 
         try {
             roomService.findByClientIdAndDealId(currentClient.getId(), currentDeal.getId());
