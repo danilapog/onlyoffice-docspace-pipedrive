@@ -58,15 +58,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class DocspaceActionManager {
-    private final DocspaceClient docspaceClient;
     private final DocspaceClient applicationDocspaceClient;
     private final SettingsService settingsService;
     private final UserService userService;
 
     public void initSharedGroup() {
         Client currentClient = SecurityUtils.getCurrentClient();
-
-        User systemUser = currentClient.getSystemUser();
+        Settings settings = currentClient.getSettings();
+        ApiKey apiKey = settings.getApiKey();
 
         List<User> users = userService.findAllByClientId(currentClient.getId());
         List<UUID> members = users.stream()
@@ -74,55 +73,49 @@ public class DocspaceActionManager {
                 .map(user -> user.getDocspaceAccount().getUuid())
                 .toList();
 
-        SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-            public Void doWork() {
-                if (!currentClient.getSettings().existSharedGroupId()) {
-                    DocspaceGroup docspaceGroup = docspaceClient.createGroup(
-                            MessageFormat.format("Pipedrive Users ({0})", currentClient.getCompanyName()),
-                            systemUser.getDocspaceAccount().getUuid(),
-                            members
-                    );
+        if (!settings.existSharedGroupId()) {
+            DocspaceGroup docspaceGroup = applicationDocspaceClient.createGroup(
+                    MessageFormat.format("Pipedrive Users ({0})", currentClient.getCompanyName()),
+                    apiKey.getOwnerId(),
+                    members
+            );
 
+            Settings savedSetting = settingsService.saveSharedGroup(
+                    currentClient.getId(),
+                    docspaceGroup.getId()
+            );
+            currentClient.setSettings(savedSetting);
+        } else {
+            try {
+                applicationDocspaceClient.updateGroup(
+                        settings.getSharedGroupId(),
+                        null,
+                        apiKey.getOwnerId(),
+                        members,
+                        null
+                );
+            } catch (WebClientResponseException e) {
+                if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                     Settings savedSetting = settingsService.saveSharedGroup(
                             currentClient.getId(),
-                            docspaceGroup.getId()
+                            null
                     );
                     currentClient.setSettings(savedSetting);
-                } else {
-                    try {
-                        docspaceClient.updateGroup(
-                                currentClient.getSettings().getSharedGroupId(),
-                                null,
-                                systemUser.getDocspaceAccount().getUuid(),
-                                members,
-                                null
-                        );
-                    } catch (WebClientResponseException e) {
-                        if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                            Settings savedSetting = settingsService.saveSharedGroup(
-                                    currentClient.getId(),
-                                    null
-                            );
-                            currentClient.setSettings(savedSetting);
 
-                            initSharedGroup();
-                            return null;
-                        }
-
-                        throw e;
-                    }
+                    initSharedGroup();
+                    return;
                 }
 
-                return null;
+                throw e;
             }
-        }, systemUser);
+        }
     }
 
     public void inviteDocspaceAccountToSharedGroup(final UUID docspaceAccountId) {
         Client currentClient = SecurityUtils.getCurrentClient();
 
         try {
-            docspaceClient.updateGroup(
+            applicationDocspaceClient.updateGroup(
                     currentClient.getSettings().getSharedGroupId(),
                     null,
                     null,
@@ -151,7 +144,7 @@ public class DocspaceActionManager {
     public void removeDocspaceAccountFromSharedGroup(final UUID docspaceAccountId) {
         Client currentClient = SecurityUtils.getCurrentClient();
 
-        docspaceClient.updateGroup(
+        applicationDocspaceClient.updateGroup(
                 currentClient.getSettings().getSharedGroupId(),
                 null,
                 null,
@@ -176,7 +169,7 @@ public class DocspaceActionManager {
                 .notify(true)
                 .build();
 
-        DocspaceMembers docspaceMembers = docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+        DocspaceMembers docspaceMembers = applicationDocspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
         boolean sharedGroupIsPresentInResponse = docspaceMembers.getMembers().stream()
                 .filter(docspaceMember -> docspaceMember.getSharedTo().getId().equals(sharedGroupId))
                 .findFirst()
@@ -202,7 +195,7 @@ public class DocspaceActionManager {
                 .notify(false)
                 .build();
 
-        docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+        applicationDocspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
     }
 
     public void inviteListDocspaceAccountsToRoom(final Long roomId, final List<DocspaceAccount> docspaceAccounts) {
@@ -222,7 +215,7 @@ public class DocspaceActionManager {
                     .notify(true)
                     .build();
 
-            docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+            applicationDocspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
         }
     }
 
@@ -240,7 +233,7 @@ public class DocspaceActionManager {
                     .notify(false)
                     .build();
 
-            docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+            applicationDocspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
         }
     }
 
