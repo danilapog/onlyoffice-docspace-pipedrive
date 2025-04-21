@@ -18,11 +18,7 @@
 
 package com.onlyoffice.docspacepipedrive.events.user;
 
-import com.onlyoffice.docspacepipedrive.entity.Client;
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
-import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -34,56 +30,20 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class UserEventListener {
     private final DocspaceActionManager docspaceActionManager;
-    private final PipedriveActionManager pipedriveActionManager;
 
     @EventListener
     public void listen(final DocspaceLoginUserEvent event) {
-        User currentUser = SecurityUtils.getCurrentUser();
-        Client currentClient = SecurityUtils.getCurrentClient();
-
-        if (currentUser.isSystemUser()) {
-            docspaceActionManager.initSharedGroup();
-            pipedriveActionManager.initWebhooks();
-        } else {
-            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-                public Void doWork() {
-                    docspaceActionManager.inviteDocspaceAccountToSharedGroup(event.getDocspaceAccount().getUuid());
-                    return null;
-                }
-            }, currentClient.getSystemUser());
-        }
+        docspaceActionManager.inviteDocspaceAccountToSharedGroup(event.getDocspaceAccount().getUuid());
     }
 
     @EventListener
     public void listen(final DocspaceLogoutUserEvent event) {
-        User currentUser = SecurityUtils.getCurrentUser();
-        Client currentClient = SecurityUtils.getCurrentClient();
-
-        if (currentUser.isSystemUser()) {
-            try {
-                docspaceActionManager.removeDocspaceAccountFromSharedGroup(event.getDocspaceAccount().getUuid());
-            } catch (Exception e) {
-                log.warn(e.getMessage(), e);
-            }
-
-            try {
-                pipedriveActionManager.removeWebhooks();
-            } catch (Exception e) {
-                log.warn(e.getMessage(), e);
-            }
-        } else {
-            try {
-                SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-                    public Void doWork() {
-                        docspaceActionManager.removeDocspaceAccountFromSharedGroup(
-                                event.getDocspaceAccount().getUuid()
-                        );
-                        return null;
-                    }
-                }, currentClient.getSystemUser());
-            } catch (Exception e) {
-                log.warn(e.getMessage(), e);
-            }
+        try {
+            docspaceActionManager.removeDocspaceAccountFromSharedGroup(
+                    event.getDocspaceAccount().getUuid()
+            );
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
         }
     }
 }

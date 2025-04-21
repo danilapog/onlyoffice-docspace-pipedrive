@@ -19,19 +19,15 @@
 package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
-import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAuthentication;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 import com.onlyoffice.docspacepipedrive.events.user.DocspaceLoginUserEvent;
 import com.onlyoffice.docspacepipedrive.events.user.DocspaceLogoutUserEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
-import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountRequest;
@@ -51,8 +47,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.Instant;
-
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -62,7 +56,7 @@ public class UserController {
     private final DocspaceAccountService docspaceAccountService;
     private final UserMapper userMapper;
     private final PipedriveClient pipedriveClient;
-    private final DocspaceClient docspaceClient;
+    private final DocspaceClient applicationDocspaceClient;
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
@@ -96,16 +90,11 @@ public class UserController {
         );
     }
 
-    @PutMapping(path = "/docspace-account", params = "system=false")
+    @PutMapping(path = "/docspace-account")
     @Transactional
     public ResponseEntity<Void> putDocspaceAccount(@AuthenticationPrincipal User currentUser,
-                                                   @AuthenticationPrincipal(expression = "client") Client currentClient,
                                                    @RequestBody DocspaceAccountRequest request) {
-        DocspaceUser docspaceUser = SecurityUtils.runAs(new SecurityUtils.RunAsWork<DocspaceUser>() {
-            public DocspaceUser doWork() {
-                return docspaceClient.getUser(request.getUserName());
-            }
-        }, currentClient.getSystemUser());
+        DocspaceUser docspaceUser = applicationDocspaceClient.getUser(request.getUserName());
 
         if (docspaceUser.getIsVisitor()) {
             throw new DocspaceAccessDeniedException(request.getUserName());
@@ -125,62 +114,11 @@ public class UserController {
         return ResponseEntity.ok(null);
     }
 
-
-    @PutMapping(path = "/docspace-account", params = "system=true")
-    @Transactional
-    public ResponseEntity<Void> putSystemDocspaceAccount(@AuthenticationPrincipal User currentUser,
-            @AuthenticationPrincipal(expression = "client") Client currentClient,
-            @RequestBody DocspaceAccountRequest request) {
-        PipedriveUser pipedriveUser = pipedriveClient.getUser();
-        if (!pipedriveUser.isSalesAdmin()) {
-            throw new PipedriveAccessDeniedException(currentUser.getUserId());
-        }
-
-        DocspaceAuthentication docspaceAuthentication = docspaceClient.login(
-                request.getUserName(),
-                request.getPasswordHash()
-        );
-
-        DocspaceToken docspaceToken = DocspaceToken.builder()
-                .value(docspaceAuthentication.getToken())
-                .issuedAt(Instant.now())
-                .build();
-
-        DocspaceAccount docspaceAccount = DocspaceAccount.builder()
-                .docspaceToken(docspaceToken)
-                .build();
-
-        currentUser.setDocspaceAccount(docspaceAccount);
-
-        DocspaceUser docspaceUser = docspaceClient.getUser(request.getUserName());
-
-        if (!docspaceUser.getIsAdmin()) {
-            throw new DocspaceAccessDeniedException(request.getUserName());
-        }
-
-        docspaceAccount.setUuid(docspaceUser.getId());
-        docspaceAccount.setEmail(docspaceUser.getEmail());
-        docspaceAccount.setPasswordHash(request.getPasswordHash());
-
-        DocspaceAccount savedDocspaceAccount = docspaceAccountService.save(currentUser.getId(), docspaceAccount);
-
-        currentClient.setSystemUser(currentUser);
-        Client updatedClient = clientService.update(currentClient);
-
-        currentUser.setDocspaceAccount(savedDocspaceAccount);
-        currentUser.setClient(updatedClient);
-
-        eventPublisher.publishEvent(new DocspaceLoginUserEvent(this, savedDocspaceAccount));
-
-        return ResponseEntity.ok(null);
-    }
-
     @DeleteMapping("/docspace-account")
     public ResponseEntity<Void> deleteDocspaceAccount(@AuthenticationPrincipal User currentUser) {
+        docspaceAccountService.deleteById(currentUser.getId());
 
         eventPublisher.publishEvent(new DocspaceLogoutUserEvent(this, currentUser.getDocspaceAccount()));
-
-        docspaceAccountService.deleteById(currentUser.getId());
 
         return ResponseEntity.noContent().build();
     }
