@@ -38,6 +38,7 @@ public class PipedriveUser {
     private List<Access> access;
     private String companyDomain;
     private String companyName;
+    private Boolean activeFlag;
 
     public Boolean isSalesAdmin() {
         return getAccess().stream()
