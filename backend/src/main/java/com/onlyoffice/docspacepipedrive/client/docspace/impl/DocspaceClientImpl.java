@@ -19,7 +19,9 @@
 package com.onlyoffice.docspacepipedrive.client.docspace.impl;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceApiKey;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAuthentication;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceCSPSettings;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceMembers;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceResponse;
@@ -65,6 +67,58 @@ public class DocspaceClientImpl implements DocspaceClient {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceAuthentication>>() { })
                 .map(DocspaceResponse<DocspaceAuthentication>::getResponse)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new DocspaceWebClientResponseException(e));
+                })
+                .block();
+    }
+
+    public DocspaceCSPSettings getCSPSettings() {
+        return webClient.get()
+                .uri("/api/2.0/security/csp")
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceCSPSettings>>() { })
+                .map(DocspaceResponse<DocspaceCSPSettings>::getResponse)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new DocspaceWebClientResponseException(e));
+                })
+                .block();
+    }
+
+    public DocspaceCSPSettings updateCSPSettings(final List<String> domains) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("domains", domains);
+
+        return webClient.post()
+                .uri("/api/2.0/security/csp")
+                .bodyValue(map)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceCSPSettings>>() { })
+                .map(DocspaceResponse<DocspaceCSPSettings>::getResponse)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new DocspaceWebClientResponseException(e));
+                })
+                .block();
+    }
+
+    public List<DocspaceApiKey> getApiKeys() {
+        return webClient.get()
+                .uri("api/2.0/keys")
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<List<DocspaceApiKey>>>() { })
+                .map(DocspaceResponse<List<DocspaceApiKey>>::getResponse)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    return Mono.error(new DocspaceWebClientResponseException(e));
+                })
+                .block();
+    }
+
+    public DocspaceUser getUser() {
+        return webClient.get()
+                .uri("/api/2.0/people/@self")
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceUser>>() { })
+                .map(DocspaceResponse<DocspaceUser>::getResponse)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     return Mono.error(new DocspaceWebClientResponseException(e));
                 })

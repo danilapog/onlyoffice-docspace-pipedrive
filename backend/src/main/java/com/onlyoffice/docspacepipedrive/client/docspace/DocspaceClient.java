@@ -18,7 +18,9 @@
 
 package com.onlyoffice.docspacepipedrive.client.docspace;
 
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceApiKey;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAuthentication;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceCSPSettings;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceMembers;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoom;
@@ -31,6 +33,10 @@ import java.util.UUID;
 
 public interface DocspaceClient {
     DocspaceAuthentication login(String userName, String passwordHash);
+    DocspaceCSPSettings getCSPSettings();
+    DocspaceCSPSettings updateCSPSettings(List<String> domains);
+    List<DocspaceApiKey> getApiKeys();
+    DocspaceUser getUser();
     DocspaceUser getUser(String email);
     DocspaceUser getUser(UUID id);
     List<DocspaceUser> findUsers(Integer employeeType);
