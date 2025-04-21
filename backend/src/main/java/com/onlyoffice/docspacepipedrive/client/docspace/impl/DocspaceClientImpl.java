@@ -16,7 +16,7 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.client.docspace;
+package com.onlyoffice.docspacepipedrive.client.docspace.impl;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAuthentication;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
@@ -46,7 +46,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class DocspaceClient {
+public class DocspaceClientImpl {
     private static final int PAGINATION_COUNT = 100;
     private final WebClient docspaceWebClient;
 
