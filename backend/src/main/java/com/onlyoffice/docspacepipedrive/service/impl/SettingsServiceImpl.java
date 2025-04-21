@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -54,6 +55,10 @@ public class SettingsServiceImpl implements SettingsService {
                 existedSetting.setUrl(settings.getUrl());
             }
 
+            if (Objects.nonNull(settings.getApiKey())) {
+                existedSetting.setApiKey(settings.getApiKey());
+            }
+
             return settingsRepository.save(existedSetting);
         } catch (SettingsNotFoundException e) {
             settings.setClient(client);
@@ -76,6 +81,7 @@ public class SettingsServiceImpl implements SettingsService {
 
         existedSetting.setUrl(null);
         existedSetting.setSharedGroupId(null);
+        existedSetting.setApiKey(null);
 
         settingsRepository.save(existedSetting);
     }
