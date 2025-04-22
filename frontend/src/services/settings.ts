@@ -45,7 +45,11 @@ export const getSettings = async (sdk: AppExtensionsSDK) => {
   return response.data;
 };
 
-export const putSettings = async (sdk: AppExtensionsSDK, url: string) => {
+export const putSettings = async (
+  sdk: AppExtensionsSDK,
+  url: string,
+  apiKey: string,
+) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
@@ -64,6 +68,7 @@ export const putSettings = async (sdk: AppExtensionsSDK, url: string) => {
     },
     data: {
       url,
+      apiKey,
     },
     timeout: 10000,
   });

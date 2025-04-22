@@ -108,7 +108,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
 
           if (
             !userResponse?.isAdmin &&
-            (!settingsResponse?.url || !settingsResponse.existSystemUser) &&
+            (!settingsResponse?.url || !settingsResponse.apiKey) &&
             !userResponse?.docspaceAccount
           ) {
             setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
