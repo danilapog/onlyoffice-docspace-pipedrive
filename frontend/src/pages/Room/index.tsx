@@ -272,27 +272,6 @@ const RoomPage: React.FC = () => {
           <OnlyofficeSpinner />
         </div>
       )}
-      {!loading && !settings?.existSystemUser && (
-        <div className="w-full">
-          <OnlyofficeSnackbar
-            header={t(
-              "notification.system-user.not-found",
-              "System User is not set.",
-            )}
-            text={`${
-              user?.isAdmin
-                ? t(
-                    "notification.plugin.set-system-user",
-                    "Please go to Settings and set yourself as a System User.",
-                  )
-                : t(
-                    "notification.plugin.functionality-is-limited",
-                    "Plugin functionality is limited.",
-                  )
-            }`}
-          />
-        </div>
-      )}
       {!loading && !room?.id && (
         <div className="h-full flex flex-row custom-scroll overflow-y-scroll overflow-x-hidden">
           <div className="p-5">
