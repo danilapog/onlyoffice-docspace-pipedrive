@@ -72,6 +72,7 @@ module.exports = {
 
                 "pipedrive-color-light-neutral-100": "#f5f5f6",
                 "pipedrive-color-light-neutral-500": "#93949a",
+                "pipedrive-color-light-neutral-700": "#65686f",
                 "pipedrive-color-light-neutral-1000": "#21232c",
                 "pipedrive-color-light-blue-200": "#e1eeff",
                 "pipedrive-color-light-blue-600": "#2b74da",
@@ -85,6 +86,7 @@ module.exports = {
                 "pipedrive-color-dark-neutral-100": "#1e2029",
                 "pipedrive-color-dark-neutral-200": "#2a2c35",
                 "pipedrive-color-dark-neutral-500": "#686970",
+                "pipedrive-color-dark-neutral-700": "#898b90",
                 "pipedrive-color-dark-neutral-1000": "#e2e2e4",
                 "pipedrive-color-dark-blue-100": "#001f4b",
                 "pipedrive-color-dark-blue-200": "#012a60",

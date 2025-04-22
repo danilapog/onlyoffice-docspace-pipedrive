@@ -23,6 +23,7 @@ import cx from "classnames";
 type InputProps = {
   text: string;
   value?: string;
+  description?: string;
   placeholder?: string;
   type?: "text" | "password";
   errorText?: string;
@@ -35,6 +36,7 @@ type InputProps = {
 export const OnlyofficeInput: React.FC<InputProps> = ({
   text,
   value,
+  description,
   placeholder,
   type = "text",
   errorText = "Please fill out this field",
@@ -73,6 +75,9 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
         disabled={disabled}
       />
       <p className={`text-red-600 text-xs ${pstyle}`}>{errorText}</p>
+      <div className="mt-1 text-xs text-pipedrive-color-light-neutral-700 dark:text-pipedrive-color-dark-neutral-700">
+        {description}
+      </div>
     </div>
   );
 };
