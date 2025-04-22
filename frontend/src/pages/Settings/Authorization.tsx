@@ -10,49 +10,31 @@ import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
 import { OnlyofficeBackgroundError } from "@layouts/ErrorBackground";
 
-import { AppContext, AppErrorType } from "@context/AppContext";
+import { AppContext } from "@context/AppContext";
 
 import { putDocspaceAccount, deleteDocspaceAccount } from "@services/user";
 
 import Authorized from "@assets/authorized.svg";
 import CommonError from "@assets/common-error.svg";
-import { OnlyofficeCheckbox } from "@components/checkbox";
-import { OnlyofficeTooltip } from "@components/tooltip";
 import { OnlyofficeHint } from "@components/hint";
 
 const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
 export const AuthorizationSetting: React.FC = () => {
   const { t } = useTranslation();
-  const { user, settings, setUser, setSettings, setAppError, sdk } =
-    useContext(AppContext);
+  const { user, settings, setUser, sdk } = useContext(AppContext);
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showValidationMessage, setShowValidationMessage] = useState(false);
   const [email, setEmail] = useState<string | undefined>("");
   const [password, setPassword] = useState<string | undefined>("");
-  const [isSystem, setIsSystem] = useState<boolean>(!settings?.existSystemUser);
 
   let docspaceInstance: SDKInstance;
 
   const handleLogin = async (event: React.SyntheticEvent) => {
     event.preventDefault();
     if (email && password) {
-      if (isSystem) {
-        const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
-          title: t("button.login", "Login"),
-          description:
-            t(
-              "settings.authorization.login.system.confirm",
-              "Do you agree to connect your DocSpace account? The app will use it to perform actions.",
-            ) || "",
-        });
-        if (!confirmed) {
-          return;
-        }
-      }
-
       setSaving(true);
     } else {
       setShowValidationMessage(true);
@@ -60,55 +42,31 @@ export const AuthorizationSetting: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    let executelogout = true;
-    if (user?.isSystem) {
-      const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
-        title: t("button.logout", "Log out"),
-        description:
-          t(
-            "settings.authorization.deleting.system.confirm",
-            `Are you sure you want to log out? You are a System User and this action will
-          result in the ONLYOFFICE DocSpace functionality being limited.`,
-          ) || "",
-      });
-      executelogout = confirmed;
-    }
-
-    if (executelogout) {
-      setDeleting(true);
-      deleteDocspaceAccount(sdk)
-        .then(async () => {
-          setEmail("");
-          setPassword("");
-          setIsSystem(!!user?.isSystem || !settings?.existSystemUser);
-          setShowValidationMessage(false);
-          if (user && settings) {
-            if (user?.isSystem) {
-              setSettings({ ...settings, existSystemUser: false });
-            }
-            setUser({ ...user, docspaceAccount: null, isSystem: false });
-
-            if (!user.isAdmin && !settings?.existSystemUser) {
-              setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
-            }
-          }
-          await sdk.execute(Command.SHOW_SNACKBAR, {
-            message: t(
-              "settings.authorization.deleting.ok",
-              "ONLYOFFICE DocSpace authorization has been successfully deleted",
-            ),
-          });
-        })
-        .catch(async () => {
-          await sdk.execute(Command.SHOW_SNACKBAR, {
-            message: t(
-              "background.error.subtitle.common",
-              "Something went wrong. Please reload the app.",
-            ),
-          });
-        })
-        .finally(() => setDeleting(false));
-    }
+    setDeleting(true);
+    deleteDocspaceAccount(sdk)
+      .then(async () => {
+        setEmail("");
+        setPassword("");
+        setShowValidationMessage(false);
+        if (user && settings) {
+          setUser({ ...user, docspaceAccount: null });
+        }
+        await sdk.execute(Command.SHOW_SNACKBAR, {
+          message: t(
+            "settings.authorization.deleting.ok",
+            "ONLYOFFICE DocSpace authorization has been successfully deleted",
+          ),
+        });
+      })
+      .catch(async () => {
+        await sdk.execute(Command.SHOW_SNACKBAR, {
+          message: t(
+            "background.error.subtitle.common",
+            "Something went wrong. Please reload the app.",
+          ),
+        });
+      })
+      .finally(() => setDeleting(false));
   };
 
   const onAppReady = async () => {
@@ -138,7 +96,7 @@ export const AuthorizationSetting: React.FC = () => {
         });
         setSaving(false);
       } else {
-        putDocspaceAccount(sdk, email, passwordHash, isSystem)
+        putDocspaceAccount(sdk, email, passwordHash)
           .then(async () => {
             if (user) {
               setUser({
@@ -148,7 +106,6 @@ export const AuthorizationSetting: React.FC = () => {
                   passwordHash: "",
                   canCreateRoom: false,
                 },
-                isSystem,
               });
             }
 
@@ -168,13 +125,6 @@ export const AuthorizationSetting: React.FC = () => {
                 "settings.connection.saving.error.forbidden.guest",
                 "The specified user should be not Guest",
               );
-
-              if (isSystem) {
-                message = t(
-                  "settings.connection.saving.error.forbidden.not-admin",
-                  "The specified user is not a ONLYOFFICE DocSpace administrator",
-                );
-              }
 
               await sdk.execute(Command.SHOW_SNACKBAR, {
                 message,
@@ -208,7 +158,7 @@ export const AuthorizationSetting: React.FC = () => {
 
   return (
     <>
-      {!settings?.url && (
+      {(!settings?.url || !settings?.apiKey) && (
         <OnlyofficeBackgroundError
           Icon={<CommonError />}
           title={t(
@@ -228,7 +178,7 @@ export const AuthorizationSetting: React.FC = () => {
           }`}
         />
       )}
-      {settings?.url && (
+      {settings?.url && settings?.apiKey && (
         <>
           <div className="flex flex-col items-start pl-5 pr-5 pt-5 pb-3">
             <div className="pb-2">
@@ -267,18 +217,6 @@ export const AuthorizationSetting: React.FC = () => {
                     "settings.authorization.status.authorized",
                     "You have successfully logged in to your ONLYOFFICE DocSpace account",
                   )}
-                  {user.isSystem && (
-                    <>
-                      <br />
-                      <Trans
-                        i18nKey="settings.authorization.status.system"
-                        defaults="Current user is <semibold>System Admin</semibold>"
-                        components={{
-                          semibold: <span className="font-semibold" />,
-                        }}
-                      />
-                    </>
-                  )}
                 </span>
               </div>
               <div className="flex justify-start items-center mt-4 ml-5">
@@ -316,28 +254,6 @@ export const AuthorizationSetting: React.FC = () => {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                {user?.isAdmin && (
-                  <div className="pl-5 pr-5">
-                    <div className="flex">
-                      <OnlyofficeCheckbox
-                        id="isSystem"
-                        checked={isSystem}
-                        text={t(
-                          "settings.authorization.inputs.system.title",
-                          "Use this account with System user (DocSpace Admin role required)",
-                        )}
-                        disabled={!settings?.existSystemUser}
-                        onChange={() => setIsSystem(!isSystem)}
-                      />
-                      <OnlyofficeTooltip
-                        text={t(
-                          "settings.authorization.inputs.system.help",
-                          "If you click on this switch, the plugin will perform actions from your DocSpace account",
-                        )}
-                      />
-                    </div>
-                  </div>
-                )}
                 <div className="flex justify-start items-center mt-4 ml-5">
                   <OnlyofficeButton
                     text={t("button.login", "Login")}

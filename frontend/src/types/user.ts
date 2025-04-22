@@ -19,7 +19,6 @@
 export type UserResponse = {
   id: string;
   name: string;
-  isSystem: boolean;
   isAdmin: boolean;
   language: {
     country_code: string;

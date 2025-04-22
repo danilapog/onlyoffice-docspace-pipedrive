@@ -113,7 +113,7 @@ export const ConnectionSettings: React.FC = () => {
           });
           setSettings(undefined);
           if (user) {
-            setUser({ ...user, docspaceAccount: null, isSystem: false });
+            setUser({ ...user, docspaceAccount: null });
           }
           setAddress("");
           setApiKey("");

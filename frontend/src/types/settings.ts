@@ -18,7 +18,6 @@
 
 export type SettingsResponse = {
   url: string;
-  existSystemUser: boolean;
   apiKey: string;
 };
 
