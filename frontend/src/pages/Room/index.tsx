@@ -78,7 +78,7 @@ const RoomPage: React.FC = () => {
   const docspaceInstance = useRef<SDKInstance | null>(null);
 
   useEffect(() => {
-    if (!settings?.url) {
+    if (!settings?.url || !settings?.apiKey) {
       setAppError(AppErrorType.DOCSPACE_CONNECTION);
       setLoading(false);
       return;
