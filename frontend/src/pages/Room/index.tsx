@@ -91,7 +91,6 @@ const RoomPage: React.FC = () => {
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onNoAccess: (e: string | Event) => {
-        sdk.execute(Command.RESIZE, { height: 350 });
         setAppError(AppErrorType.DOCSPACE_ROOM_NO_ACCESS);
         setLoading(false);
       },
@@ -143,7 +142,6 @@ const RoomPage: React.FC = () => {
             return;
           }
 
-          await sdk.execute(Command.RESIZE, { height: 150 });
           setLoading(false);
         } else if (e?.response?.status === 401) {
           setAppError(AppErrorType.TOKEN_ERROR);
@@ -163,7 +161,6 @@ const RoomPage: React.FC = () => {
           id: response.roomId,
           locale: getLocaleForDocspace(i18next.language),
         });
-        sdk.execute(Command.RESIZE, { height: 350 });
         setLoading(true);
 
         await sdk.execute(Command.SHOW_SNACKBAR, {
@@ -244,7 +241,7 @@ const RoomPage: React.FC = () => {
         </div>
       )}
       {!loading && !config.id && user?.docspaceAccount?.canCreateRoom && (
-        <div className="h-full flex flex-row">
+        <div className="h-full flex flex-row custom-scroll overflow-y-scroll overflow-x-hidden">
           <div className="p-5">
             <div className="w-full pb-4">
               {t(
