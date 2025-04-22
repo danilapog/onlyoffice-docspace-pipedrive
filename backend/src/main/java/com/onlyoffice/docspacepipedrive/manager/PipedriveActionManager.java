@@ -126,6 +126,7 @@ public class PipedriveActionManager {
 
         List<Long> salesAdminIds = pipedriveUsers.stream()
                 .filter(PipedriveUser::isSalesAdmin)
+                .filter(PipedriveUser::getActiveFlag)
                 .map(PipedriveUser::getId)
                 .toList();
 
