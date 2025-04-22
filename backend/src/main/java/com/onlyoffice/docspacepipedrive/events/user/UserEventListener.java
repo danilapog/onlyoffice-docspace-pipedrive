@@ -71,7 +71,7 @@ public class UserEventListener {
                     return null;
                 }
             }, newWebhookOwner);
-        } finally {
+        } catch () finally {
             pipedriveActionManager.deleteWebhooks(user.getWebhooks());
         }
     }

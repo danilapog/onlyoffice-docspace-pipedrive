@@ -76,6 +76,11 @@ public class PipedriveActionManager {
 
     private void initWebhook(final String eventObject, final String eventAction) {
         User user = SecurityUtils.getCurrentUser();
+        Client client = SecurityUtils.getCurrentClient();
+
+        if (webhookService.existsByClientIdAndName(client.getId(), eventObject + "." + eventAction)) {
+            return;
+        }
 
         Webhook webhook = Webhook.builder()
                 .name(eventObject + "." + eventAction)
