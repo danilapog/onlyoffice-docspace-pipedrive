@@ -74,23 +74,6 @@ public class PipedriveActionManager {
         }
     }
 
-    @Transactional
-    public void removeWebhooks() {
-        User currentUser = SecurityUtils.getCurrentUser();
-
-        List<Webhook> webhooks = webhookService.findAllByUserId(currentUser.getId());
-
-        for (Webhook webhook : webhooks) {
-            pipedriveClient.deleteWebhook(webhook.getWebhookId());
-
-            try {
-                webhookService.deleteById(webhook.getId());
-            } catch (Exception e) {
-                log.warn(e.getMessage(), e);
-            }
-        }
-    }
-
     private void initWebhook(final String eventObject, final String eventAction) {
         User user = SecurityUtils.getCurrentUser();
 
