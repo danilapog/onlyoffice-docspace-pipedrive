@@ -57,6 +57,8 @@ public class UserEventListener {
         User user = event.getUser();
         Client client = user.getClient();
 
+        pipedriveActionManager.deleteWebhooks(user.getWebhooks());
+
         try {
             User newWebhookOwner = pipedriveActionManager.findDealAdmin(client.getId());
 
@@ -71,8 +73,8 @@ public class UserEventListener {
                     return null;
                 }
             }, newWebhookOwner);
-        } catch () finally {
-            pipedriveActionManager.deleteWebhooks(user.getWebhooks());
+        } catch (Exception e) {
+            log.warn("Error reinit Webhooks for client {}: {}", client.getId(), e.getMessage());
         }
     }
 }
