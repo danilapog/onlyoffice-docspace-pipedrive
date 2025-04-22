@@ -35,7 +35,7 @@ export const OnlyofficeSnackbar: React.FC<SnackbarProps> = ({
   return (
     <div>
       {show && (
-        <div className="flex w-full px-5 py-3 bg-amber-100 font-normal text-xs items-start">
+        <div className="flex w-full px-5 py-3 bg-amber-100 font-normal text-xs dark:text-pipedrive-color-dark-neutral-700 items-start">
           <div className="flex flex-col w-full gap-2">
             <div className="font-semibold leading-3">{header}</div>
             <div className="leading-3">{text}</div>
