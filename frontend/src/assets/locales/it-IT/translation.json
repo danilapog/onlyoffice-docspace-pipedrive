@@ -36,6 +36,8 @@
   "docspace.room.type.vdr": "Stanza di dati virtuale",
   "docspace.room.type.custom": "Stanza personalizzata",
   "link.learn-more": "Per saperne di più",
+  "notification.webhooks-is-not-active.header": "",
+  "notification.webhooks-is-not-active.text": "",
   "room.creating.ok": "La stanza virtuale ONLYOFFICE DocSpace è stata creata con successo!",
   "room.creating.error": "Impossibile creare la stanza ONLYOFFICE DocSpace!",
   "room.create.description": "Crea la stanza ONLYOFFICE DocSpace per lavorare con i documenti relativi a questo accordo. Non sarà possibile modificare il tipo di stanza",

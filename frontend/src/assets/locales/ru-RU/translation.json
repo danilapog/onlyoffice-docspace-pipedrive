@@ -36,6 +36,8 @@
   "docspace.room.type.vdr": "Виртуальная комната данных",
   "docspace.room.type.custom": "Пользовательская комната",
   "link.learn-more": "Узнать больше",
+  "notification.webhooks-is-not-active.header": "",
+  "notification.webhooks-is-not-active.text": "",
   "room.creating.ok": "Комната ONLYOFFICE DocSpace успешно создана!",
   "room.creating.error": "Не удалось создать комнату ONLYOFFICE DocSpace!",
   "room.create.description": "Создайте комнату ONLYOFFICE DocSpace для работы с документами, связанными с этой сделкой. Вы не сможете изменить тип комнаты.",

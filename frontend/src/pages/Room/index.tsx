@@ -272,6 +272,20 @@ const RoomPage: React.FC = () => {
           <OnlyofficeSpinner />
         </div>
       )}
+      {!loading && !settings?.isWebhooksInstalled && (
+        <div className="w-full">
+          <OnlyofficeSnackbar
+            header={t(
+              "notification.webhooks-is-not-active.header",
+              "Synchronization Warning",
+            )}
+            text={t(
+              "notification.webhooks-is-not-active.text",
+              "Synchronization between Deal followers and Room members is not performed because no Deal Admin has installed the plugin",
+            )}
+          />
+        </div>
+      )}
       {!loading && !room?.id && (
         <div className="h-full flex flex-row custom-scroll overflow-y-scroll overflow-x-hidden">
           <div className="p-5">

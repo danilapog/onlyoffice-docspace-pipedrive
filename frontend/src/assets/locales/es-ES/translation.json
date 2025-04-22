@@ -36,6 +36,8 @@
   "docspace.room.type.vdr": "Sala de datos virtuales",
   "docspace.room.type.custom": "Sala personalizada",
   "link.learn-more": "Más información",
+  "notification.webhooks-is-not-active.header": "",
+  "notification.webhooks-is-not-active.text": "",
   "room.creating.ok": "¡La sala de ONLYOFFICE DocSpace se ha creado correctamente!",
   "room.creating.error": "¡Error al crear la sala de ONLYOFFICE DocSpace!",
   "room.create.description": "Cree una sala de ONLYOFFICE DocSpace para trabajar con documentos relacionados con este acuerdo. No podrá cambiar el tipo de sala.",

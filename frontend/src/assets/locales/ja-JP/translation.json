@@ -36,6 +36,8 @@
   "docspace.room.type.vdr": "バーチャルデータルーム",
   "docspace.room.type.custom": "カスタムルーム",
   "link.learn-more": "詳しくはこちら",
+  "notification.webhooks-is-not-active.header": "",
+  "notification.webhooks-is-not-active.text": "",
   "room.creating.ok": "ONLYOFFICE DocSpace ルームが正常に作成されました！",
   "room.creating.error": "ONLYOFFICE DocSpace ルームの作成に失敗しました！",
   "room.create.description": "この案件に関連するドキュメントを扱うためにONLYOFFICE DocSpaceルームを作成してください。ルームタイプを変更することはできませんので、ご注意ください。",
