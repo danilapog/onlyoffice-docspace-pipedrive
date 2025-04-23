@@ -91,20 +91,8 @@ public class UserController {
             currentUser.setClient(updatedClient);
         }
 
-        DocspaceUser docspaceUser = null;
-        try {
-            docspaceUser = docspaceClient.getUser(currentUser.getDocspaceAccount().getUuid());
-
-            if (!currentUser.getDocspaceAccount().getUuid().equals(docspaceUser.getId())) {
-                docspaceAccountService.deleteById(currentUser.getId());
-                docspaceUser = null;
-            }
-        } catch (Exception e) {
-            //ToDo
-        }
-
         return ResponseEntity.ok(
-                userMapper.userToUserResponse(currentUser, pipedriveUser, docspaceUser)
+                userMapper.userToUserResponse(pipedriveUser, currentUser.getDocspaceAccount())
         );
     }
 

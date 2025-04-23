@@ -18,22 +18,16 @@
 
 package com.onlyoffice.docspacepipedrive.web.mapper;
 
-import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
-import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 
 
 @DecoratedWith(UserMapperDelegate.class)
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
-    @Mappings({
-        @Mapping(target = "id", source = "user.id")
-    })
-    UserResponse userToUserResponse(User user, PipedriveUser pipedriveUser, DocspaceUser docspaceUser);
+    UserResponse userToUserResponse(PipedriveUser pipedriveUser, DocspaceAccount docspaceAccount);
 }

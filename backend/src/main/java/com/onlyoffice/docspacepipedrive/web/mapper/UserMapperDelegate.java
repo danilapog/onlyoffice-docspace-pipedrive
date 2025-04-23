@@ -18,32 +18,31 @@
 
 package com.onlyoffice.docspacepipedrive.web.mapper;
 
-import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
-import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountResponse;
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
 
+import java.util.Objects;
 
 public abstract class UserMapperDelegate implements UserMapper {
     @Override
-    public UserResponse userToUserResponse(final User user, final PipedriveUser pipedriveUser,
-                                           final DocspaceUser docspaceUser) {
+    public UserResponse userToUserResponse(final PipedriveUser pipedriveUser,
+                                           final DocspaceAccount docspaceAccount) {
         UserResponse userResponse = new UserResponse();
 
-        userResponse.setId(user.getUserId());
+        userResponse.setId(pipedriveUser.getId());
         userResponse.setIsSystem(user.isSystemUser());
         userResponse.setName(pipedriveUser.getName());
-        userResponse.setIsAdmin(pipedriveUser.getAccess().stream()
+        userResponse.setIsAdmin(!pipedriveUser.getAccess().stream()
                 .filter(access -> access.getApp().equals("sales") && access.getAdmin())
-                .toList().size() > 0);
+                .toList().isEmpty());
         userResponse.setLanguage(pipedriveUser.getLanguage());
 
-        if (user.getDocspaceAccount() != null && docspaceUser != null) {
+        if (Objects.nonNull(docspaceAccount)) {
             DocspaceAccountResponse docspaceAccountResponse = new DocspaceAccountResponse(
-                    docspaceUser.getEmail(),
-                    user.getDocspaceAccount().getPasswordHash(),
-                    docspaceUser.getIsOwner() || docspaceUser.getIsAdmin() || docspaceUser.getIsRoomAdmin()
+                    docspaceAccount.getEmail(),
+                    docspaceAccount.getPasswordHash()
             );
 
             userResponse.setDocspaceAccount(docspaceAccountResponse);
