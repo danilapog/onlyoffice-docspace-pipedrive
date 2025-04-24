@@ -92,7 +92,7 @@ public class UserController {
         }
 
         return ResponseEntity.ok(
-                userMapper.userToUserResponse(pipedriveUser, currentUser.getDocspaceAccount())
+                userMapper.userToUserResponse(currentUser, pipedriveUser, currentUser.getDocspaceAccount())
         );
     }
 
