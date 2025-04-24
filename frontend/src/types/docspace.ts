@@ -25,3 +25,9 @@ export type DocspaceResponse<T> = {
 export type CSPSettings = {
   domains: Array<string>;
 };
+
+export type DocspaceUser = {
+  isOwner: boolean;
+  isAdmin: boolean;
+  isRoomAdmin: boolean;
+};

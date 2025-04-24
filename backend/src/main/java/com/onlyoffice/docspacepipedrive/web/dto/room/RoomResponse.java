@@ -27,5 +27,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class RoomResponse {
-    private String roomId;
+    private String id;
+    private String title;
 }

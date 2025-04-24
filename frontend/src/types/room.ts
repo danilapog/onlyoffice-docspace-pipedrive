@@ -17,5 +17,6 @@
  */
 
 export type RoomResponse = {
-  roomId: number;
+  id: string | null;
+  title: string;
 };

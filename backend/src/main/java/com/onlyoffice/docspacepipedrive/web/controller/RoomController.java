@@ -18,8 +18,6 @@
 
 package com.onlyoffice.docspacepipedrive.web.controller;
 
-import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
-import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollower;
@@ -49,6 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 @RestController
@@ -56,12 +55,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class RoomController {
-    private static final String INTEGRATION_TAG_NAME = "Pipedrive Integration";
-
     private final RoomService roomService;
     private final RoomMapper roomMapper;
     private final PipedriveClient pipedriveClient;
-    private final DocspaceClient docspaceClient;
     private final DocspaceActionManager docspaceActionManager;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -70,31 +66,38 @@ public class RoomController {
             @AuthenticationPrincipal(expression = "client") Client currentClient,
             @PathVariable Long dealId
     ) {
-        pipedriveClient.getDeal(dealId);
+        PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
+
+        Room room;
+        try {
+            room = roomService.findByClientIdAndDealId(currentClient.getId(), dealId);
+        } catch (RoomNotFoundException e) {
+            room = Room.builder()
+                    .dealId(dealId)
+                    .roomId(null)
+                    .build();
+        }
 
         return ResponseEntity.ok(
-                roomMapper.roomToRoomResponse(roomService.findByClientIdAndDealId(currentClient.getId(), dealId))
+                new RoomResponse(
+                        Objects.toString(room.getRoomId(), null),
+                        MessageFormat.format(
+                                "{0} - Pipedrive ({1})",
+                                pipedriveDeal.getTitle(),
+                                currentClient.getCompanyName()
+                        )
+                )
         );
     }
 
     @PostMapping("/{dealId}")
-    public ResponseEntity<RoomResponse> create(@AuthenticationPrincipal(expression = "client") Client currentClient,
+    public ResponseEntity<RoomResponse> save(@AuthenticationPrincipal(expression = "client") Client currentClient,
                                                @PathVariable Long dealId,
                                                @RequestBody RoomRequest request) {
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
 
-        DocspaceRoom docspaceRoom = docspaceClient.createRoom(
-                MessageFormat.format(
-                        "{0} - Pipedrive ({1})",
-                        pipedriveDeal.getTitle(),
-                        currentClient.getCompanyName()
-                ),
-                request.getRoomType(),
-                Collections.singletonList(INTEGRATION_TAG_NAME)
-        );
-
         Room room = Room.builder()
-                .roomId(docspaceRoom.getId())
+                .roomId(request.getRoomId())
                 .dealId(pipedriveDeal.getId())
                 .build();
 

@@ -16,7 +16,7 @@
  *
  */
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
@@ -28,19 +28,21 @@ import {
 
 import { AppContext, AppErrorType } from "@context/AppContext";
 
-import { createRoom, getRoom } from "@services/room";
+import { getRoom, postRoom } from "@services/room";
 import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 
 import { OnlyofficeSpinner } from "@components/spinner";
 
 import { OnlyofficeSnackbar } from "@components/snackbar";
 import { getLocaleForDocspace } from "@utils/locale";
-import { AxiosError } from "axios";
 import {
   DropdownButtonColor,
   OnlyofficeDropdownButton,
 } from "@components/dropdownButton";
 import { DropdownButtonOptions } from "@components/dropdownButton/DropdownButton";
+import { SDKInstance } from "@onlyoffice/docspace-sdk-js/dist/types/instance";
+import { DocspaceUser } from "src/types/docspace";
+import { RoomResponse } from "src/types/room";
 
 const DOCSPACE_FRAME_ID = "docspace-frame";
 const DOCSPACE_ROOM_TYPES = [
@@ -63,55 +65,17 @@ const DOCSPACE_ROOM_TYPES = [
 ];
 
 const RoomPage: React.FC = () => {
+  const { t } = useTranslation();
+  const { parameters } = getCurrentURL();
   const { sdk, user, settings, setAppError } = useContext(AppContext);
 
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [loadDocspace, setLoadDocspace] = useState(false);
   const [showDocspaceWindow, setShowDocspaceWindow] = useState(false);
-  const [config, setConfig] = useState<TFrameConfig>({
-    frameId: DOCSPACE_FRAME_ID,
-    mode: "manager",
-    width: "100%",
-    height: "100%",
-    theme: sdk.userSettings.theme === "dark" ? "Dark" : "Base",
-    showHeader: false,
-    events: {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      onContentReady: (e: string | Event) => {
-        setShowDocspaceWindow(true);
-        setLoading(false);
-        sdk.execute(Command.RESIZE, { height: 680 });
-      },
-      onAppError: (e: string | Event) => {
-        setAppError(AppErrorType.COMMON_ERROR);
-        setLoading(false);
+  const [room, setRoom] = useState<RoomResponse | null>(null);
 
-        // eslint-disable-next-line no-console
-        console.error(e);
-      },
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      onNoAccess: (e: string | Event) => {
-        setAppError(AppErrorType.DOCSPACE_ROOM_NO_ACCESS);
-        setLoading(false);
-      },
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      onNotFound: (e: Event) => {
-        if (user?.docspaceAccount?.canCreateRoom) {
-          setConfig({
-            ...config,
-            id: null,
-          });
-        } else {
-          setAppError(AppErrorType.DOCSPACE_ROOM_NOT_FOUND);
-        }
-
-        setLoading(false);
-      },
-    } as TFrameEvents,
-  } as TFrameConfig);
-
-  const { t } = useTranslation();
-  const { parameters } = getCurrentURL();
+  const docspaceInstance = useRef<SDKInstance | null>(null);
 
   useEffect(() => {
     if (!settings?.url) {
@@ -127,23 +91,12 @@ const RoomPage: React.FC = () => {
     }
 
     getRoom(sdk, Number(parameters.get("selectedIds")))
-      .then(async (response) => {
-        setConfig({
-          ...config,
-          id: response.roomId,
-          locale: getLocaleForDocspace(i18next.language),
-        });
+      .then(async (data) => {
+        setRoom(data);
+        setLoadDocspace(true);
       })
       .catch(async (e) => {
-        if (e?.response?.status === 404) {
-          if (!user?.docspaceAccount?.canCreateRoom) {
-            setAppError(AppErrorType.DOCSPACE_ROOM_NOT_FOUND);
-            setLoading(false);
-            return;
-          }
-
-          setLoading(false);
-        } else if (e?.response?.status === 401) {
+        if (e?.response?.status === 401) {
           setAppError(AppErrorType.TOKEN_ERROR);
         } else {
           setAppError(AppErrorType.COMMON_ERROR);
@@ -151,49 +104,149 @@ const RoomPage: React.FC = () => {
       });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const onAppReady = () => {
+    if (docspaceInstance.current && !room?.id) {
+      docspaceInstance.current
+        .getUserInfo()
+        .then((data) => {
+          const docspaceUser = data as DocspaceUser;
+
+          if (
+            !docspaceUser.isOwner &&
+            !docspaceUser.isAdmin &&
+            !docspaceUser.isRoomAdmin
+          ) {
+            docspaceInstance.current?.destroyFrame();
+            setAppError(AppErrorType.DOCSPACE_ROOM_NOT_FOUND);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  };
+
+  const onContentReady = () => {
+    setShowDocspaceWindow(true);
+    setLoading(false);
+    sdk.execute(Command.RESIZE, { height: 680 });
+  };
+
+  const onAppError = (e: string | Event) => {
+    // eslint-disable-next-line no-console
+    console.error(e);
+
+    setAppError(AppErrorType.COMMON_ERROR);
+    setLoading(false);
+  };
+
+  const onNoAccess = () => {
+    setAppError(AppErrorType.DOCSPACE_ROOM_NO_ACCESS);
+    setLoading(false);
+  };
+
+  const onNotFound = () => {
+    setRoom({ ...room, id: null } as RoomResponse);
+  };
+
+  const saveRoom = (roomId: string) => {
+    postRoom(sdk, Number(parameters.get("selectedIds")), roomId).catch((e) => {
+      if (e?.response?.status === 401) {
+        setAppError(AppErrorType.TOKEN_ERROR);
+      } else {
+        setAppError(AppErrorType.COMMON_ERROR);
+      }
+    });
+  };
+
   const handleCreateRoom = (roomType: string) => {
-    setCreating(true);
+    if (docspaceInstance.current && room) {
+      setCreating(true);
 
-    createRoom(sdk, Number(parameters.get("selectedIds")), Number(roomType))
-      .then(async (response) => {
-        setConfig({
-          ...config,
-          id: response.roomId,
-          locale: getLocaleForDocspace(i18next.language),
+      docspaceInstance.current
+        .createRoom(
+          room.title,
+          // @ts-expect-error Error in docspace-sdk-js types
+          Number(roomType),
+          undefined,
+          ["Pipedrive Deal"],
+        )
+        .then(async (data) => {
+          const docspaceRoom = data as { id: string; status: number };
+
+          if (docspaceRoom.status && docspaceRoom.status !== 200) {
+            let message = t(
+              "room.creating.error",
+              "Failed to create ONLYOFFICE DocSpace room!",
+            );
+            let link;
+
+            if (docspaceRoom.status === 402) {
+              message = t(
+                "docspace.error.payment",
+                "Creating this room is not possible since the limit is reached for the number of rooms included in your current plan.",
+              );
+              link = {
+                url: `${stripTrailingSlash(settings?.url || "")}/portal-settings/payments/portal-payments`,
+                label: t("docspace.link.payments", "Upgrade plan"),
+              };
+            }
+
+            await sdk.execute(Command.SHOW_SNACKBAR, {
+              message,
+              link,
+            });
+            return;
+          }
+
+          docspaceInstance.current?.destroyFrame();
+          await sdk.execute(Command.SHOW_SNACKBAR, {
+            message: t(
+              "room.creating.ok",
+              "ONLYOFFICE DocSpace room was successfully created!",
+            ),
+          });
+
+          setRoom({ ...room, id: docspaceRoom.id } as RoomResponse);
+          setLoading(true);
+          saveRoom(docspaceRoom.id);
+        })
+        .finally(() => {
+          setCreating(false);
         });
-        setLoading(true);
+    }
+  };
 
-        await sdk.execute(Command.SHOW_SNACKBAR, {
-          message: t(
-            "room.creating.ok",
-            "ONLYOFFICE DocSpace room was successfully created!",
-          ),
-        });
-      })
-      .catch(async (e) => {
-        let message = t(
-          "room.creating.error",
-          "Failed to create ONLYOFFICE DocSpace room!",
-        );
-        let link;
+  const getRoomDocspaceConfig = () => {
+    const config = {
+      frameId: DOCSPACE_FRAME_ID,
+      mode: "manager",
+      width: "100%",
+      height: "100%",
+      id: room?.id,
+      theme: sdk.userSettings.theme === "dark" ? "Dark" : "Base",
+      showHeader: false,
+      locale: getLocaleForDocspace(i18next.language),
+      events: {
+        onAppError,
+        onNoAccess,
+        onNotFound,
+      } as TFrameEvents,
+    } as TFrameConfig;
 
-        if (e instanceof AxiosError && e?.response?.status === 402) {
-          message = t(
-            "docspace.error.payment",
-            "Creating this room is not possible since the limit is reached for the number of rooms included in your current plan.",
-          );
-          link = {
-            url: `${stripTrailingSlash(settings?.url || "")}/portal-settings/payments/portal-payments`,
-            label: t("docspace.link.payments", "Upgrade plan"),
-          };
-        }
+    if (room?.id && config.events) {
+      config.events.onContentReady = onContentReady as (
+        e?: Event | object | string,
+      ) => void;
+    }
 
-        await sdk.execute(Command.SHOW_SNACKBAR, {
-          message,
-          link,
-        });
-        setCreating(false);
-      });
+    if (!room?.id && config.events) {
+      config.events.onAppReady = onAppReady as (
+        e?: Event | object | string,
+      ) => void;
+    }
+
+    return config;
   };
 
   const onRequestPasswordHash = () => user?.docspaceAccount?.passwordHash || "";
@@ -240,7 +293,7 @@ const RoomPage: React.FC = () => {
           />
         </div>
       )}
-      {!loading && !config.id && user?.docspaceAccount?.canCreateRoom && (
+      {!loading && !room?.id && (
         <div className="h-full flex flex-row custom-scroll overflow-y-scroll overflow-x-hidden">
           <div className="p-5">
             <div className="w-full pb-4">
@@ -269,18 +322,22 @@ const RoomPage: React.FC = () => {
           </div>
         </div>
       )}
-      {config.id && user && settings?.url && (
+      {loadDocspace && user && settings?.url && (
         <div
+          key={room?.id}
           className={`w-full h-full flex flex-row
             ${!showDocspaceWindow ? "hidden" : ""}
           `}
         >
           <DocSpace
             url={settings.url}
-            config={config}
+            config={getRoomDocspaceConfig()}
             email={user?.docspaceAccount?.userName || "undefined"}
             onRequestPasswordHash={onRequestPasswordHash}
             onUnsuccessLogin={onUnsuccessLogin}
+            onSetDocspaceInstance={(instance) => {
+              docspaceInstance.current = instance;
+            }}
           />
         </div>
       )}

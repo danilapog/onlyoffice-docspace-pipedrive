@@ -18,7 +18,6 @@
 
 package com.onlyoffice.docspacepipedrive.web.dto.room;
 
-import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,5 +26,5 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class RoomRequest {
-    private DocspaceRoomType roomType;
+    private Long roomId;
 }

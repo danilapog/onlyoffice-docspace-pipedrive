@@ -45,10 +45,10 @@ export const getRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
   return response.data;
 };
 
-export const createRoom = async (
+export const postRoom = async (
   sdk: AppExtensionsSDK,
   dealId: number,
-  roomType: number,
+  roomId: string,
 ) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
@@ -61,7 +61,7 @@ export const createRoom = async (
       Authorization: `Bearer ${pctx.token}`,
     },
     data: {
-      roomType,
+      roomId,
     },
     timeout: 30000,
   });
