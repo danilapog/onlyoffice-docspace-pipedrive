@@ -25,7 +25,7 @@ import { UserResponse } from "src/types/user";
 export const getUser = async (sdk: AppExtensionsSDK) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
-  axiosRetry(client as any, {
+  axiosRetry(client, {
     retries: 2,
     retryCondition: (error) => error.status !== 200,
     retryDelay: (count) => count * 50,
@@ -53,7 +53,7 @@ export const putDocspaceAccount = async (
 ) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
-  axiosRetry(client as any, {
+  axiosRetry(client, {
     retries: 1,
     retryCondition: (error) => error.status === 429,
     retryDelay: (count) => count * 50,
@@ -78,7 +78,7 @@ export const putDocspaceAccount = async (
 export const deleteDocspaceAccount = async (sdk: AppExtensionsSDK) => {
   const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
-  axiosRetry(client as any, {
+  axiosRetry(client, {
     retries: 1,
     retryCondition: (error) => error.status === 429,
     retryDelay: (count) => count * 50,

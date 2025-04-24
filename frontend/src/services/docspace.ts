@@ -22,7 +22,7 @@ import { CSPSettings, DocspaceResponse } from "src/types/docspace";
 
 export const getCSPSettings = async (url: string) => {
   const client = axios.create({ baseURL: url });
-  axiosRetry(client as any, {
+  axiosRetry(client, {
     retries: 2,
     retryCondition: (error) => error.status !== 200,
     retryDelay: (count) => count * 50,
