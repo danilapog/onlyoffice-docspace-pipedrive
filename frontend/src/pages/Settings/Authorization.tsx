@@ -23,7 +23,8 @@ const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
 export const AuthorizationSetting: React.FC = () => {
   const { t } = useTranslation();
-  const { user, settings, setUser, sdk } = useContext(AppContext);
+  const { user, settings, setUser, sdk, pipedriveToken } =
+    useContext(AppContext);
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -44,7 +45,7 @@ export const AuthorizationSetting: React.FC = () => {
 
   const handleLogout = async () => {
     setDeleting(true);
-    deleteDocspaceAccount(sdk)
+    deleteDocspaceAccount(pipedriveToken)
       .then(async () => {
         setEmail("");
         setPassword("");
@@ -97,7 +98,7 @@ export const AuthorizationSetting: React.FC = () => {
         });
         setSaving(false);
       } else {
-        putDocspaceAccount(sdk, email, passwordHash)
+        putDocspaceAccount(pipedriveToken, email, passwordHash)
           .then(async () => {
             if (user) {
               setUser({
@@ -179,7 +180,7 @@ export const AuthorizationSetting: React.FC = () => {
           }`}
         />
       )}
-      {(settings?.apiKey && !settings?.isApiKeyValid) && (
+      {settings?.apiKey && !settings?.isApiKeyValid && (
         <OnlyofficeBackgroundError
           Icon={<TokenError className="mb-5" />}
           title={t(

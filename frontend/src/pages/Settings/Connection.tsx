@@ -36,8 +36,15 @@ import { AxiosError } from "axios";
 export const ConnectionSettings: React.FC = () => {
   const { t } = useTranslation();
   const getSettingsErrorMessage = useErrorMessage();
-  const { user, setUser, settings, setSettings, sdk, reloadAppContext } =
-    useContext(AppContext);
+  const {
+    user,
+    setUser,
+    settings,
+    setSettings,
+    sdk,
+    pipedriveToken,
+    reloadAppContext,
+  } = useContext(AppContext);
 
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
@@ -50,7 +57,7 @@ export const ConnectionSettings: React.FC = () => {
     event.preventDefault();
     if (address && apiKey) {
       setConnecting(true);
-      putSettings(sdk, stripTrailingSlash(address), apiKey)
+      putSettings(pipedriveToken, stripTrailingSlash(address), apiKey)
         .then(async (response: SettingsResponse) => {
           setSettings(response);
           setAddress(response.url);
@@ -103,7 +110,7 @@ export const ConnectionSettings: React.FC = () => {
 
     if (confirmed) {
       setDisconnecting(true);
-      deleteSettings(sdk)
+      deleteSettings(pipedriveToken)
         .then(async () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(

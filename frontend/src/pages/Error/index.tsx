@@ -44,7 +44,8 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
   const [processingRequestAccess, setProcessingRequestAccess] = useState(false);
 
   const { t } = useTranslation();
-  const { sdk, user, appError, setAppError } = useContext(AppContext);
+  const { sdk, pipedriveToken, user, appError, setAppError } =
+    useContext(AppContext);
 
   useEffect(() => {
     const { parameters } = getCurrentURL();
@@ -174,7 +175,10 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
             loading: processingRequestAccess,
             onClick: () => {
               setProcessingRequestAccess(true);
-              requestAccessToRoom(sdk, Number(parameters.get("selectedIds")))
+              requestAccessToRoom(
+                pipedriveToken,
+                Number(parameters.get("selectedIds")),
+              )
                 .then(async () => {
                   await sdk.execute(Command.SHOW_SNACKBAR, {
                     message: t(
@@ -261,7 +265,15 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
         break;
       }
     }
-  }, [sdk, appError, t, user, setAppError, processingRequestAccess]);
+  }, [
+    sdk,
+    pipedriveToken,
+    appError,
+    t,
+    user,
+    setAppError,
+    processingRequestAccess,
+  ]);
 
   return (
     <>

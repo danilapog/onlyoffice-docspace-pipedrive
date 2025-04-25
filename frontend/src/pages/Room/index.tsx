@@ -67,7 +67,8 @@ const DOCSPACE_ROOM_TYPES = [
 const RoomPage: React.FC = () => {
   const { t } = useTranslation();
   const { parameters } = getCurrentURL();
-  const { sdk, user, settings, setAppError } = useContext(AppContext);
+  const { sdk, pipedriveToken, user, settings, setAppError } =
+    useContext(AppContext);
 
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -96,7 +97,7 @@ const RoomPage: React.FC = () => {
       return;
     }
 
-    getRoom(sdk, Number(parameters.get("selectedIds")))
+    getRoom(pipedriveToken, Number(parameters.get("selectedIds")))
       .then(async (data) => {
         setRoom(data);
         setLoadDocspace(true);
@@ -156,7 +157,11 @@ const RoomPage: React.FC = () => {
   };
 
   const saveRoom = (roomId: string) => {
-    postRoom(sdk, Number(parameters.get("selectedIds")), roomId).catch((e) => {
+    postRoom(
+      pipedriveToken,
+      Number(parameters.get("selectedIds")),
+      roomId,
+    ).catch((e) => {
       if (e?.response?.status === 401) {
         setAppError(AppErrorType.TOKEN_ERROR);
       } else {

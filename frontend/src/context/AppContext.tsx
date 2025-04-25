@@ -29,6 +29,7 @@ import { getSettings, validateApiKey } from "@services/settings";
 
 import { UserResponse } from "src/types/user";
 import { SettingsResponse } from "src/types/settings";
+import { PipedriveToken } from "@context/PipedriveToken";
 
 type AppContextProps = {
   children?: JSX.Element | JSX.Element[];
@@ -48,6 +49,7 @@ export enum AppErrorType {
 
 export interface IAppContext {
   sdk: AppExtensionsSDK;
+  pipedriveToken: PipedriveToken;
   user: UserResponse | undefined;
   setUser: (value: UserResponse) => void;
   settings: SettingsResponse | undefined;
@@ -61,6 +63,7 @@ export const AppContext = React.createContext<IAppContext>({} as IAppContext);
 
 export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const [sdk, setSDK] = useState<AppExtensionsSDK>();
+  const [pipedriveToken, setPipedriveToken] = useState<PipedriveToken>();
   const [user, setUser] = useState<UserResponse>();
   const [settings, setSettings] = useState<SettingsResponse>();
   const [loading, setLoading] = useState(true);
@@ -75,6 +78,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
 
     return {
       sdk,
+      pipedriveToken,
       user,
       setUser,
       settings,
@@ -85,6 +89,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
     } as IAppContext;
   }, [
     sdk,
+    pipedriveToken,
     user,
     setUser,
     settings,
@@ -100,8 +105,9 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
       .then(async (s) => {
         setSDK(s);
         try {
-          const userResponse = await getUser(s);
-          let settingsResponse = await getSettings(s);
+          const pipedriveTokenObject = new PipedriveToken(s);
+          const userResponse = await getUser(pipedriveTokenObject);
+          let settingsResponse = await getSettings(pipedriveTokenObject);
 
           await i18next.changeLanguage(
             `${userResponse.language.language_code}-${userResponse.language.country_code}`,
@@ -109,7 +115,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
 
           if (settingsResponse.apiKey && !settingsResponse.isApiKeyValid) {
             try {
-              settingsResponse = await validateApiKey(s);
+              settingsResponse = await validateApiKey(pipedriveTokenObject);
             } catch (e) {
               if (e instanceof AxiosError && e?.response?.status !== 400) {
                 throw e;
@@ -120,13 +126,17 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
           if (!userResponse?.isAdmin) {
             if (!settingsResponse?.url || !settingsResponse.apiKey) {
               setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
-            } else if (settingsResponse.apiKey && !settingsResponse.isApiKeyValid) {
+            } else if (
+              settingsResponse.apiKey &&
+              !settingsResponse.isApiKeyValid
+            ) {
               setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
             }
           }
 
           setUser(userResponse);
           setSettings(settingsResponse);
+          setPipedriveToken(pipedriveTokenObject);
         } catch (e) {
           if (e instanceof AxiosError && e?.response?.status === 401) {
             setAppError(AppErrorType.TOKEN_ERROR);

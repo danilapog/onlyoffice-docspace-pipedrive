@@ -18,12 +18,12 @@
 
 import axios from "axios";
 import axiosRetry from "axios-retry";
-import AppExtensionsSDK, { Command } from "@pipedrive/app-extensions-sdk";
 
 import { SettingsResponse } from "src/types/settings";
+import { PipedriveToken } from "@context/PipedriveToken";
 
-export const getSettings = async (sdk: AppExtensionsSDK) => {
-  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+export const getSettings = async (pipedriveToken: PipedriveToken) => {
+  const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
     retries: 2,
@@ -37,7 +37,7 @@ export const getSettings = async (sdk: AppExtensionsSDK) => {
     url: `/api/v1/settings`,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${pctx.token}`,
+      Authorization: `Bearer ${token}`,
     },
     timeout: 5000,
   });
@@ -46,11 +46,11 @@ export const getSettings = async (sdk: AppExtensionsSDK) => {
 };
 
 export const putSettings = async (
-  sdk: AppExtensionsSDK,
+  pipedriveToken: PipedriveToken,
   url: string,
   apiKey: string,
 ) => {
-  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+  const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
     retries: 1,
@@ -64,7 +64,7 @@ export const putSettings = async (
     url: `/api/v1/settings`,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${pctx.token}`,
+      Authorization: `Bearer ${token}`,
     },
     data: {
       url,
@@ -76,8 +76,8 @@ export const putSettings = async (
   return response.data;
 };
 
-export const deleteSettings = async (sdk: AppExtensionsSDK) => {
-  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+export const deleteSettings = async (pipedriveToken: PipedriveToken) => {
+  const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
     retries: 1,
@@ -91,7 +91,7 @@ export const deleteSettings = async (sdk: AppExtensionsSDK) => {
     url: `/api/v1/settings`,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${pctx.token}`,
+      Authorization: `Bearer ${token}`,
     },
     timeout: 15000,
   });
@@ -99,8 +99,8 @@ export const deleteSettings = async (sdk: AppExtensionsSDK) => {
   return response.data;
 };
 
-export const validateApiKey = async (sdk: AppExtensionsSDK) => {
-  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+export const validateApiKey = async (pipedriveToken: PipedriveToken) => {
+  const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
 
   const response = await client<SettingsResponse>({
@@ -108,7 +108,7 @@ export const validateApiKey = async (sdk: AppExtensionsSDK) => {
     url: `/api/v1/settings/validate-api-key`,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${pctx.token}`,
+      Authorization: `Bearer ${token}`,
     },
     timeout: 15000,
   });
