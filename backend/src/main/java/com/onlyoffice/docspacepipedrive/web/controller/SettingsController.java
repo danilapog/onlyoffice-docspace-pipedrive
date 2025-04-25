@@ -29,7 +29,7 @@ import com.onlyoffice.docspacepipedrive.events.settings.SettingsUpdateEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
-import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
+import com.onlyoffice.docspacepipedrive.manager.DocspaceSettingsValidator;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
@@ -58,8 +58,8 @@ public class SettingsController {
 
     private final SettingsService settingsService;
     private final PipedriveClient pipedriveClient;
-    private final DocspaceActionManager docspaceActionManager;
     private final PipedriveActionManager pipedriveActionManager;
+    private final DocspaceSettingsValidator docspaceSettingsValidator;
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
@@ -100,7 +100,7 @@ public class SettingsController {
                 .valid(true)
                 .build();
 
-        Settings settings = docspaceActionManager.validateSettings(
+        Settings settings = docspaceSettingsValidator.validate(
                 Settings.builder()
                         .url(request.getUrl())
                         .apiKey(apiKey)
