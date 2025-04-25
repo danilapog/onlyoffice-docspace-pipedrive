@@ -98,3 +98,20 @@ export const deleteSettings = async (sdk: AppExtensionsSDK) => {
 
   return response.data;
 };
+
+export const validateApiKey = async (sdk: AppExtensionsSDK) => {
+  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+  const client = axios.create({ baseURL: process.env.BACKEND_URL });
+
+  const response = await client<SettingsResponse>({
+    method: "POST",
+    url: `/api/v1/settings/validate-api-key`,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${pctx.token}`,
+    },
+    timeout: 15000,
+  });
+
+  return response.data;
+};

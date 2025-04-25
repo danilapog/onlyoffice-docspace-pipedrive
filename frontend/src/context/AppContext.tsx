@@ -25,7 +25,7 @@ import { AxiosError } from "axios";
 import { OnlyofficeSpinner } from "@components/spinner";
 
 import { getUser } from "@services/user";
-import { getSettings } from "@services/settings";
+import { getSettings, validateApiKey } from "@services/settings";
 
 import { UserResponse } from "src/types/user";
 import { SettingsResponse } from "src/types/settings";
@@ -101,11 +101,21 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         setSDK(s);
         try {
           const userResponse = await getUser(s);
-          const settingsResponse = await getSettings(s);
+          let settingsResponse = await getSettings(s);
 
           await i18next.changeLanguage(
             `${userResponse.language.language_code}-${userResponse.language.country_code}`,
           );
+
+          if (settingsResponse.apiKey && !settingsResponse.isApiKeyValid) {
+            try {
+              settingsResponse = await validateApiKey(s);
+            } catch (e) {
+              if (e instanceof AxiosError && e?.response?.status !== 400) {
+                throw e;
+              }
+            }
+          }
 
           if (!userResponse?.isAdmin) {
             if (!settingsResponse?.url || !settingsResponse.apiKey) {
