@@ -20,7 +20,6 @@ package com.onlyoffice.docspacepipedrive.web.mapper;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountResponse;
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
 
@@ -28,7 +27,7 @@ import java.util.Objects;
 
 public abstract class UserMapperDelegate implements UserMapper {
     @Override
-    public UserResponse userToUserResponse(final User user, final PipedriveUser pipedriveUser,
+    public UserResponse userToUserResponse(final PipedriveUser pipedriveUser,
                                            final DocspaceAccount docspaceAccount) {
         UserResponse userResponse = new UserResponse();
 
