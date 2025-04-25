@@ -23,7 +23,6 @@ import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceResponse;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.ErrorCode;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +31,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 import java.util.Objects;
@@ -106,7 +106,7 @@ public class DocspaceSettingsValidator {
             log.warn("Error while getting DocSpace API keys", e);
 
             throw new SettingsValidationException(ErrorCode.DOCSPACE_CAN_NOT_BE_REACHED);
-        } catch (DocspaceWebClientResponseException e) {
+        } catch (WebClientResponseException e) {
             log.warn("Error while getting DocSpace API keys", e);
 
             throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
@@ -125,7 +125,7 @@ public class DocspaceSettingsValidator {
             log.warn("Error while getting DocSpace API key owner", e);
 
             throw new SettingsValidationException(ErrorCode.DOCSPACE_CAN_NOT_BE_REACHED);
-        } catch (DocspaceWebClientResponseException e) {
+        } catch (WebClientResponseException e) {
             log.warn("Error while getting DocSpace API key owner", e);
 
             throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN);
