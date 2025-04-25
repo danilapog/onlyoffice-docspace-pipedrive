@@ -56,7 +56,7 @@ public class UserController {
     private final DocspaceAccountService docspaceAccountService;
     private final UserMapper userMapper;
     private final PipedriveClient pipedriveClient;
-    private final DocspaceClient applicationDocspaceClient;
+    private final DocspaceClient docspaceClient;
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
@@ -94,7 +94,7 @@ public class UserController {
     @Transactional
     public ResponseEntity<Void> putDocspaceAccount(@AuthenticationPrincipal User currentUser,
                                                    @RequestBody DocspaceAccountRequest request) {
-        DocspaceUser docspaceUser = applicationDocspaceClient.getUser(request.getUserName());
+        DocspaceUser docspaceUser = docspaceClient.getUser(request.getUserName());
 
         if (docspaceUser.getIsVisitor()) {
             throw new DocspaceAccessDeniedException(request.getUserName());

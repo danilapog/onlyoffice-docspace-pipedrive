@@ -9,4 +9,8 @@
     <changeSet author="onlyoffice (generated)" id="1744199693794-2">
         <dropColumn tableName="clients" columnName="system_user_id"/>
     </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1744199693794-4">
+        <dropColumn tableName="docspace_accounts" columnName="token_issued_at"/>
+        <dropColumn tableName="docspace_accounts" columnName="token_value"/>
+    </changeSet>
 </databaseChangeLog>

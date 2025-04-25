@@ -59,7 +59,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class DocspaceActionManager {
-    private final DocspaceClient applicationDocspaceClient;
+    private final DocspaceClient docspaceClient;
     private final SettingsService settingsService;
     private final UserService userService;
 
@@ -75,7 +75,7 @@ public class DocspaceActionManager {
                 .toList();
 
         if (!settings.existSharedGroupId()) {
-            DocspaceGroup docspaceGroup = applicationDocspaceClient.createGroup(
+            DocspaceGroup docspaceGroup = docspaceClient.createGroup(
                     MessageFormat.format("Pipedrive Users ({0})", currentClient.getCompanyName()),
                     apiKey.getOwnerId(),
                     members
@@ -88,7 +88,7 @@ public class DocspaceActionManager {
             currentClient.setSettings(savedSetting);
         } else {
             try {
-                applicationDocspaceClient.updateGroup(
+                docspaceClient.updateGroup(
                         settings.getSharedGroupId(),
                         null,
                         apiKey.getOwnerId(),
@@ -116,7 +116,7 @@ public class DocspaceActionManager {
         Client currentClient = SecurityUtils.getCurrentClient();
 
         try {
-            applicationDocspaceClient.updateGroup(
+            docspaceClient.updateGroup(
                     currentClient.getSettings().getSharedGroupId(),
                     null,
                     null,
@@ -145,7 +145,7 @@ public class DocspaceActionManager {
     public void removeDocspaceAccountFromSharedGroup(final UUID docspaceAccountId) {
         Client currentClient = SecurityUtils.getCurrentClient();
 
-        applicationDocspaceClient.updateGroup(
+        docspaceClient.updateGroup(
                 currentClient.getSettings().getSharedGroupId(),
                 null,
                 null,
@@ -170,7 +170,7 @@ public class DocspaceActionManager {
                 .notify(true)
                 .build();
 
-        DocspaceMembers docspaceMembers = applicationDocspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+        DocspaceMembers docspaceMembers = docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
         boolean sharedGroupIsPresentInResponse = docspaceMembers.getMembers().stream()
                 .filter(docspaceMember -> docspaceMember.getSharedTo().getId().equals(sharedGroupId))
                 .findFirst()
@@ -196,7 +196,7 @@ public class DocspaceActionManager {
                 .notify(false)
                 .build();
 
-        applicationDocspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+        docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
     }
 
     public void inviteListDocspaceAccountsToRoom(final Long roomId, final List<DocspaceAccount> docspaceAccounts) {
@@ -216,7 +216,7 @@ public class DocspaceActionManager {
                     .notify(true)
                     .build();
 
-            applicationDocspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+            docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
         }
     }
 
@@ -234,7 +234,7 @@ public class DocspaceActionManager {
                     .notify(false)
                     .build();
 
-            applicationDocspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
+            docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
         }
     }
 
@@ -248,7 +248,7 @@ public class DocspaceActionManager {
 
         List<DocspaceApiKey> docspaceApiKeys = new ArrayList<>();
         try {
-            docspaceApiKeys = applicationDocspaceClient.getApiKeys();
+            docspaceApiKeys = docspaceClient.getApiKeys();
         } catch (WebClientRequestException e) {
             log.warn("Error while getting DocSpace API keys", e);
 
@@ -281,7 +281,7 @@ public class DocspaceActionManager {
             throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
         }
 
-        DocspaceUser docspaceUser = applicationDocspaceClient.getUser();
+        DocspaceUser docspaceUser = docspaceClient.getUser();
         if (!docspaceUser.getIsAdmin()) {
             throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN);
         }
@@ -291,7 +291,7 @@ public class DocspaceActionManager {
     }
 
     public DocspaceCSPSettings addDomainsToCSPSettings(final List<String> domains) {
-        DocspaceCSPSettings docspaceCSPSettings = applicationDocspaceClient.getCSPSettings();
+        DocspaceCSPSettings docspaceCSPSettings = docspaceClient.getCSPSettings();
 
         List<String> allowedDomains = docspaceCSPSettings.getDomains();
 
@@ -302,7 +302,7 @@ public class DocspaceActionManager {
         if (!notAllowedDomains.isEmpty()) {
             allowedDomains.addAll(notAllowedDomains);
 
-            return applicationDocspaceClient.updateCSPSettings(allowedDomains);
+            return docspaceClient.updateCSPSettings(allowedDomains);
         }
 
         return docspaceCSPSettings;

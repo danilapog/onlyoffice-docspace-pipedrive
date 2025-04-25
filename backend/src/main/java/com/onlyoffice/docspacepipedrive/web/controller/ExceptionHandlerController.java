@@ -20,7 +20,6 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccountAlreadyExistsException;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
@@ -126,18 +125,6 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(DocspaceAccountAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> docspaceAccountAlreadyExists(DocspaceAccountAlreadyExistsException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(
-                        new ErrorResponse(
-                                HttpStatus.FORBIDDEN.value(),
-                                e.getLocalizedMessage(),
-                                ErrorResponse.Provider.INTEGRATION_APP
-                        )
-                );
-    }
-
-    @ExceptionHandler(DocspaceAuthorizationException.class)
-    public ResponseEntity<ErrorResponse> docspaceAuthorizationException(DocspaceAuthorizationException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(
                         new ErrorResponse(
