@@ -24,8 +24,15 @@ const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
 export const AuthorizationSetting: React.FC = () => {
   const { t } = useTranslation();
-  const { user, settings, setUser, setSettings, setAppError, sdk } =
-    useContext(AppContext);
+  const {
+    user,
+    settings,
+    setUser,
+    setSettings,
+    setAppError,
+    sdk,
+    pipedriveToken,
+  } = useContext(AppContext);
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -76,7 +83,7 @@ export const AuthorizationSetting: React.FC = () => {
 
     if (executelogout) {
       setDeleting(true);
-      deleteDocspaceAccount(sdk)
+      deleteDocspaceAccount(pipedriveToken)
         .then(async () => {
           setEmail("");
           setPassword("");
@@ -138,7 +145,7 @@ export const AuthorizationSetting: React.FC = () => {
         });
         setSaving(false);
       } else {
-        putDocspaceAccount(sdk, email, passwordHash, isSystem)
+        putDocspaceAccount(pipedriveToken, email, passwordHash, isSystem)
           .then(async () => {
             if (user) {
               setUser({
