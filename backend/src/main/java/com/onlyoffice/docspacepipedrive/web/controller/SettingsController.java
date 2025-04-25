@@ -26,6 +26,7 @@ import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.events.settings.SettingsDeleteEvent;
 import com.onlyoffice.docspacepipedrive.events.settings.SettingsUpdateEvent;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
@@ -75,12 +76,19 @@ public class SettingsController {
 
         try {
             settingsResponse.setUrl(settings.getUrl());
-            settingsResponse.setApiKey(formatApiKey(settings.getApiKey().getValue()));
-            settingsResponse.setIsApiKeyValid(settings.getApiKey().isValid());
-            settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled());
         } catch (DocspaceUrlNotFoundException e) {
             settingsResponse.setUrl("");
         }
+
+        try {
+            settingsResponse.setApiKey(formatApiKey(settings.getApiKey().getValue()));
+            settingsResponse.setIsApiKeyValid(settings.getApiKey().isValid());
+        } catch (DocspaceApiKeyNotFoundException e) {
+            settingsResponse.setApiKey("");
+            settingsResponse.setIsApiKeyValid(false);
+        }
+
+        settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled());
 
         return ResponseEntity.ok(settingsResponse);
     }

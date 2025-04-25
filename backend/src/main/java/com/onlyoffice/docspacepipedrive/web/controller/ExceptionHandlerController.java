@@ -20,6 +20,8 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccountAlreadyExistsException;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyInvalidException;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
@@ -143,6 +145,30 @@ public class ExceptionHandlerController {
                         new SettingsErrorResponse(
                                 e.getErrorCode().toString(),
                                 e.getErrorCode().getMessage()
+                        )
+                );
+    }
+
+    @ExceptionHandler(DocspaceApiKeyNotFoundException.class)
+    public ResponseEntity<ErrorResponse> docspaceApiKeyNotFoundException(DocspaceApiKeyNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                                e.getLocalizedMessage(),
+                                ErrorResponse.Provider.INTEGRATION_APP
+                        )
+                );
+    }
+
+    @ExceptionHandler(DocspaceApiKeyInvalidException.class)
+    public ResponseEntity<ErrorResponse> docspaceApiKeyInvalidException(DocspaceApiKeyInvalidException e) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                                e.getLocalizedMessage(),
+                                ErrorResponse.Provider.INTEGRATION_APP
                         )
                 );
     }
