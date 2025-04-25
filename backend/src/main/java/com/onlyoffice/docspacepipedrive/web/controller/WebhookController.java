@@ -23,12 +23,16 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.entity.Client;
+import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.events.deal.AddFollowersToPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.deal.AddVisibleEveryoneForPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.deal.RemoveFollowersFromPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.deal.RemoveVisibleEveryoneForPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.user.UserOwnerWebhooksIsLostEvent;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyInvalidException;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
@@ -62,6 +66,18 @@ public class WebhookController {
                             @RequestBody WebhookRequest<PipedriveDeal> request) {
         PipedriveDeal currentDeal = request.getCurrent();
         PipedriveDeal previousDeal = request.getPrevious();
+
+        Settings settings = currentClient.getSettings();
+        try {
+            ApiKey apiKey = settings.getApiKey();
+            if (!apiKey.isValid()) {
+                log.info(new DocspaceApiKeyInvalidException(currentClient.getId()).getMessage());
+                return;
+            }
+        } catch (DocspaceApiKeyNotFoundException e) {
+            log.info(e.getMessage());
+            return;
+        }
 
         try {
             roomService.findByClientIdAndDealId(currentClient.getId(), currentDeal.getId());
