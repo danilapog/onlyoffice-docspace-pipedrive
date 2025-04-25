@@ -19,6 +19,7 @@
 export type SettingsResponse = {
   url: string;
   apiKey: string;
+  isApiKeyValid: boolean;
   isWebhooksInstalled: boolean;
 };
 

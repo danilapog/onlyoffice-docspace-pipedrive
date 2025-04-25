@@ -1,5 +1,6 @@
 ﻿{
   "background.error.title.common": "Errore",
+  "background.error.title.docspace-invalid-api-key": "",
   "background.error.title.token-expired": "Il token di sicurezza del documento è scaduto",
   "background.error.title.create-room": "Spiacenti, non hai l'autorizzazione per creare stanze",
   "background.error.title.no-room-access": "Siamo spiacenti, non hai accesso a questa stanza",

@@ -42,6 +42,7 @@ export enum AppErrorType {
   DOCSPACE_AUTHORIZATION,
   DOCSPACE_ROOM_NOT_FOUND,
   DOCSPACE_UNREACHABLE,
+  DOCSPACE_INVALID_API_KEY,
   DOCSPACE_ROOM_NO_ACCESS,
 }
 
@@ -106,12 +107,12 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
             `${userResponse.language.language_code}-${userResponse.language.country_code}`,
           );
 
-          if (
-            !userResponse?.isAdmin &&
-            (!settingsResponse?.url || !settingsResponse.apiKey) &&
-            !userResponse?.docspaceAccount
-          ) {
-            setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+          if (!userResponse?.isAdmin) {
+            if (!settingsResponse?.url || !settingsResponse.apiKey) {
+              setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+            } else if (settingsResponse.apiKey && !settingsResponse.isApiKeyValid) {
+              setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
+            }
           }
 
           setUser(userResponse);

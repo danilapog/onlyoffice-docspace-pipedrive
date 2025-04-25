@@ -1,5 +1,6 @@
 ﻿{
   "background.error.title.common": "Erreur",
+  "background.error.title.docspace-invalid-api-key": "",
   "background.error.title.token-expired": "Le jeton de sécurité du document a expiré",
   "background.error.title.create-room": "Désolé, vous n'avez pas l'autorisation de créer des salles",
   "background.error.title.no-room-access": "Malheureusement, vous n'avez pas accès à cette salle",

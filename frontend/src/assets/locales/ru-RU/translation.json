@@ -1,5 +1,6 @@
 {
   "background.error.title.common": "Ошибка",
+  "background.error.title.docspace-invalid-api-key": "",
   "background.error.title.token-expired": "Срок действия токена безопасности документа истек",
   "background.error.title.create-room": "К сожалению, у вас нет разрешения на создание комнат",
   "background.error.title.no-room-access": "К сожалению, у вас нет доступа к этой комнате",

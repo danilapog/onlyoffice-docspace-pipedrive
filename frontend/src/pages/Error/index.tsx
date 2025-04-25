@@ -229,6 +229,33 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
         });
         break;
       }
+      case AppErrorType.DOCSPACE_INVALID_API_KEY: {
+        setErrorProps({
+          Icon: <TokenError className="mb-5" />,
+          title: t(
+            "background.error.title.docspace-invalid-api-key",
+            "ONLYOFFICE DocSpace API Key is invalid",
+          ),
+          subtitle: `${
+            user?.isAdmin
+              ? t(
+                  "background.error.hint.admin.docspace-connection",
+                  "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
+                )
+              : t(
+                  "background.error.hint.docspace-connection",
+                  "Please contact the administrator.",
+                )
+          }`,
+          button: {
+            text: t("button.settings", "Settings") || "Settings",
+            onClick: user?.isAdmin
+              ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
+              : undefined,
+          },
+        });
+        break;
+      }
       default: {
         setErrorProps(undefined);
         break;

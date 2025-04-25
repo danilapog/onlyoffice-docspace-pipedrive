@@ -1,5 +1,6 @@
 ﻿{
   "background.error.title.common": "エラー",
+  "background.error.title.docspace-invalid-api-key": "",
   "background.error.title.token-expired": "ドキュメントのセキュリティトークンが期限切れです",
   "background.error.title.create-room": "申し訳ありませんが、ルームを作成する権限がありません",
   "background.error.title.no-room-access": "申し訳ありませんが、このルームにはアクセスできません。",

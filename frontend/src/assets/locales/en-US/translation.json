@@ -1,5 +1,6 @@
 {
   "background.error.title.common": "Error",
+  "background.error.title.docspace-invalid-api-key": "ONLYOFFICE DocSpace API Key is invalid",
   "background.error.title.token-expired": "The document security token has expired",
   "background.error.title.create-room": "Sorry, you don't have a permission to create rooms",
   "background.error.title.no-room-access": "Sorry, you don't have access to this room",

@@ -84,6 +84,12 @@ const RoomPage: React.FC = () => {
       return;
     }
 
+    if (settings?.apiKey && !settings?.isApiKeyValid) {
+      setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
+      setLoading(false);
+      return;
+    }
+
     if (!user?.docspaceAccount) {
       setAppError(AppErrorType.DOCSPACE_AUTHORIZATION);
       setLoading(false);
