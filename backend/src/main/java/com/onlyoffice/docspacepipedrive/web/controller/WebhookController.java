@@ -31,11 +31,13 @@ import com.onlyoffice.docspacepipedrive.events.deal.AddVisibleEveryoneForPipedri
 import com.onlyoffice.docspacepipedrive.events.deal.RemoveFollowersFromPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.deal.RemoveVisibleEveryoneForPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.user.UserOwnerWebhooksIsLostEvent;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyInvalidException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
+import com.onlyoffice.docspacepipedrive.exceptions.SettingsValidationException;
+import com.onlyoffice.docspacepipedrive.manager.DocspaceSettingsValidator;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
+import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.webhook.WebhookRequest;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +61,8 @@ public class WebhookController {
     private final RoomService roomService;
     private final UserService userService;
     private final PipedriveActionManager pipedriveActionManager;
+    private final DocspaceSettingsValidator docspaceSettingsValidator;
+    private final SettingsService settingsService;
     private final ApplicationEventPublisher eventPublisher;
 
     @PostMapping("/deal")
@@ -67,15 +71,9 @@ public class WebhookController {
         PipedriveDeal currentDeal = request.getCurrent();
         PipedriveDeal previousDeal = request.getPrevious();
 
-        Settings settings = currentClient.getSettings();
         try {
-            ApiKey apiKey = settings.getApiKey();
-            if (!apiKey.isValid()) {
-                log.info(new DocspaceApiKeyInvalidException(currentClient.getId()).getMessage());
-                return;
-            }
-        } catch (DocspaceApiKeyNotFoundException e) {
-            log.info(e.getMessage());
+            validateClient(currentClient);
+        } catch (DocspaceApiKeyNotFoundException | SettingsValidationException e) {
             return;
         }
 
@@ -146,5 +144,19 @@ public class WebhookController {
         if (isOwnerWebhookIsNotSalesAdmin) {
             eventPublisher.publishEvent(new UserOwnerWebhooksIsLostEvent(this, currentUser));
         }
+    }
+
+    private void validateClient(final Client client) {
+        Settings settings = client.getSettings();
+        ApiKey apiKey = settings.getApiKey();
+
+        if (apiKey.isValid()) {
+            return;
+        }
+
+        Settings validSettings = docspaceSettingsValidator.validate(settings);
+        Settings savedSettings = settingsService.put(client.getId(), validSettings);
+
+        client.setSettings(savedSettings);
     }
 }
