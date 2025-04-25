@@ -43,6 +43,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -151,6 +152,27 @@ public class SettingsController {
         eventPublisher.publishEvent(new SettingsDeleteEvent(this));
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("validate-api-key")
+    public ResponseEntity<SettingsResponse> validateApiKey(
+            @AuthenticationPrincipal(expression = "client") Client currentClient) {
+        Settings currentSettings = currentClient.getSettings();
+
+        Settings settings = docspaceSettingsValidator.validate(currentSettings);
+
+        Settings savedSettings = settingsService.put(
+                currentClient.getId(),
+                settings
+        );
+
+        SettingsResponse settingsResponse = new SettingsResponse();
+        settingsResponse.setUrl(savedSettings.getUrl());
+        settingsResponse.setApiKey(formatApiKey(savedSettings.getApiKey().getValue()));
+        settingsResponse.setIsApiKeyValid(settings.getApiKey().isValid());
+        settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled());
+
+        return ResponseEntity.ok(settingsResponse);
     }
 
     private String formatApiKey(final String apiKey) {
