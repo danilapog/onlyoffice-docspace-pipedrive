@@ -54,6 +54,7 @@ public class SettingsEventListener {
     @EventListener
     public void listen(final SettingsUpdateEvent event) {
         Client client = SecurityUtils.getCurrentClient();
+        client.setSettings(event.getSettings());
 
         docspaceActionManager.addDomainsToCSPSettings(Arrays.asList(client.getUrl(), frontendUrl));
         docspaceActionManager.initSharedGroup();
