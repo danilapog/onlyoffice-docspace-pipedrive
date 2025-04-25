@@ -76,6 +76,7 @@ public class SettingsController {
         try {
             settingsResponse.setUrl(settings.getUrl());
             settingsResponse.setApiKey(formatApiKey(settings.getApiKey().getValue()));
+            settingsResponse.setIsApiKeyValid(settings.getApiKey().isValid());
             settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled());
         } catch (DocspaceUrlNotFoundException e) {
             settingsResponse.setUrl("");
@@ -96,6 +97,7 @@ public class SettingsController {
 
         ApiKey apiKey = ApiKey.builder()
                 .value(request.getApiKey())
+                .valid(true)
                 .build();
 
         Settings settings = docspaceActionManager.validateSettings(
@@ -117,6 +119,7 @@ public class SettingsController {
         try {
             settingsResponse.setUrl(savedSettings.getUrl());
             settingsResponse.setApiKey(formatApiKey(savedSettings.getApiKey().getValue()));
+            settingsResponse.setIsApiKeyValid(savedSettings.getApiKey().isValid());
             settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled());
         } catch (DocspaceUrlNotFoundException e) {
             settingsResponse.setUrl("");

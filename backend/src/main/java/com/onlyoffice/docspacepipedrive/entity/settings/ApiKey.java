@@ -34,4 +34,5 @@ import java.util.UUID;
 public class ApiKey {
     private String value;
     private UUID ownerId;
+    private boolean valid;
 }

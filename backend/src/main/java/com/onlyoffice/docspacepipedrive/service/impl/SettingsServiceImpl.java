@@ -76,6 +76,15 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
+    public Settings setApiKeyValid(final Long clientId, final boolean valid) {
+        Settings existedSetting = findByClientId(clientId);
+
+        existedSetting.getApiKey().setValid(valid);
+
+        return settingsRepository.save(existedSetting);
+    }
+
+    @Override
     public void clear(final Long clientId) {
         Settings existedSetting = findByClientId(clientId);
 

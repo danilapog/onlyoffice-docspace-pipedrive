@@ -54,7 +54,8 @@ public class Settings {
     private String url;
     @AttributeOverrides({
             @AttributeOverride(name = "value", column = @Column(name = "api_key_value")),
-            @AttributeOverride(name = "ownerId", column = @Column(name = "api_key_owner_id"))
+            @AttributeOverride(name = "ownerId", column = @Column(name = "api_key_owner_id")),
+            @AttributeOverride(name = "valid", column = @Column(name = "api_key_valid"))
     })
     private ApiKey apiKey;
     private UUID sharedGroupId;
