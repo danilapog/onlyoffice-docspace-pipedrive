@@ -251,12 +251,13 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
                   "Please contact the administrator.",
                 )
           }`,
-          button: {
-            text: t("button.settings", "Settings") || "Settings",
-            onClick: user?.isAdmin
-              ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
-              : undefined,
-          },
+          button: user?.isAdmin
+            ? {
+                text: t("button.settings", "Settings") || "Settings",
+                onClick: () =>
+                  sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
+              }
+            : undefined,
         });
         break;
       }
