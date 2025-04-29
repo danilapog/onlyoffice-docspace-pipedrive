@@ -39,6 +39,8 @@
   "link.learn-more": "Узнать больше",
   "notification.webhooks-is-not-active.header": "",
   "notification.webhooks-is-not-active.text": "",
+  "notification.webhooks-is-not-active.help-text.admin": "",
+  "notification.webhooks-is-not-active.help-text.user": "",
   "room.creating.ok": "Комната ONLYOFFICE DocSpace успешно создана!",
   "room.creating.error": "Не удалось создать комнату ONLYOFFICE DocSpace!",
   "room.create.description": "Создайте комнату ONLYOFFICE DocSpace для работы с документами, связанными с этой сделкой. Вы не сможете изменить тип комнаты.",

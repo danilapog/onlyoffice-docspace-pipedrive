@@ -39,6 +39,8 @@
   "link.learn-more": "Learn more",
   "notification.webhooks-is-not-active.header": "Synchronization Warning",
   "notification.webhooks-is-not-active.text": "Synchronization between Deal followers and Room members is not performed because no Deal Admin has installed the plugin",
+  "notification.webhooks-is-not-active.help-text.admin": "Please reinstall plugin",
+  "notification.webhooks-is-not-active.help-text.user": "Please contact with Deal Admin",
   "room.creating.ok": "ONLYOFFICE DocSpace room was successfully created!",
   "room.creating.error": "Failed to create ONLYOFFICE DocSpace room!",
   "room.create.description": "Create ONLYOFFICE DocSpace room to work with documents related to this deal. You will not be able to change the room type.",

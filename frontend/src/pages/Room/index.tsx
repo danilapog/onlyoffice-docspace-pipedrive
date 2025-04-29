@@ -290,10 +290,20 @@ const RoomPage: React.FC = () => {
               "notification.webhooks-is-not-active.header",
               "Synchronization Warning",
             )}
-            text={t(
+            text={`${t(
               "notification.webhooks-is-not-active.text",
               "Synchronization between Deal followers and Room members is not performed because no Deal Admin has installed the plugin",
-            )}
+            )} (${
+              user?.isAdmin
+                ? t(
+                    "notification.webhooks-is-not-active.help-text.admin",
+                    "Please reinstall plugin",
+                  )
+                : t(
+                    "notification.webhooks-is-not-active.help-text.user",
+                    "Please contact with Deal Admin",
+                  )
+            })`}
           />
         </div>
       )}
