@@ -52,11 +52,15 @@ public class PipedriveActionManager {
     public boolean isWebhooksInstalled() {
         Client currentClient = SecurityUtils.getCurrentClient();
 
+        return isWebhooksInstalled(currentClient.getId());
+    }
+
+    public boolean isWebhooksInstalled(final Long clientId) {
         return webhookService.existsByClientIdAndName(
-                currentClient.getId(),
+                clientId,
                 "deal.updated"
         ) && webhookService.existsByClientIdAndName(
-                currentClient.getId(),
+                clientId,
                 "user.updated"
         );
     }
