@@ -200,7 +200,7 @@ export const AuthorizationSetting: React.FC = () => {
           }`}
         />
       )}
-      {settings?.url && settings?.apiKey && (
+      {settings?.url && settings?.apiKey && settings?.isApiKeyValid && (
         <>
           <div className="flex flex-col items-start pl-5 pr-5 pt-5 pb-3">
             <div className="pb-2">
