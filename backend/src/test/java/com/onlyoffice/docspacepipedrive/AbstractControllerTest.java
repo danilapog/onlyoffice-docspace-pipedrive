@@ -173,6 +173,7 @@ public abstract class AbstractControllerTest {
                 .apiKey(ApiKey.builder()
                         .value("sk-api-key-for-test")
                         .ownerId(UUID.randomUUID())
+                        .valid(true)
                         .build())
                 .sharedGroupId(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"))
                 .build());

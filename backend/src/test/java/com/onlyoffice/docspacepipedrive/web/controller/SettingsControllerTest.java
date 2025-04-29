@@ -58,7 +58,9 @@ public class SettingsControllerTest extends AbstractControllerTest {
         String expectedResponse = objectMapper.writeValueAsString(
                 new SettingsResponse(
                         WIREMOCK_DOCSPACE_SERVER.baseUrl(),
-                        "sk-***test"
+                        "sk-***test",
+                        true,
+                        false
                 )
         );
 
@@ -82,7 +84,9 @@ public class SettingsControllerTest extends AbstractControllerTest {
         String expectedResponse = objectMapper.writeValueAsString(
             new SettingsResponse(
                 "",
-                null
+                "",
+                false,
+                false
             )
         );
 
@@ -111,7 +115,9 @@ public class SettingsControllerTest extends AbstractControllerTest {
         String expectedResponse = objectMapper.writeValueAsString(
                 new SettingsResponse(
                         WIREMOCK_DOCSPACE_SERVER.baseUrl(),
-                        "sk-***test"
+                        "sk-***test",
+                        true,
+                        true
                 )
         );
 
