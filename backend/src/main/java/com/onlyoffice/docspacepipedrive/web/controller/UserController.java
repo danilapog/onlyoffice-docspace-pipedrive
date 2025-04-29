@@ -22,13 +22,11 @@ import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.events.user.DocspaceLoginUserEvent;
 import com.onlyoffice.docspacepipedrive.events.user.DocspaceLogoutUserEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
-import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
@@ -44,15 +42,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
-    private final ClientService clientService;
     private final DocspaceAccountService docspaceAccountService;
     private final UserMapper userMapper;
     private final PipedriveClient pipedriveClient;
@@ -60,30 +55,8 @@ public class UserController {
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
-    public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal User currentUser,
-                                                @AuthenticationPrincipal(expression = "client") Client currentClient) {
+    public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal User currentUser) {
         PipedriveUser pipedriveUser = pipedriveClient.getUser();
-
-        UriComponents clientUri = UriComponentsBuilder.newInstance()
-                .scheme("https")
-                .host(pipedriveUser.getCompanyDomain() + ".pipedrive.com")
-                .build();
-
-        boolean updateClient = false;
-        if (!clientUri.toUriString().equals(currentClient.getUrl())) {
-            currentClient.setUrl(clientUri.toUriString());
-            updateClient = true;
-        }
-
-        if (!pipedriveUser.getCompanyName().equals(currentClient.getCompanyName())) {
-            currentClient.setCompanyName(pipedriveUser.getCompanyName());
-            updateClient = true;
-        }
-
-        if (updateClient) {
-            Client updatedClient = clientService.update(currentClient);
-            currentUser.setClient(updatedClient);
-        }
 
         return ResponseEntity.ok(
                 userMapper.userToUserResponse(pipedriveUser, currentUser.getDocspaceAccount())
