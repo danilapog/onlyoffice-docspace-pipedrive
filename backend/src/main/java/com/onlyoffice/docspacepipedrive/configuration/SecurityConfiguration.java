@@ -21,6 +21,7 @@ package com.onlyoffice.docspacepipedrive.configuration;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.security.AuthenticationEntryPointImpl;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2AuthenticationSuccessHandler;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2LoginCancelFilter;
 import com.onlyoffice.docspacepipedrive.security.provider.ClientRegistrationAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.provider.JwtAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.provider.WebhookAuthenticationProvider;
@@ -83,6 +84,7 @@ public class SecurityConfiguration {
                                                    final BasicAuthenticationFilter clientRegistrationAuthenticationFilter,
                                                    final BearerTokenAuthenticationFilter jwtAuthenticationFilter,
                                                    final BasicAuthenticationFilter webhookAuthenticationFilter,
+                                                   final OAuth2LoginCancelFilter oAuth2LoginCancelFilter,
                                                    final OAuth2AuthenticationSuccessHandler auth2AuthenticationSuccessHandler) throws Exception {
         http
                 .authorizeHttpRequests(auth -> {
@@ -109,6 +111,7 @@ public class SecurityConfiguration {
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterAfter(new ForwardedHeaderFilter(), WebAsyncManagerIntegrationFilter.class)
+                .addFilterBefore(oAuth2LoginCancelFilter, OAuth2LoginAuthenticationFilter.class)
                 .addFilterBefore(clientRegistrationAuthenticationFilter, OAuth2LoginAuthenticationFilter.class)
                 .addFilterAfter(jwtAuthenticationFilter, OAuth2LoginAuthenticationFilter.class)
                 .addFilterAfter(webhookAuthenticationFilter, OAuth2LoginAuthenticationFilter.class);
@@ -195,6 +198,12 @@ public class SecurityConfiguration {
                 return new NegatedRequestMatcher(new AntPathRequestMatcher("/api/v1/webhook/**")).matches(request);
             }
         };
+    }
+
+    @Bean
+    public OAuth2LoginCancelFilter oAuth2LoginCancelFilter(
+            final ClientRegistrationRepository clientRegistrationRepository) {
+        return new OAuth2LoginCancelFilter(clientRegistrationRepository);
     }
 
     @Bean
