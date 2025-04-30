@@ -23,6 +23,7 @@ import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.user.AccessToken;
 import com.onlyoffice.docspacepipedrive.entity.user.RefreshToken;
+import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
@@ -54,7 +55,20 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
     public <T extends OAuth2AuthorizedClient> T loadAuthorizedClient(final String clientRegistrationId,
                                                                      final Authentication authentication,
                                                                      final HttpServletRequest request) {
-        User user = (User) authentication.getPrincipal();
+        User user;
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            user = (User) principal;
+        } else {
+            try {
+                user = userService.findByClientIdAndUserId(
+                        Long.parseLong((authentication.getName()).split(":")[0]),
+                        Long.parseLong((authentication.getName()).split(":")[1])
+                );
+            } catch (UserNotFoundException e) {
+                return null;
+            }
+        }
 
         OAuth2AccessToken accessToken = new OAuth2AccessToken(
                 OAuth2AccessToken.TokenType.BEARER,

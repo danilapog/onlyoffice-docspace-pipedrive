@@ -19,8 +19,9 @@
 package com.onlyoffice.docspacepipedrive.security.provider;
 
 import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
-import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
+import com.onlyoffice.docspacepipedrive.security.RedisAuthenticationRepository;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
+import com.onlyoffice.docspacepipedrive.security.service.OAuth2PipedriveUserService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,22 +31,28 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import java.text.MessageFormat;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationProvider implements AuthenticationProvider {
+    private final OAuth2PipedriveUserService oAuth2PipedriveUserService;
     private final UserService userService;
     private final JwtDecoder jwtDecoder;
+    private final RedisAuthenticationRepository redisAuthenticationRepository;
+
     private MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
     @Value("${spring.security.jwt.client-name-attribute}")
@@ -65,26 +72,44 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
         BearerTokenAuthenticationToken bearer = (BearerTokenAuthenticationToken) authentication;
 
-        Map<String, Object> body;
+        Jwt jwt;
         try {
-            body = jwtDecoder.decode(bearer.getToken()).getClaims();
+            jwt = jwtDecoder.decode(bearer.getToken());
         } catch (Exception e) {
             log.debug("Failed to authenticate since the JWT was invalid");
             throw new InvalidBearerTokenException(e.getMessage(), e);
         }
 
-        Long clientId = (Long) body.get(clientNameAttribute);
-        Long userId = (Long) body.get(userNameAttribute);
+        OAuth2AuthenticationToken resultAuthentication = (OAuth2AuthenticationToken)
+                redisAuthenticationRepository.getAuthentication(bearer.getToken());
 
-        User user;
-        try {
-            user = userService.findByClientIdAndUserId(clientId, userId);
-        } catch (UserNotFoundException e) {
-            log.debug(MessageFormat.format("Failed to authenticate: {0}", e.getMessage()));
-            throw new InvalidBearerTokenException(e.getMessage(), e);
+        if (Objects.isNull(resultAuthentication)) {
+            Map<String, Object> body = jwt.getClaims();
+            Long clientId = (Long) body.get(clientNameAttribute);
+            Long userId = (Long) body.get(userNameAttribute);
+
+            OAuth2User oAuth2User;
+            try {
+                oAuth2User = oAuth2PipedriveUserService.loadUser(clientId, userId);
+            } catch (RuntimeException e) {
+                throw new InvalidBearerTokenException(e.getMessage(), e);
+            }
+
+            resultAuthentication = createSuccessAuthentication(oAuth2User, authentication);
+            redisAuthenticationRepository.saveAuthentication(
+                    bearer.getToken(),
+                    resultAuthentication,
+                    jwt.getExpiresAt()
+            );
         }
 
-        return createSuccessAuthentication(user, authentication);
+        User user = userService.findByClientIdAndUserId(
+                Long.parseLong(resultAuthentication.getName().split(":")[0]),
+                Long.parseLong((resultAuthentication.getName()).split(":")[1])
+        );
+        ((OAuth2PipedriveUser) resultAuthentication.getPrincipal()).setUser(user);
+
+        return resultAuthentication;
     }
 
     @Override
@@ -92,11 +117,15 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         return BearerTokenAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    protected Authentication createSuccessAuthentication(final User principal, final Authentication authentication) {
-        UserAuthenticationToken result = new UserAuthenticationToken(principal);
-        result.setDetails(authentication.getDetails());
+    protected OAuth2AuthenticationToken createSuccessAuthentication(final OAuth2User oAuth2User,
+                                                                    final Authentication authentication) {
+        OAuth2AuthenticationToken result = new OAuth2AuthenticationToken(
+                oAuth2User,
+                oAuth2User.getAuthorities(),
+                "pipedrive"
+        );
 
-        log.debug("Authenticated user");
+        result.setDetails(authentication.getDetails());
         return result;
     }
 }

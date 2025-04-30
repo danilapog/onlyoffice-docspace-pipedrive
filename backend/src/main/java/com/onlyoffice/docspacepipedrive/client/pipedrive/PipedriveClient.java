@@ -42,6 +42,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Component
@@ -91,7 +92,7 @@ public class PipedriveClient {
                     })
                     .block();
 
-            dealFollowers.addAll(response.getData());
+            dealFollowers.addAll(Optional.ofNullable(response.getData()).orElse(List.of()));
 
             moreItemInCollection = response.getAdditionalData().getPagination().getMoreItemsInCollection();
             if (moreItemInCollection) {

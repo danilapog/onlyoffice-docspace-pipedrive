@@ -23,6 +23,7 @@ import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyInvalidException;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -128,6 +129,9 @@ public class DocspaceAuthorizationApiKeyExchangeFilterFunction implements Exchan
         if (authentication != null) {
             if (authentication.getPrincipal() instanceof User) {
                 user = (User) authentication.getPrincipal();
+            }
+            if (authentication.getPrincipal() instanceof OAuth2PipedriveUser) {
+                user = ((OAuth2PipedriveUser) authentication.getPrincipal()).getUser();
             }
         }
 

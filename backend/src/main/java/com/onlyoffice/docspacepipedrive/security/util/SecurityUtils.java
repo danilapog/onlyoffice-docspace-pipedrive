@@ -20,6 +20,7 @@ package com.onlyoffice.docspacepipedrive.security.util;
 
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -50,6 +51,9 @@ public final class SecurityUtils {
         if (authentication != null) {
             if (authentication.getPrincipal() instanceof User) {
                 return (User) authentication.getPrincipal();
+            }
+            if (authentication.getPrincipal() instanceof OAuth2PipedriveUser) {
+                return ((OAuth2PipedriveUser) authentication.getPrincipal()).getUser();
             }
         }
 
