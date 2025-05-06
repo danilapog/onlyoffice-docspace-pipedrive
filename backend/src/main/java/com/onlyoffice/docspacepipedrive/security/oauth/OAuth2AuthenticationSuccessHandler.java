@@ -20,9 +20,6 @@ package com.onlyoffice.docspacepipedrive.security.oauth;
 
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
-import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import jakarta.servlet.ServletException;
@@ -41,6 +38,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -76,14 +74,13 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     private boolean isInitializeWebhooks(final Long clientId) {
-        try {
-            Settings settings = settingsService.findByClientId(clientId);
-            String url = settings.getUrl();
-            ApiKey apiKey = settings.getApiKey();
+        Settings settings = settingsService.findByClientId(clientId);
 
-            return !url.isEmpty() && apiKey.isValid() && !pipedriveActionManager.isWebhooksInstalled(clientId);
-        } catch (SettingsNotFoundException | DocspaceUrlNotFoundException | DocspaceApiKeyNotFoundException e) {
-            return false;
-        }
+        String url = settings.getUrl();
+        ApiKey apiKey = settings.getApiKey();
+
+        return Objects.nonNull(url) && !url.isEmpty()
+                && Objects.nonNull(apiKey) && apiKey.isValid()
+                && !pipedriveActionManager.isWebhooksInstalled(clientId);
     }
 }

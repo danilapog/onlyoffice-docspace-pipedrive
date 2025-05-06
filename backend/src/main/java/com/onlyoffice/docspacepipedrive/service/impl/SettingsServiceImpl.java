@@ -20,7 +20,6 @@ package com.onlyoffice.docspacepipedrive.service.impl;
 
 import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
-import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
 import com.onlyoffice.docspacepipedrive.repository.SettingsRepository;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
@@ -41,16 +40,15 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public Settings findByClientId(final Long clientId) {
         return settingsRepository.findByClientId(clientId)
-                .orElseThrow(() -> new SettingsNotFoundException(clientId));
+                .orElse(new Settings());
     }
 
     @Override
     public Settings put(final Long clientId, final Settings settings) {
-        Client client = clientService.findById(clientId);
+        Settings existedSetting = settingsRepository.findByClientId(clientId)
+                .orElse(null);
 
-        try {
-            Settings existedSetting = findByClientId(clientId);
-
+        if (Objects.nonNull(existedSetting)) {
             if (StringUtils.hasText(settings.getUrl())) {
                 existedSetting.setUrl(settings.getUrl());
             }
@@ -60,10 +58,12 @@ public class SettingsServiceImpl implements SettingsService {
             }
 
             return settingsRepository.save(existedSetting);
-        } catch (SettingsNotFoundException e) {
-            settings.setClient(client);
-            return settingsRepository.save(settings);
         }
+
+        Client client = clientService.findById(clientId);
+        settings.setClient(client);
+
+        return settingsRepository.save(settings);
     }
 
     @Override
