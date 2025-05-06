@@ -19,8 +19,6 @@
 package com.onlyoffice.docspacepipedrive.entity;
 
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -65,21 +63,9 @@ public class Settings {
     @ToString.Exclude
     private Client client;
 
-    public String getUrl() {
-        return Optional.ofNullable(url).orElseThrow(
-                () -> new DocspaceUrlNotFoundException(this.client.getId())
-        );
-    }
-
     public UUID getSharedGroupId() {
         return Optional.ofNullable(sharedGroupId).orElseThrow(
                 () -> new SharedGroupIdNotFoundException(this.client.getId())
-        );
-    }
-
-    public ApiKey getApiKey() {
-        return Optional.ofNullable(apiKey).orElseThrow(
-                () -> new DocspaceApiKeyNotFoundException(this.client.getId())
         );
     }
 
