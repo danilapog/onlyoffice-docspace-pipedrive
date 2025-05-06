@@ -18,7 +18,6 @@
 
 package com.onlyoffice.docspacepipedrive.security.util;
 
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
@@ -34,26 +33,13 @@ public final class SecurityUtils {
     private SecurityUtils() {
     }
 
-    public static Client getCurrentClient() {
-        User currentUser = getCurrentUser();
-
-        if (currentUser != null) {
-            return currentUser.getClient();
-        }
-
-        return null;
-    }
-
-    public static User getCurrentUser() {
+    public static OAuth2PipedriveUser getCurrentUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
 
         if (authentication != null) {
-            if (authentication.getPrincipal() instanceof User) {
-                return (User) authentication.getPrincipal();
-            }
             if (authentication.getPrincipal() instanceof OAuth2PipedriveUser) {
-                return ((OAuth2PipedriveUser) authentication.getPrincipal()).getUser();
+                return (OAuth2PipedriveUser) authentication.getPrincipal();
             }
         }
 

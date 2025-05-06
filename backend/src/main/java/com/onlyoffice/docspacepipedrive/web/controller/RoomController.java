@@ -108,7 +108,11 @@ public class RoomController {
 
         try {
             eventPublisher.publishEvent(
-                    new AddRoomToPipedriveDealEvent(this, pipedriveDeal, createdRoom.getRoomId())
+                    new AddRoomToPipedriveDealEvent(this,
+                            currentUser.getClientId(),
+                            pipedriveDeal,
+                            createdRoom.getRoomId()
+                    )
             );
         } catch (Exception e) {
             log.warn(e.getMessage(), e);

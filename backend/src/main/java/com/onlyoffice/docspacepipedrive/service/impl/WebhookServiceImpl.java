@@ -18,8 +18,11 @@
 
 package com.onlyoffice.docspacepipedrive.service.impl;
 
+import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
+import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.WebhookNotFoundException;
+import com.onlyoffice.docspacepipedrive.repository.UserRepository;
 import com.onlyoffice.docspacepipedrive.repository.WebhookRepository;
 import com.onlyoffice.docspacepipedrive.service.WebhookService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +36,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class WebhookServiceImpl implements WebhookService {
+    private final UserRepository userRepository;
     private final WebhookRepository webhookRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -53,7 +57,11 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
-    public Webhook save(final Webhook webhook) {
+    public Webhook save(final Long clientId, final Long userId, final Webhook webhook) {
+        User user = userRepository.findByClientIdAndUserId(clientId, userId)
+                .orElseThrow(() -> new UserNotFoundException(clientId, userId));
+
+        webhook.setUser(user);
         webhook.setPassword(passwordEncoder.encode(webhook.getPassword()));
         return webhookRepository.save(webhook);
     }

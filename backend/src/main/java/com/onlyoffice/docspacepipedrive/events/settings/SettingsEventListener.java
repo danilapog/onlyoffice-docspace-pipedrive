@@ -23,7 +23,7 @@ import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class SettingsEventListener {
+    private final ClientService clientService;
     private final RoomService roomService;
     private final UserService userService;
     private final DocspaceAccountService docspaceAccountService;
@@ -53,7 +54,7 @@ public class SettingsEventListener {
 
     @EventListener
     public void listen(final SettingsUpdateEvent event) {
-        Client client = SecurityUtils.getCurrentClient();
+        Client client = clientService.findById(event.getClientId());
         client.setSettings(event.getSettings());
 
         docspaceActionManager.addDomainsToCSPSettings(Arrays.asList(client.getUrl(), frontendUrl));
@@ -63,11 +64,9 @@ public class SettingsEventListener {
 
     @EventListener
     public void listen(final SettingsDeleteEvent event) {
-        Client client = SecurityUtils.getCurrentClient();
+        roomService.deleteAllByClientId(event.getClientId());
 
-        roomService.deleteAllByClientId(client.getId());
-
-        List<User> users = userService.findAllByClientId(client.getId());
+        List<User> users = userService.findAllByClientId(event.getClientId());
 
         List<Long> docspaceAccountIds = users.stream()
                 .filter(user -> user.getDocspaceAccount() != null)

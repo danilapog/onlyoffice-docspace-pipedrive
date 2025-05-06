@@ -28,6 +28,6 @@ public interface WebhookService {
     boolean existsByClientIdAndName(Long clientId, String name);
     Webhook findById(UUID id);
     List<Webhook> findAllByUserId(Long userId);
-    Webhook save(Webhook webhook);
+    Webhook save(Long clientId, Long userId, Webhook webhook);
     void deleteById(UUID id);
 }

@@ -18,7 +18,6 @@
 
 package com.onlyoffice.docspacepipedrive.client.docspace.filter;
 
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
@@ -60,31 +59,26 @@ public class DocspaceAuthorizationApiKeyExchangeFilterFunction implements Exchan
                 .flatMap(clientResponse -> {
                     HttpStatusCode statusCode = clientResponse.statusCode();
                     if (HttpStatus.UNAUTHORIZED.equals(statusCode) || HttpStatus.FORBIDDEN.equals(statusCode)) {
-                        Client client = getClient(request);
+                        Long clientId = getClientId(request);
 
-                        invalidateApiKey(client);
+                        invalidateApiKey(clientId);
 
-                        return Mono.error(new DocspaceApiKeyInvalidException(client.getId()));
+                        return Mono.error(new DocspaceApiKeyInvalidException(clientId));
                     }
                     return Mono.just(clientResponse);
                 });
     }
 
+    private Settings resolveSettings(final ClientRequest request) {
+        Long clientId = getClientId(request);
 
-    private ApiKey resolveApiKey(final ClientRequest request) {
-        Client client = getClient(request);
-        Settings settings = client.getSettings();
-        ApiKey apiKey = settings.getApiKey();
-
-        if (!apiKey.isValid()) {
-            throw new DocspaceApiKeyInvalidException(client.getId());
-        }
-
-        return settings.getApiKey();
+        return settingsService.findByClientId(clientId);
     }
 
+
     private ClientRequest bearer(final ClientRequest request) {
-        ApiKey apiKey = resolveApiKey(request);
+        Settings settings = resolveSettings(request);
+        ApiKey apiKey = settings.getApiKey();
 
         return ClientRequest.from(request)
                 .headers(headers -> {
@@ -121,7 +115,7 @@ public class DocspaceAuthorizationApiKeyExchangeFilterFunction implements Exchan
         }
     }
 
-    private Client getClient(final ClientRequest request) {
+    private Long getClientId(final ClientRequest request) {
         Map<String, Object> attrs = request.attributes();
         Authentication authentication = (Authentication) attrs.get(AUTHENTICATION_ATTR_NAME);
 
@@ -131,18 +125,18 @@ public class DocspaceAuthorizationApiKeyExchangeFilterFunction implements Exchan
                 user = (User) authentication.getPrincipal();
             }
             if (authentication.getPrincipal() instanceof OAuth2PipedriveUser) {
-                user = ((OAuth2PipedriveUser) authentication.getPrincipal()).getUser();
+                return ((OAuth2PipedriveUser) authentication.getPrincipal()).getClientId();
             }
         }
 
         if (user != null) {
-            return user.getClient();
+            return user.getClient().getId();
         }
 
         return null;
     }
 
-    private void invalidateApiKey(final Client client) {
-        settingsService.setApiKeyValid(client.getId(), false);
+    private void invalidateApiKey(final Long clientId) {
+        settingsService.setApiKeyValid(clientId, false);
     }
 }
