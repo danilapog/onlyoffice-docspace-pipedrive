@@ -52,7 +52,10 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getUser(@AuthenticationPrincipal OAuth2PipedriveUser currentUser) {
-        DocspaceAccount docspaceAccount = currentUser.getUser().getDocspaceAccount();
+        DocspaceAccount docspaceAccount = docspaceAccountService.findByClientIdAndUserId(
+                currentUser.getClientId(),
+                currentUser.getUserId()
+        );
 
         Map<String, Object> userResponse = currentUser.getAttributes();
         userResponse.put("isAdmin", currentUser.getAuthorities().contains(
@@ -84,7 +87,7 @@ public class UserController {
                 .build();
 
         DocspaceAccount savedDocspaceAccount = docspaceAccountService.save(
-                currentUser.getUser().getId(),
+                currentUser.getUserId(),
                 docspaceAccount
         );
 
@@ -95,11 +98,18 @@ public class UserController {
 
     @DeleteMapping("/docspace-account")
     public ResponseEntity<Void> deleteDocspaceAccount(@AuthenticationPrincipal OAuth2PipedriveUser currentUser) {
-        docspaceAccountService.deleteById(currentUser.getUser().getUserId());
+        DocspaceAccount docspaceAccount = docspaceAccountService.findByClientIdAndUserId(
+                currentUser.getClientId(),
+                currentUser.getUserId()
+        );
 
-        eventPublisher.publishEvent(new DocspaceLogoutUserEvent(
-                this, currentUser.getUser().getDocspaceAccount()
-        ));
+        if (Objects.nonNull(docspaceAccount)) {
+            docspaceAccountService.deleteById(currentUser.getUserId());
+
+            eventPublisher.publishEvent(new DocspaceLogoutUserEvent(
+                    this, docspaceAccount
+            ));
+        }
 
         return ResponseEntity.noContent().build();
     }

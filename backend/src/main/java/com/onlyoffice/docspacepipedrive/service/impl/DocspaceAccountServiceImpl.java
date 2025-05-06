@@ -22,7 +22,6 @@ import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccountAlreadyExistsException;
 import com.onlyoffice.docspacepipedrive.repository.DocspaceAccountRepository;
-import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,13 +35,18 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DocspaceAccountServiceImpl implements DocspaceAccountService {
-    private final ClientService clientService;
     private final UserService userService;
     private final DocspaceAccountRepository docspaceAccountRepository;
 
     @Override
     public DocspaceAccount findById(final Long id) {
         return docspaceAccountRepository.findById(id)
+                .orElse(null);
+    }
+
+    @Override
+    public DocspaceAccount findByClientIdAndUserId(final Long clientId, final Long userId) {
+        return docspaceAccountRepository.findByUser_Client_IdAndUser_UserId(clientId, userId)
                 .orElse(null);
     }
 

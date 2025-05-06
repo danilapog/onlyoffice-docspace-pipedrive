@@ -21,11 +21,13 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollower;
+import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.events.deal.AddRoomToPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
+import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
@@ -54,6 +56,7 @@ import java.util.Objects;
 @Slf4j
 public class RoomController {
     private final RoomService roomService;
+    private final DocspaceAccountService docspaceAccountService;
     private final RoomMapper roomMapper;
     private final PipedriveClient pipedriveClient;
     private final DocspaceActionManager docspaceActionManager;
@@ -134,9 +137,14 @@ public class RoomController {
                 .isPresent();
 
         if (currentUserIsDealFollower) {
+            DocspaceAccount docspaceAccount = docspaceAccountService.findByClientIdAndUserId(
+                    currentUser.getClientId(),
+                    currentUser.getUserId()
+            );
+
             docspaceActionManager.inviteListDocspaceAccountsToRoom(
                     room.getRoomId(),
-                    Collections.singletonList(currentUser.getUser().getDocspaceAccount())
+                    Collections.singletonList(docspaceAccount)
             );
         } else {
             docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());

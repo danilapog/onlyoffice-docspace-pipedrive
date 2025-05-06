@@ -22,7 +22,10 @@ import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 
 @Repository
 public interface DocspaceAccountRepository extends JpaRepository<DocspaceAccount, Long> {
+    Optional<DocspaceAccount> findByUser_Client_IdAndUser_UserId(Long clientId, Long userId);
 }
