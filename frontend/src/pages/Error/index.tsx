@@ -44,7 +44,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
   const [processingRequestAccess, setProcessingRequestAccess] = useState(false);
 
   const { t } = useTranslation();
-  const { sdk, pipedriveToken, user, appError, setAppError } =
+  const { sdk, pipedriveToken, user, appError, setAppError, reloadAppContext } =
     useContext(AppContext);
 
   useEffect(() => {
@@ -87,40 +87,31 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
       case AppErrorType.PLUGIN_NOT_AVAILABLE: {
         setErrorProps({
           Icon: <CommonError className="mb-5" />,
-          title: t(
-            "background.error.subtitle.plugin.not-active.message",
-            "ONLYOFFICE DocSpace App is not yet available",
-          ),
-          subtitle: t(
-            "background.error.subtitle.plugin.not-active.help",
-            "Please wait until a Pipedrive Administrator configures the app settings",
-          ),
-        });
-        break;
-      }
-      case AppErrorType.DOCSPACE_CONNECTION: {
-        setErrorProps({
-          Icon: <CommonError className="mb-5" />,
-          title: t(
-            "background.error.subtitle.docspace-connection",
-            "You are not connected to ONLYOFFICE DocSpace",
-          ),
-          subtitle: `${
-            user?.isAdmin
-              ? t(
-                  "background.error.hint.admin.docspace-connection",
-                  "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
-                )
-              : t(
-                  "background.error.hint.docspace-connection",
-                  "Please contact the administrator.",
-                )
-          }`,
+          title: user?.isAdmin
+            ? t(
+                "background.error.subtitle.docspace-connection",
+                "You are not connected to ONLYOFFICE DocSpace",
+              )
+            : t(
+                "background.error.subtitle.plugin.not-active.message",
+                "ONLYOFFICE DocSpace App is not yet available.",
+              ),
+          subtitle: user?.isAdmin
+            ? t(
+                "background.error.hint.admin.docspace-connection",
+                "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
+              )
+            : t(
+                "background.error.subtitle.plugin.not-active.help",
+                "Please wait until a Pipedrive Administrator configures the app settings.",
+              ),
           button: {
-            text: t("button.settings", "Settings") || "Settings",
+            text: user?.isAdmin
+              ? t("button.settings", "Settings")
+              : t("button.reload", "Reload"),
             onClick: user?.isAdmin
               ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
-              : undefined,
+              : () => reloadAppContext(),
           },
         });
         break;
@@ -227,6 +218,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
     user,
     setAppError,
     processingRequestAccess,
+    reloadAppContext,
   ]);
 
   return (

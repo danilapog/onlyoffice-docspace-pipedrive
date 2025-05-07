@@ -32,6 +32,7 @@ export const AuthorizationSetting: React.FC = () => {
     setAppError,
     sdk,
     pipedriveToken,
+    reloadAppContext,
   } = useContext(AppContext);
 
   const [saving, setSaving] = useState(false);
@@ -218,21 +219,36 @@ export const AuthorizationSetting: React.FC = () => {
       {!settings?.url && (
         <OnlyofficeBackgroundError
           Icon={<CommonError />}
-          title={t(
-            "background.error.subtitle.docspace-connection",
-            "You are not connected to ONLYOFFICE DocSpace",
-          )}
-          subtitle={`${
+          title={
+            user?.isAdmin
+              ? t(
+                  "background.error.subtitle.docspace-connection",
+                  "You are not connected to ONLYOFFICE DocSpace",
+                )
+              : t(
+                  "background.error.subtitle.plugin.not-active.message",
+                  "ONLYOFFICE DocSpace App is not yet available.",
+                )
+          }
+          subtitle={
             user?.isAdmin
               ? t(
                   "background.error.hint.admin.docspace-connection",
                   "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
                 )
               : t(
-                  "background.error.hint.docspace-connection",
-                  "Please contact the administrator.",
+                  "background.error.subtitle.plugin.not-active.help",
+                  "Please wait until a Pipedrive Administrator configures the app settings.",
                 )
-          }`}
+          }
+          button={
+            !user?.isAdmin
+              ? {
+                  text: t("button.reload", "Reload"),
+                  onClick: () => reloadAppContext(),
+                }
+              : undefined
+          }
         />
       )}
       {settings?.url && (

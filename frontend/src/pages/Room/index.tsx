@@ -80,12 +80,6 @@ const RoomPage: React.FC = () => {
   const docspaceInstance = useRef<SDKInstance | null>(null);
 
   useEffect(() => {
-    if (!settings?.url) {
-      setAppError(AppErrorType.DOCSPACE_CONNECTION);
-      setLoading(false);
-      return;
-    }
-
     if (!user?.docspaceAccount) {
       sdk.execute(Command.RESIZE, { height: 128 });
       setLoading(false);
