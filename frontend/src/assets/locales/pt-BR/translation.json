@@ -41,6 +41,7 @@
   "room.creating.ok": "A sala ONLYOFFICE DocSpace foi criada com sucesso!",
   "room.creating.error": "Falha ao criar a sala ONLYOFFICE DocSpace!",
   "room.create.description": "Crie uma sala ONLYOFFICE DocSpace para trabalhar com documentos relacionados a este negócio. Você não poderá alterar o tipo de sala.",
+  "room.login.description": "",
   "room.request-access.ok": "Você obteve acesso com sucesso à sala do ONLYOFFICE DocSpace",
   "room.request-access.error": "Erro ao obter acesso à sala do ONLYOFFICE DocSpace",
   "notification.system-user.not-found": "O usuário do sistema não está definido.",

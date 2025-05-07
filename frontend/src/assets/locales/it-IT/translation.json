@@ -41,6 +41,7 @@
   "room.creating.ok": "La stanza virtuale ONLYOFFICE DocSpace è stata creata con successo!",
   "room.creating.error": "Impossibile creare la stanza ONLYOFFICE DocSpace!",
   "room.create.description": "Crea la stanza ONLYOFFICE DocSpace per lavorare con i documenti relativi a questo accordo. Non sarà possibile modificare il tipo di stanza",
+  "room.login.description": "",
   "room.request-access.ok": "L'accesso alla stanza ONLYOFFICE DocSpace è stato concesso",
   "room.request-access.error": "Errore nell'accesso alla stanza ONLYOFFICE DocSpace",
   "notification.system-user.not-found": "L'utente del sistema non è impostato.",

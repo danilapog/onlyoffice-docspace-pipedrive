@@ -41,6 +41,7 @@
   "room.creating.ok": "Комната ONLYOFFICE DocSpace успешно создана!",
   "room.creating.error": "Не удалось создать комнату ONLYOFFICE DocSpace!",
   "room.create.description": "Создайте комнату ONLYOFFICE DocSpace для работы с документами, связанными с этой сделкой. Вы не сможете изменить тип комнаты.",
+  "room.login.description": "",
   "room.request-access.ok": "Вам успешно предоставлен доступ к комнате ONLYOFFICE DocSpace",
   "room.request-access.error": "Ошибка при получении доступа к комнате ONLYOFFICE DocSpace",
   "notification.system-user.not-found": "Пользователь системы не установлен.",

@@ -125,25 +125,6 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
         });
         break;
       }
-      case AppErrorType.DOCSPACE_AUTHORIZATION: {
-        setErrorProps({
-          Icon: <CommonError className="mb-5" />,
-          title: t(
-            "background.error.subtitle.docspace-authorization.message",
-            "Can not get authorize in ONLYOFFICE DocSpace",
-          ),
-          subtitle: t(
-            "background.error.subtitle.docspace-authorization.help",
-            "Please go to the Authorization Setting to configure ONLYOFFICE DocSpace app settings",
-          ),
-          button: {
-            text: t("button.settings", "Settings") || "Settings",
-            onClick: () =>
-              sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
-          },
-        });
-        break;
-      }
       case AppErrorType.DOCSPACE_ROOM_NOT_FOUND: {
         setErrorProps({
           Icon: <DenniedError className="mb-5" />,

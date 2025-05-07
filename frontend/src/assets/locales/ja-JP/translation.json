@@ -41,6 +41,7 @@
   "room.creating.ok": "ONLYOFFICE DocSpace ルームが正常に作成されました！",
   "room.creating.error": "ONLYOFFICE DocSpace ルームの作成に失敗しました！",
   "room.create.description": "この案件に関連するドキュメントを扱うためにONLYOFFICE DocSpaceルームを作成してください。ルームタイプを変更することはできませんので、ご注意ください。",
+  "room.login.description": "",
   "room.request-access.ok": "ONLYOFFICE DocSpaceルームへのアクセスが許可されました。",
   "room.request-access.error": "ONLYOFFICE DocSpaceルームへのアクセスエラー",
   "notification.system-user.not-found": "システムユーザーが設定されていません。",
