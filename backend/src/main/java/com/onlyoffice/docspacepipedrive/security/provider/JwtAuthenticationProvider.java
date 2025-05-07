@@ -18,11 +18,8 @@
 
 package com.onlyoffice.docspacepipedrive.security.provider;
 
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.security.RedisAuthenticationRepository;
-import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
-import com.onlyoffice.docspacepipedrive.security.service.OAuth2PipedriveUserService;
-import com.onlyoffice.docspacepipedrive.service.UserService;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +46,6 @@ import java.util.Objects;
 @Slf4j
 public class JwtAuthenticationProvider implements AuthenticationProvider {
     private final OAuth2PipedriveUserService oAuth2PipedriveUserService;
-    private final UserService userService;
     private final JwtDecoder jwtDecoder;
     private final RedisAuthenticationRepository redisAuthenticationRepository;
 
@@ -102,12 +98,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
                     jwt.getExpiresAt()
             );
         }
-
-        User user = userService.findByClientIdAndUserId(
-                Long.parseLong(resultAuthentication.getName().split(":")[0]),
-                Long.parseLong((resultAuthentication.getName()).split(":")[1])
-        );
-        ((OAuth2PipedriveUser) resultAuthentication.getPrincipal()).setUser(user);
 
         return resultAuthentication;
     }

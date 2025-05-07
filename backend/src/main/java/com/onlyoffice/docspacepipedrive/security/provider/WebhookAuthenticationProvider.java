@@ -93,8 +93,7 @@ public class WebhookAuthenticationProvider implements AuthenticationProvider {
                         Map.of(
                                 "id", userId,
                                 "company_id", clientId
-                        ),
-                        null
+                        )
                 ),
                 List.of(),
                 "pipedrive"

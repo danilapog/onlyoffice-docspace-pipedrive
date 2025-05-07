@@ -102,13 +102,15 @@ public class PipedriveActionManager {
     }
 
     private void deleteWebhook(final Webhook webhook) {
+        User webhookOwner = webhook.getUser();
+
         try {
             SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
                 public Void doWork() {
                     pipedriveClient.deleteWebhook(webhook.getWebhookId());
                     return null;
                 }
-            }, webhook.getUser());
+            }, webhookOwner.getClient().getId(), webhookOwner.getUserId());
         } catch (Exception e) {
             log.warn("Error deleting webhook in Pipedrive (WebhookID: {})", webhook.getWebhookId(), e);
         } finally {

@@ -18,10 +18,7 @@
 
 package com.onlyoffice.docspacepipedrive.security.oauth;
 
-import com.onlyoffice.docspacepipedrive.entity.User;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -34,14 +31,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@Getter
-@Setter
 public class OAuth2PipedriveUser implements OAuth2User, Serializable {
     private static final String USER_ID_ATTRIBUTE_KEY = "id";
     private static final String CLIENT_ID_ATTRIBUTE_KEY = "company_id";
     private static final String AUTHORITIES_ATTRIBUTE_KEY = "access";
     private final Map<String, Object> attributes;
-    private User user;
 
     @Override
     public Map<String, Object> getAttributes() {

@@ -72,7 +72,7 @@ public class UserEventListener {
                     pipedriveActionManager.initWebhooks();
                     return null;
                 }
-            }, newWebhookOwner);
+            }, client.getId(), newWebhookOwner.getUserId());
         } catch (Exception e) {
             log.warn("Error reinit Webhooks for client {}: {}", client.getId(), e.getMessage());
         }
