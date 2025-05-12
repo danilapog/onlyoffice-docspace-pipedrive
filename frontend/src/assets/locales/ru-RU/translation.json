@@ -3,6 +3,7 @@
   "background.error.title.token-expired": "Срок действия токена безопасности документа истек",
   "background.error.title.create-room": "К сожалению, у вас нет разрешения на создание комнат",
   "background.error.title.no-room-access": "К сожалению, у вас нет доступа к этой комнате",
+  "background.error.title.not-available": "",
   "background.error.subtitle.common": "Что-то пошло не так. Пожалуйста, перезагрузите приложение",
   "background.error.subtitle.token-expired": "Что-то пошло не так. Пожалуйста, авторизуйте приложение повторно",
   "background.error.subtitle.plugin.not-active.message": "Приложение ONLYOFFICE DocSpace недоступно",

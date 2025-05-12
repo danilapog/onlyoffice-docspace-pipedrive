@@ -3,6 +3,7 @@
   "background.error.title.token-expired": "O token de segurança do documento expirou",
   "background.error.title.create-room": "Desculpe, você não tem permissão para criar salas",
   "background.error.title.no-room-access": "Desculpe, você não tem acesso a esta sala",
+  "background.error.title.not-available": "",
   "background.error.subtitle.common": "Algo deu errado. Recarregue o aplicativo.",
   "background.error.subtitle.token-expired": "Algo deu errado. Reautorize o aplicativo.",
   "background.error.subtitle.plugin.not-active.message": "O aplicativo ONLYOFFICE DocSpace ainda não está disponível",

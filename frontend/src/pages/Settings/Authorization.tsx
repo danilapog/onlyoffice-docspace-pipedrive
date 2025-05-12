@@ -15,7 +15,7 @@ import { AppContext, AppErrorType } from "@context/AppContext";
 import { putDocspaceAccount, deleteDocspaceAccount } from "@services/user";
 
 import Authorized from "@assets/authorized.svg";
-import CommonError from "@assets/common-error.svg";
+import NotAvailable from "@assets/not-available.svg";
 import { OnlyofficeCheckbox } from "@components/checkbox";
 import { OnlyofficeTooltip } from "@components/tooltip";
 import { OnlyofficeHint } from "@components/hint";
@@ -218,28 +218,24 @@ export const AuthorizationSetting: React.FC = () => {
     <>
       {!settings?.url && (
         <OnlyofficeBackgroundError
-          Icon={<CommonError />}
-          title={
-            user?.isAdmin
-              ? t(
-                  "background.error.subtitle.docspace-connection",
-                  "You are not connected to ONLYOFFICE DocSpace",
-                )
-              : t(
-                  "background.error.subtitle.plugin.not-active.message",
-                  "ONLYOFFICE DocSpace App is not yet available.",
-                )
-          }
+          Icon={<NotAvailable />}
+          title={t("background.error.title.not-available", "Not yet available")}
           subtitle={
             user?.isAdmin
-              ? t(
+              ? `${t(
+                  "background.error.subtitle.docspace-connection",
+                  "You are not connected to ONLYOFFICE DocSpace",
+                )} ${t(
                   "background.error.hint.admin.docspace-connection",
                   "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
-                )
-              : t(
+                )}`
+              : `${t(
+                  "background.error.subtitle.plugin.not-active.message",
+                  "ONLYOFFICE DocSpace App is not yet available.",
+                )} ${t(
                   "background.error.subtitle.plugin.not-active.help",
                   "Please wait until a Pipedrive Administrator configures the app settings.",
-                )
+                )}`
           }
           button={
             !user?.isAdmin
