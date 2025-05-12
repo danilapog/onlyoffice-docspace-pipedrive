@@ -110,7 +110,7 @@ export const AuthorizationSetting: React.FC = () => {
         .catch(async () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
-              "background.error.subtitle.common",
+              "error.common",
               "Something went wrong. Please reload the app.",
             ),
           });

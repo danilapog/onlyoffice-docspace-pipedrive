@@ -54,12 +54,16 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
     switch (appError) {
       case AppErrorType.COMMON_ERROR: {
         setErrorProps({
-          Icon: <CommonError className="mb-5" />,
-          title: t("background.error.title.common", "Error"),
+          Icon: <CommonError />,
+          title: t("background.error.title.common", "Something went wrong"),
           subtitle: t(
             "background.error.subtitle.common",
-            "Something went wrong. Please reload the app.",
+            "Could not fetch plugin settings. Please reload the Pipedrive window.",
           ),
+          button: {
+            text: t("button.reload", "Reload"),
+            onClick: () => reloadAppContext(),
+          }
         });
         break;
       }
