@@ -4,6 +4,7 @@
   "background.error.title.create-room": "Spiacenti, non hai l'autorizzazione per creare stanze",
   "background.error.title.no-room-access": "Siamo spiacenti, non hai accesso a questa stanza",
   "background.error.title.not-available": "",
+  "background.error.title.unreached": "",
   "background.error.subtitle.common": "",
   "background.error.subtitle.token-expired": "",
   "background.error.subtitle.plugin.not-active.message": "L'app ONLYOFFICE DocSpace non è ancora disponibile",

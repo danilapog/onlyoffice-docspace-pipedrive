@@ -4,6 +4,7 @@
   "background.error.title.create-room": "Désolé, vous n'avez pas l'autorisation de créer des salles",
   "background.error.title.no-room-access": "Malheureusement, vous n'avez pas accès à cette salle",
   "background.error.title.not-available": "",
+  "background.error.title.unreached": "",
   "background.error.subtitle.common": "",
   "background.error.subtitle.token-expired": "",
   "background.error.subtitle.plugin.not-active.message": "L'application ONLYOFFICE DocSpace n'est pas encore disponible",

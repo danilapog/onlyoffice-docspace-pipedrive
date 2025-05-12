@@ -4,6 +4,7 @@
   "background.error.title.create-room": "Sorry, you don't have a permission to create rooms",
   "background.error.title.no-room-access": "Sorry, you don't have access to this room",
   "background.error.title.not-available": "Not yet available",
+  "background.error.title.unreached": "Cannot be reached",
   "background.error.subtitle.common": "Could not fetch plugin settings. Please reload the Pipedrive window.",
   "background.error.subtitle.token-expired": "The document security token has expired. Please re-authorize the app.",
   "background.error.subtitle.plugin.not-active.message": "ONLYOFFICE DocSpace App is not yet available",

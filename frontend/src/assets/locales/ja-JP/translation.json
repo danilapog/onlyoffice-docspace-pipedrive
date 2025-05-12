@@ -4,6 +4,7 @@
   "background.error.title.create-room": "申し訳ありませんが、ルームを作成する権限がありません",
   "background.error.title.no-room-access": "申し訳ありませんが、このルームにはアクセスできません。",
   "background.error.title.not-available": "",
+  "background.error.title.unreached": "",
   "background.error.subtitle.common": "",
   "background.error.subtitle.token-expired": "",
   "background.error.subtitle.plugin.not-active.message": "ONLYOFFICE DocSpace アプリはまだ利用できません",

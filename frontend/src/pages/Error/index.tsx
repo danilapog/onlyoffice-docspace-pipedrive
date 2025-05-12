@@ -29,7 +29,6 @@ import { AppContext, AppErrorType } from "@context/AppContext";
 import CommonError from "@assets/common-error.svg";
 import NotAvailable from "@assets/not-available.svg";
 import DenniedError from "@assets/dennied-error.svg";
-import UnreachableError from "@assets/unreachable-error.svg";
 
 import { Command, View } from "@pipedrive/app-extensions-sdk";
 import { requestAccessToRoom } from "@services/room";
@@ -175,10 +174,10 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
       }
       case AppErrorType.DOCSPACE_UNREACHABLE: {
         setErrorProps({
-          Icon: <UnreachableError className="mb-5" />,
+          Icon: <NotAvailable />,
           title: t(
-            "docspace.error.unreached",
-            "ONLYOFFICE DocSpace cannot be reached",
+            "background.error.title.unreached",
+            "Cannot be reached",
           ),
           subtitle: `${t(
             "docspace.error.unreached",

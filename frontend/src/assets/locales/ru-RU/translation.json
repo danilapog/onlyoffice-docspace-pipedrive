@@ -4,6 +4,7 @@
   "background.error.title.create-room": "К сожалению, у вас нет разрешения на создание комнат",
   "background.error.title.no-room-access": "К сожалению, у вас нет доступа к этой комнате",
   "background.error.title.not-available": "",
+  "background.error.title.unreached": "",
   "background.error.subtitle.common": "",
   "background.error.subtitle.token-expired": "",
   "background.error.subtitle.plugin.not-active.message": "Приложение ONLYOFFICE DocSpace недоступно",

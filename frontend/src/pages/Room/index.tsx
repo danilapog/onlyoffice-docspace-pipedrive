@@ -132,7 +132,7 @@ const RoomPage: React.FC = () => {
     // eslint-disable-next-line no-console
     console.error(e);
 
-    setAppError(AppErrorType.COMMON_ERROR);
+    setAppError(AppErrorType.DOCSPACE_UNREACHABLE);
     setLoading(false);
   };
 
