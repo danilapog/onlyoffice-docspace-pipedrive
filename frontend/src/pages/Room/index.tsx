@@ -33,7 +33,6 @@ import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 
 import { OnlyofficeSpinner } from "@components/spinner";
 
-import { OnlyofficeSnackbar } from "@components/snackbar";
 import { getLocaleForDocspace } from "@utils/locale";
 import {
   DropdownButtonColor,
@@ -298,30 +297,6 @@ const RoomPage: React.FC = () => {
               }
             />
           </div>
-        </div>
-      )}
-      {!loading && !settings?.isWebhooksInstalled && user?.docspaceAccount && (
-        <div className="w-full">
-          <OnlyofficeSnackbar
-            header={t(
-              "notification.webhooks-is-not-active.header",
-              "Synchronization Warning",
-            )}
-            text={`${t(
-              "notification.webhooks-is-not-active.text",
-              "Synchronization between Deal followers and Room members is not performed because no Deal Admin has installed the plugin",
-            )} (${
-              user?.isAdmin
-                ? t(
-                    "notification.webhooks-is-not-active.help-text.admin",
-                    "Please reinstall plugin",
-                  )
-                : t(
-                    "notification.webhooks-is-not-active.help-text.user",
-                    "Please contact with Deal Admin",
-                  )
-            })`}
-          />
         </div>
       )}
       {!loading && !room?.id && user?.docspaceAccount && (

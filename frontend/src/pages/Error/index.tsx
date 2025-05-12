@@ -229,6 +229,35 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
         });
         break;
       }
+      case AppErrorType.WEBHOOKS_IS_NOT_INSTALLED: {
+        setErrorProps({
+          Icon: <CommonError />,
+          title: t(
+            "background.error.title.webhook.is-not-installed",
+            "Synchronization Warning",
+          ),
+          subtitle: user?.isAdmin
+            ? t(
+                "background.error.hint.webhook.is-not-installed",
+                "The synchronization between Deal followers and Room members is not occurring due to a webhook malfunction.",
+              )
+            : t(
+                "background.error.hint.docspace-connection",
+                "Please contact the administrator.",
+              ),
+          button: user?.isAdmin
+            ? {
+                text: t("button.reinstall", "Reinstall plugin"),
+                onClick: () =>
+                  window.open(
+                    `${process.env.BACKEND_URL}/oauth2/authorization/pipedrive`,
+                    "_blank",
+                  ),
+              }
+            : undefined,
+        });
+        break;
+      }
       default: {
         setErrorProps(undefined);
         break;

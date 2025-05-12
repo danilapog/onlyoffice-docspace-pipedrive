@@ -44,6 +44,7 @@ export enum AppErrorType {
   DOCSPACE_UNREACHABLE,
   DOCSPACE_INVALID_API_KEY,
   DOCSPACE_ROOM_NO_ACCESS,
+  WEBHOOKS_IS_NOT_INSTALLED,
 }
 
 export interface IAppContext {
@@ -131,6 +132,8 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
               !settingsResponse.isApiKeyValid
             ) {
               setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
+            } else if (!settingsResponse.isWebhooksInstalled) {
+              setAppError(AppErrorType.WEBHOOKS_IS_NOT_INSTALLED);
             }
           }
 
