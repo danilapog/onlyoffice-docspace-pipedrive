@@ -117,7 +117,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
       }
       case AppErrorType.DOCSPACE_ROOM_NOT_FOUND: {
         setErrorProps({
-          Icon: <DenniedError className="mb-5" />,
+          Icon: <DenniedError />,
           title: t(
             "background.error.title.create-room",
             "Sorry, you don't have a permission to create rooms",
@@ -131,7 +131,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
       }
       case AppErrorType.DOCSPACE_ROOM_NO_ACCESS: {
         setErrorProps({
-          Icon: <DenniedError className="mb-5" />,
+          Icon: <DenniedError />,
           title: t(
             "background.error.title.no-room-access",
             "Sorry, you don't have access to this room",
