@@ -18,12 +18,12 @@
 
 import axios from "axios";
 import axiosRetry from "axios-retry";
-import AppExtensionsSDK, { Command } from "@pipedrive/app-extensions-sdk";
 
 import { UserResponse } from "src/types/user";
+import { PipedriveToken } from "@context/PipedriveToken";
 
-export const getUser = async (sdk: AppExtensionsSDK) => {
-  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+export const getUser = async (pipedriveToken: PipedriveToken) => {
+  const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
     retries: 2,
@@ -37,7 +37,7 @@ export const getUser = async (sdk: AppExtensionsSDK) => {
     url: `/api/v1/user`,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${pctx.token}`,
+      Authorization: `Bearer ${token}`,
     },
     timeout: 15000,
   });
@@ -46,12 +46,12 @@ export const getUser = async (sdk: AppExtensionsSDK) => {
 };
 
 export const putDocspaceAccount = async (
-  sdk: AppExtensionsSDK,
+  pipedriveToken: PipedriveToken,
   userName: string,
   passwordHash: string,
   system: boolean,
 ) => {
-  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+  const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
     retries: 1,
@@ -65,7 +65,7 @@ export const putDocspaceAccount = async (
     url: `/api/v1/user/docspace-account?system=${system}`,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${pctx.token}`,
+      Authorization: `Bearer ${token}`,
     },
     data: {
       userName,
@@ -75,8 +75,8 @@ export const putDocspaceAccount = async (
   });
 };
 
-export const deleteDocspaceAccount = async (sdk: AppExtensionsSDK) => {
-  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+export const deleteDocspaceAccount = async (pipedriveToken: PipedriveToken) => {
+  const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
     retries: 1,
@@ -90,7 +90,7 @@ export const deleteDocspaceAccount = async (sdk: AppExtensionsSDK) => {
     url: `/api/v1/user/docspace-account`,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${pctx.token}`,
+      Authorization: `Bearer ${token}`,
     },
     timeout: 10000,
   });

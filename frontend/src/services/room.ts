@@ -18,12 +18,15 @@
 
 import axios from "axios";
 import axiosRetry from "axios-retry";
-import AppExtensionsSDK, { Command } from "@pipedrive/app-extensions-sdk";
 
 import { RoomResponse } from "src/types/room";
+import { PipedriveToken } from "@context/PipedriveToken";
 
-export const getRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
-  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+export const getRoom = async (
+  pipedriveToken: PipedriveToken,
+  dealId: number,
+) => {
+  const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
     retries: 2,
@@ -37,7 +40,7 @@ export const getRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
     url: `/api/v1/room/${dealId}`,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${pctx.token}`,
+      Authorization: `Bearer ${token}`,
     },
     timeout: 10000,
   });
@@ -46,11 +49,11 @@ export const getRoom = async (sdk: AppExtensionsSDK, dealId: number) => {
 };
 
 export const postRoom = async (
-  sdk: AppExtensionsSDK,
+  pipedriveToken: PipedriveToken,
   dealId: number,
   roomId: string,
 ) => {
-  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+  const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
 
   const response = await client<RoomResponse>({
@@ -58,7 +61,7 @@ export const postRoom = async (
     url: `/api/v1/room/${dealId}`,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${pctx.token}`,
+      Authorization: `Bearer ${token}`,
     },
     data: {
       roomId,
@@ -70,10 +73,10 @@ export const postRoom = async (
 };
 
 export const requestAccessToRoom = async (
-  sdk: AppExtensionsSDK,
+  pipedriveToken: PipedriveToken,
   dealId: number,
 ) => {
-  const pctx = await sdk.execute(Command.GET_SIGNED_TOKEN);
+  const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
     retries: 1,
@@ -87,7 +90,7 @@ export const requestAccessToRoom = async (
     url: `/api/v1/room/${dealId}/request-access`,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${pctx.token}`,
+      Authorization: `Bearer ${token}`,
     },
     timeout: 15000,
   });

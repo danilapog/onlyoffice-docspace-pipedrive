@@ -35,8 +35,15 @@ import { getCSPSettings } from "@services/docspace";
 
 export const ConnectionSettings: React.FC = () => {
   const { t } = useTranslation();
-  const { user, setUser, settings, setSettings, sdk, reloadAppContext } =
-    useContext(AppContext);
+  const {
+    user,
+    setUser,
+    settings,
+    setSettings,
+    sdk,
+    pipedriveToken,
+    reloadAppContext,
+  } = useContext(AppContext);
   const { url } = getCurrentURL();
 
   const [connecting, setConnecting] = useState(false);
@@ -78,7 +85,7 @@ export const ConnectionSettings: React.FC = () => {
             return;
           }
 
-          putSettings(sdk, stripTrailingSlash(address))
+          putSettings(pipedriveToken, stripTrailingSlash(address))
             .then(async (response: SettingsResponse) => {
               setSettings(response);
               await sdk.execute(Command.SHOW_SNACKBAR, {
@@ -133,7 +140,7 @@ export const ConnectionSettings: React.FC = () => {
 
     if (confirmed) {
       setDisconnecting(true);
-      deleteSettings(sdk)
+      deleteSettings(pipedriveToken)
         .then(async () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
