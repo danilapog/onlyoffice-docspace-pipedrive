@@ -17,7 +17,7 @@
   "background.error.hint.admin.docspace-connection": "Accedi alle Impostazioni di connessione per configurare le impostazioni dell'app ONLYOFFICE DocSpace.",
   "background.error.hint.docspace-connection": "Contatta l'amministratore.",
   "button.reauthorize": "Riautorizza",
-  "button.settings": "Impostazioni",
+  "button.settings": "",
   "button.create.room": "Crea stanza",
   "button.login": "Login",
   "button.logout": "Esci",

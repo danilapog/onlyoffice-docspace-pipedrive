@@ -17,7 +17,7 @@
   "background.error.hint.admin.docspace-connection": "ONLYOFFICE DocSpace アプリの設定を行うには、接続設定に移動してください。",
   "background.error.hint.docspace-connection": "管理者にお問い合わせください。",
   "button.reauthorize": "再認証",
-  "button.settings": "設定",
+  "button.settings": "",
   "button.create.room": "ルームの作成",
   "button.login": "ログイン",
   "button.logout": "ログアウト",

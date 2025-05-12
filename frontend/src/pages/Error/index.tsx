@@ -107,7 +107,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
               )}`,
           button: {
             text: user?.isAdmin
-              ? t("button.settings", "Settings")
+              ? t("button.settings", "Go to Settings")
               : t("button.reload", "Reload"),
             onClick: user?.isAdmin
               ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
@@ -195,7 +195,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
               }`,
           button: user?.isAdmin
             ? {
-                text: t("button.settings", "Settings"),
+                text: t("button.settings", "Go to Settings"),
                 onClick: () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
               }
             : undefined
