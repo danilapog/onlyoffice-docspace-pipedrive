@@ -258,22 +258,6 @@ export const AuthorizationSetting: React.FC = () => {
                 )}
               />
             </div>
-            {!user?.docspaceAccount && (
-              <OnlyofficeHint>
-                <p>
-                  <Trans
-                    i18nKey="settings.authorization.hint.login.message"
-                    defaults="DocSpace users with the <semibold>{{role}}</semibold> type can't log into Pipedrive"
-                    values={{
-                      role: t("docspace.roles.guest", "Guest"),
-                    }}
-                    components={{
-                      semibold: <span className="font-semibold" />,
-                    }}
-                  />
-                </p>
-              </OnlyofficeHint>
-            )}
           </div>
           {user?.docspaceAccount && (
             <>
