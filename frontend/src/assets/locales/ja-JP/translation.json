@@ -20,7 +20,7 @@
   "background.error.hint.docspace-connection": "管理者にお問い合わせください。",
   "background.error.hint.webhook.is-not-installed": "",
   "button.reauthorize": "再認証",
-  "button.settings": "設定",
+  "button.settings": "",
   "button.create.room": "ルームの作成",
   "button.login": "ログイン",
   "button.logout": "ログアウト",

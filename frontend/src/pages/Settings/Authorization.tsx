@@ -168,14 +168,14 @@ export const AuthorizationSetting: React.FC = () => {
               ? `${t(
                   "background.error.subtitle.docspace-connection",
                   "You are not connected to ONLYOFFICE DocSpace",
-                )} ${t(
+                )}. ${t(
                   "background.error.hint.admin.docspace-connection",
                   "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
                 )}`
               : `${t(
                   "background.error.subtitle.plugin.not-active.message",
-                  "ONLYOFFICE DocSpace App is not yet available.",
-                )} ${t(
+                  "ONLYOFFICE DocSpace App is not yet available",
+                )}. ${t(
                   "background.error.subtitle.plugin.not-active.help",
                   "Please wait until a Pipedrive Administrator configures the app settings.",
                 )}`

@@ -290,7 +290,7 @@ const RoomPage: React.FC = () => {
               )}
             </div>
             <OnlyofficeButton
-              text={t("button.settings", "Settings")}
+              text={t("button.settings", "Go to Settings")}
               color={ButtonColor.PRIMARY}
               onClick={() =>
                 sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })

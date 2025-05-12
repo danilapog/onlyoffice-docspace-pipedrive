@@ -20,7 +20,7 @@
   "background.error.hint.docspace-connection": "Contatta l'amministratore.",
   "background.error.hint.webhook.is-not-installed": "",
   "button.reauthorize": "Riautorizza",
-  "button.settings": "Impostazioni",
+  "button.settings": "",
   "button.create.room": "Crea stanza",
   "button.login": "Login",
   "button.logout": "Esci",

@@ -20,7 +20,7 @@
   "background.error.hint.docspace-connection": "Bitte wenden Sie sich an den Administrator.",
   "background.error.hint.webhook.is-not-installed": "",
   "button.reauthorize": "Erneut autorisieren",
-  "button.settings": "Einstellungen",
+  "button.settings": "",
   "button.create.room": "Raum erstellen",
   "button.login": "Anmelden",
   "button.logout": "Abmelden",

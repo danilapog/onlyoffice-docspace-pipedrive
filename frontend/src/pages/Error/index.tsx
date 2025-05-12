@@ -49,6 +49,8 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
   useEffect(() => {
     const { parameters } = getCurrentURL();
 
+    sdk.execute(Command.RESIZE, { height: 400 }).catch(() => {});
+
     switch (appError) {
       case AppErrorType.COMMON_ERROR: {
         setErrorProps({
@@ -92,20 +94,20 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
             ? `${t(
                 "background.error.subtitle.docspace-connection",
                 "You are not connected to ONLYOFFICE DocSpace",
-              )} ${t(
+              )}. ${t(
                 "background.error.hint.admin.docspace-connection",
                 "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
               )}`
             : `${t(
                 "background.error.subtitle.plugin.not-active.message",
-                "ONLYOFFICE DocSpace App is not yet available.",
-              )} ${t(
+                "ONLYOFFICE DocSpace App is not yet available",
+              )}. ${t(
                 "background.error.subtitle.plugin.not-active.help",
                 "Please wait until a Pipedrive Administrator configures the app settings.",
               )}`,
           button: {
             text: user?.isAdmin
-              ? t("button.settings", "Settings")
+              ? t("button.settings", "Go to Settings")
               : t("button.reload", "Reload"),
             onClick: user?.isAdmin
               ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
@@ -191,12 +193,13 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
                       "Please contact the administrator.",
                     )
               }`,
-          button: {
-            text: t("button.settings", "Settings") || "Settings",
-            onClick: user?.isAdmin
-              ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
-              : undefined,
-          },
+          button: user?.isAdmin
+            ? {
+                text: t("button.settings", "Go to Settings"),
+                onClick: () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
+              }
+            : undefined
+          ,
         });
         break;
       }

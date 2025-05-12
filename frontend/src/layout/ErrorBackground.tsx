@@ -23,6 +23,7 @@ import { OnlyofficeSubtitle } from "@components/title";
 import { OnlyofficeError } from "@components/error/Error";
 
 import DocspaceLogo from "@assets/docspace-logo.svg";
+import DocspaceLogoDark from "@assets/docspace-logo-dark.svg";
 
 export type ErrorProps = {
   Icon: JSX.Element | JSX.Element[];
@@ -40,7 +41,8 @@ export const OnlyofficeBackgroundError: React.FC<ErrorProps> = ({
   <div className="w-full h-full flex justify-center flex-col items-center">
     <div className="max-w-[526px] flex justify-between flex-col items-center">
       <div className="hidden sm:flex justify-center items-center mb-8">
-        <DocspaceLogo />
+        <DocspaceLogo className="dark:hidden" />
+        <DocspaceLogoDark className="hidden dark:block" />
       </div>
       <div className="max-w-[314px] md:max-w-[470px]">
         <div className="flex justify-center items-center min-h-40">{Icon}</div>

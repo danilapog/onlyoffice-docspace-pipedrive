@@ -20,7 +20,7 @@
   "background.error.hint.docspace-connection": "Please contact the administrator.",
   "background.error.hint.webhook.is-not-installed": "The synchronization between Deal followers and Room members is not occurring due to a webhook malfunction.",
   "button.reauthorize": "Re-authorize",
-  "button.settings": "Settings",
+  "button.settings": "Go to Settings",
   "button.create.room": "Create room",
   "button.login": "Login",
   "button.logout": "Log out",
