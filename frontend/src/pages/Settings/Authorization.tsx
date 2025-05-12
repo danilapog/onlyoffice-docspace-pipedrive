@@ -15,7 +15,7 @@ import { AppContext } from "@context/AppContext";
 import { putDocspaceAccount, deleteDocspaceAccount } from "@services/user";
 
 import Authorized from "@assets/authorized.svg";
-import CommonError from "@assets/common-error.svg";
+import NotAvailable from "@assets/not-available.svg";
 import TokenError from "@assets/token-error.svg";
 import { OnlyofficeHint } from "@components/hint";
 
@@ -23,8 +23,15 @@ const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
 export const AuthorizationSetting: React.FC = () => {
   const { t } = useTranslation();
-  const { user, settings, setUser, sdk, pipedriveToken } =
-    useContext(AppContext);
+  const {
+    user,
+    settings,
+    setUser,
+    setAppError,
+    sdk,
+    pipedriveToken,
+    reloadAppContext,
+  } = useContext(AppContext);
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -63,7 +70,7 @@ export const AuthorizationSetting: React.FC = () => {
       .catch(async () => {
         await sdk.execute(Command.SHOW_SNACKBAR, {
           message: t(
-            "background.error.subtitle.common",
+            "error.common",
             "Something went wrong. Please reload the app.",
           ),
         });
@@ -162,22 +169,33 @@ export const AuthorizationSetting: React.FC = () => {
     <>
       {(!settings?.url || !settings?.apiKey) && (
         <OnlyofficeBackgroundError
-          Icon={<CommonError />}
-          title={t(
-            "background.error.subtitle.docspace-connection",
-            "You are not connected to ONLYOFFICE DocSpace",
-          )}
-          subtitle={`${
+          Icon={<NotAvailable />}
+          title={t("background.error.title.not-available", "Not yet available")}
+          subtitle={
             user?.isAdmin
-              ? t(
+              ? `${t(
+                  "background.error.subtitle.docspace-connection",
+                  "You are not connected to ONLYOFFICE DocSpace",
+                )} ${t(
                   "background.error.hint.admin.docspace-connection",
                   "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
-                )
-              : t(
-                  "background.error.hint.docspace-connection",
-                  "Please contact the administrator.",
-                )
-          }`}
+                )}`
+              : `${t(
+                  "background.error.subtitle.plugin.not-active.message",
+                  "ONLYOFFICE DocSpace App is not yet available.",
+                )} ${t(
+                  "background.error.subtitle.plugin.not-active.help",
+                  "Please wait until a Pipedrive Administrator configures the app settings.",
+                )}`
+          }
+          button={
+            !user?.isAdmin
+              ? {
+                  text: t("button.reload", "Reload"),
+                  onClick: () => reloadAppContext(),
+                }
+              : undefined
+          }
         />
       )}
       {settings?.apiKey && !settings?.isApiKeyValid && (

@@ -22,6 +22,8 @@ import { ButtonColor, OnlyofficeButton, ButtonProps } from "@components/button";
 import { OnlyofficeSubtitle } from "@components/title";
 import { OnlyofficeError } from "@components/error/Error";
 
+import DocspaceLogo from "@assets/docspace-logo.svg";
+
 export type ErrorProps = {
   Icon: JSX.Element | JSX.Element[];
   title: string;
@@ -35,20 +37,25 @@ export const OnlyofficeBackgroundError: React.FC<ErrorProps> = ({
   subtitle,
   button,
 }) => (
-  <div className="w-full h-full flex justify-center flex-col items-center overflow-hidden">
-    <div className="flex justify-center items-center overflow-hidden min-h-40">
-      {Icon}
-    </div>
-    <div>
-      <OnlyofficeError text={title} />
-    </div>
-    <div className="w-1/2 pt-2">
-      <OnlyofficeSubtitle text={subtitle} />
-    </div>
-    {button && (
-      <div className="pt-5 z-[100]">
-        <OnlyofficeButton color={ButtonColor.PRIMARY} {...button} />
+  <div className="w-full h-full flex justify-center flex-col items-center">
+    <div className="max-w-[526px] flex justify-between flex-col items-center">
+      <div className="hidden sm:flex justify-center items-center mb-8">
+        <DocspaceLogo />
       </div>
-    )}
+      <div className="max-w-[314px] md:max-w-[470px]">
+        <div className="flex justify-center items-center min-h-40">{Icon}</div>
+        <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-col gap-2">
+            <OnlyofficeError text={title} />
+            <OnlyofficeSubtitle text={subtitle} />
+          </div>
+          {button && (
+            <div className="pt-4 z-[100]">
+              <OnlyofficeButton color={ButtonColor.PRIMARY} {...button} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   </div>
 );

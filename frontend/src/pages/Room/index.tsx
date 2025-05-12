@@ -19,7 +19,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
-import { Command } from "@pipedrive/app-extensions-sdk";
+import { Command, View } from "@pipedrive/app-extensions-sdk";
 import { DocSpace } from "@onlyoffice/docspace-react";
 import {
   TFrameConfig,
@@ -43,6 +43,7 @@ import { DropdownButtonOptions } from "@components/dropdownButton/DropdownButton
 import { SDKInstance } from "@onlyoffice/docspace-sdk-js/dist/types/instance";
 import { DocspaceUser } from "src/types/docspace";
 import { RoomResponse } from "src/types/room";
+import { ButtonColor, OnlyofficeButton } from "@components/button";
 
 const DOCSPACE_FRAME_ID = "docspace-frame";
 const DOCSPACE_ROOM_TYPES = [
@@ -67,7 +68,7 @@ const DOCSPACE_ROOM_TYPES = [
 const RoomPage: React.FC = () => {
   const { t } = useTranslation();
   const { parameters } = getCurrentURL();
-  const { sdk, pipedriveToken, user, settings, setAppError } =
+  const { sdk, pipedriveToken, user, setUser, settings, setAppError } =
     useContext(AppContext);
 
   const [loading, setLoading] = useState(true);
@@ -79,12 +80,6 @@ const RoomPage: React.FC = () => {
   const docspaceInstance = useRef<SDKInstance | null>(null);
 
   useEffect(() => {
-    if (!settings?.url || !settings?.apiKey) {
-      setAppError(AppErrorType.DOCSPACE_CONNECTION);
-      setLoading(false);
-      return;
-    }
-
     if (settings?.apiKey && !settings?.isApiKeyValid) {
       setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
       setLoading(false);
@@ -92,7 +87,7 @@ const RoomPage: React.FC = () => {
     }
 
     if (!user?.docspaceAccount) {
-      setAppError(AppErrorType.DOCSPACE_AUTHORIZATION);
+      sdk.execute(Command.RESIZE, { height: 128 });
       setLoading(false);
       return;
     }
@@ -143,7 +138,7 @@ const RoomPage: React.FC = () => {
     // eslint-disable-next-line no-console
     console.error(e);
 
-    setAppError(AppErrorType.COMMON_ERROR);
+    setAppError(AppErrorType.DOCSPACE_UNREACHABLE);
     setLoading(false);
   };
 
@@ -263,7 +258,10 @@ const RoomPage: React.FC = () => {
   const onRequestPasswordHash = () => user?.docspaceAccount?.passwordHash || "";
 
   const onUnsuccessLogin = () => {
-    setAppError(AppErrorType.DOCSPACE_AUTHORIZATION);
+    if (user) {
+      setUser({ ...user, docspaceAccount: null });
+    }
+    sdk.execute(Command.RESIZE, { height: 128 });
     setLoading(false);
   };
 
@@ -283,7 +281,26 @@ const RoomPage: React.FC = () => {
           <OnlyofficeSpinner />
         </div>
       )}
-      {!loading && !settings?.isWebhooksInstalled && (
+      {!loading && !user?.docspaceAccount && (
+        <div className="h-full flex flex-row custom-scroll overflow-y-scroll overflow-x-hidden">
+          <div className="p-5">
+            <div className="w-full pb-4">
+              {t(
+                "room.login.description",
+                "Log in to ONLYOFFICE DocSpace to easily collaborate on the deal-related documents.",
+              )}
+            </div>
+            <OnlyofficeButton
+              text={t("button.settings", "Settings")}
+              color={ButtonColor.PRIMARY}
+              onClick={() =>
+                sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
+              }
+            />
+          </div>
+        </div>
+      )}
+      {!loading && !settings?.isWebhooksInstalled && user?.docspaceAccount && (
         <div className="w-full">
           <OnlyofficeSnackbar
             header={t(
@@ -307,7 +324,7 @@ const RoomPage: React.FC = () => {
           />
         </div>
       )}
-      {!loading && !room?.id && (
+      {!loading && !room?.id && user?.docspaceAccount && (
         <div className="h-full flex flex-row custom-scroll overflow-y-scroll overflow-x-hidden">
           <div className="p-5">
             <div className="w-full pb-4">
@@ -336,7 +353,7 @@ const RoomPage: React.FC = () => {
           </div>
         </div>
       )}
-      {loadDocspace && user && settings?.url && (
+      {loadDocspace && user && settings?.url && user?.docspaceAccount && (
         <div
           key={room?.id}
           className={`w-full h-full flex flex-row

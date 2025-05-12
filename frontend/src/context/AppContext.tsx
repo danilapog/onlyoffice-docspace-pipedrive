@@ -30,6 +30,7 @@ import { getSettings, validateApiKey } from "@services/settings";
 import { UserResponse } from "src/types/user";
 import { SettingsResponse } from "src/types/settings";
 import { PipedriveToken } from "@context/PipedriveToken";
+import { useLocation } from "react-router-dom";
 
 type AppContextProps = {
   children?: JSX.Element | JSX.Element[];
@@ -39,8 +40,6 @@ export enum AppErrorType {
   COMMON_ERROR,
   TOKEN_ERROR,
   PLUGIN_NOT_AVAILABLE,
-  DOCSPACE_CONNECTION,
-  DOCSPACE_AUTHORIZATION,
   DOCSPACE_ROOM_NOT_FOUND,
   DOCSPACE_UNREACHABLE,
   DOCSPACE_INVALID_API_KEY,
@@ -62,6 +61,7 @@ export interface IAppContext {
 export const AppContext = React.createContext<IAppContext>({} as IAppContext);
 
 export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
+  const location = useLocation();
   const [sdk, setSDK] = useState<AppExtensionsSDK>();
   const [pipedriveToken, setPipedriveToken] = useState<PipedriveToken>();
   const [user, setUser] = useState<UserResponse>();
@@ -123,7 +123,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
             }
           }
 
-          if (!userResponse?.isAdmin) {
+          if (location.pathname !=="/settings") {
             if (!settingsResponse?.url || !settingsResponse.apiKey) {
               setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
             } else if (
@@ -151,7 +151,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         // eslint-disable-next-line no-console
         (e) => console.error(e),
       );
-  }, [reload]);
+  }, [reload, location]);
 
   return (
     <>
