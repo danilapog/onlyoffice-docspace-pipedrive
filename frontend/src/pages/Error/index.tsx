@@ -205,12 +205,12 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
       }
       case AppErrorType.DOCSPACE_INVALID_API_KEY: {
         setErrorProps({
-          Icon: <TokenError className="mb-5" />,
-          title: t(
+          Icon: <NotAvailable />,
+          title: t("background.error.title.not-available", "Not yet available"),
+          subtitle: `${t(
             "background.error.title.docspace-invalid-api-key",
             "ONLYOFFICE DocSpace API Key is invalid",
-          ),
-          subtitle: `${
+          )} ${
             user?.isAdmin
               ? t(
                   "background.error.hint.admin.docspace-connection",
@@ -221,13 +221,14 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
                   "Please contact the administrator.",
                 )
           }`,
-          button: user?.isAdmin
-            ? {
-                text: t("button.settings", "Settings") || "Settings",
-                onClick: () =>
-                  sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
-              }
-            : undefined,
+          button: {
+            text: user?.isAdmin
+              ? t("button.settings", "Settings")
+              : t("button.reload", "Reload"),
+            onClick: user?.isAdmin
+              ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
+              : () => reloadAppContext(),
+          },
         });
         break;
       }

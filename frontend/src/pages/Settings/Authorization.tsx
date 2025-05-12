@@ -16,7 +16,6 @@ import { putDocspaceAccount, deleteDocspaceAccount } from "@services/user";
 
 import Authorized from "@assets/authorized.svg";
 import NotAvailable from "@assets/not-available.svg";
-import TokenError from "@assets/token-error.svg";
 import { OnlyofficeHint } from "@components/hint";
 
 const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
@@ -200,12 +199,12 @@ export const AuthorizationSetting: React.FC = () => {
       )}
       {settings?.apiKey && !settings?.isApiKeyValid && (
         <OnlyofficeBackgroundError
-          Icon={<TokenError className="mb-5" />}
-          title={t(
+          Icon={<NotAvailable />}
+          title={t("background.error.title.not-available", "Not yet available")}
+          subtitle={`${t(
             "background.error.title.docspace-invalid-api-key",
             "ONLYOFFICE DocSpace API Key is invalid",
-          )}
-          subtitle={`${
+          )} ${
             user?.isAdmin
               ? t(
                   "background.error.hint.admin.docspace-connection",
@@ -216,6 +215,14 @@ export const AuthorizationSetting: React.FC = () => {
                   "Please contact the administrator.",
                 )
           }`}
+          button={
+            !user?.isAdmin
+              ? {
+                  text: t("button.reload", "Reload"),
+                  onClick: () => reloadAppContext(),
+                }
+              : undefined
+          }
         />
       )}
       {settings?.url && settings?.apiKey && settings?.isApiKeyValid && (
