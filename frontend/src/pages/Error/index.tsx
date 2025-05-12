@@ -49,6 +49,8 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
   useEffect(() => {
     const { parameters } = getCurrentURL();
 
+    sdk.execute(Command.RESIZE, { height: 400 }).catch(() => {});
+
     switch (appError) {
       case AppErrorType.COMMON_ERROR: {
         setErrorProps({
