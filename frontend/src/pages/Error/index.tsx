@@ -28,7 +28,6 @@ import { AppContext, AppErrorType } from "@context/AppContext";
 
 import CommonError from "@assets/common-error.svg";
 import NotAvailable from "@assets/not-available.svg";
-import TokenError from "@assets/token-error.svg";
 import DenniedError from "@assets/dennied-error.svg";
 import UnreachableError from "@assets/unreachable-error.svg";
 
@@ -69,14 +68,11 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
       }
       case AppErrorType.TOKEN_ERROR: {
         setErrorProps({
-          Icon: <TokenError className="mb-5" />,
-          title: t(
-            "background.error.title.token-expired",
-            "The document security token has expired",
-          ),
+          Icon: <CommonError className="mb-5" />,
+          title: t("background.error.title.common", "Something went wrong"),
           subtitle: t(
             "background.error.subtitle.token-expired",
-            "Something went wrong. Please re-authorize the app.",
+            "The document security token has expired. Please re-authorize the app.",
           ),
           button: {
             text: t("button.reauthorize", "Re-authorize") || "Re-authorize",

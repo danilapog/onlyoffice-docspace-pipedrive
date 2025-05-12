@@ -5,7 +5,7 @@
   "background.error.title.no-room-access": "К сожалению, у вас нет доступа к этой комнате",
   "background.error.title.not-available": "",
   "background.error.subtitle.common": "",
-  "background.error.subtitle.token-expired": "Что-то пошло не так. Пожалуйста, авторизуйте приложение повторно",
+  "background.error.subtitle.token-expired": "",
   "background.error.subtitle.plugin.not-active.message": "Приложение ONLYOFFICE DocSpace недоступно",
   "background.error.subtitle.plugin.not-active.help": "Пожалуйста, подождите, когда администратор Pipedrive настроит приложение",
   "background.error.subtitle.docspace-connection": "Вы не подключены к ONLYOFFICE DocSpace",

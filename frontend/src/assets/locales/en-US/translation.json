@@ -5,7 +5,7 @@
   "background.error.title.no-room-access": "Sorry, you don't have access to this room",
   "background.error.title.not-available": "Not yet available",
   "background.error.subtitle.common": "Could not fetch plugin settings. Please reload the Pipedrive window.",
-  "background.error.subtitle.token-expired": "Something went wrong. Please re-authorize the app.",
+  "background.error.subtitle.token-expired": "The document security token has expired. Please re-authorize the app.",
   "background.error.subtitle.plugin.not-active.message": "ONLYOFFICE DocSpace App is not yet available",
   "background.error.subtitle.plugin.not-active.help": "Please wait until a Pipedrive Administrator configures the app settings",
   "background.error.subtitle.docspace-connection": "You are not connected to ONLYOFFICE DocSpace",
