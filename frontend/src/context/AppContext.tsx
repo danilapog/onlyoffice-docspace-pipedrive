@@ -123,7 +123,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
             }
           }
 
-          if (location.pathname !=="/settings") {
+          if (location.pathname !== "/settings") {
             if (!settingsResponse?.url || !settingsResponse.apiKey) {
               setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
             } else if (

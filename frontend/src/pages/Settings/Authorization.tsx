@@ -22,15 +22,8 @@ const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
 export const AuthorizationSetting: React.FC = () => {
   const { t } = useTranslation();
-  const {
-    user,
-    settings,
-    setUser,
-    setAppError,
-    sdk,
-    pipedriveToken,
-    reloadAppContext,
-  } = useContext(AppContext);
+  const { user, settings, setUser, sdk, pipedriveToken, reloadAppContext } =
+    useContext(AppContext);
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
