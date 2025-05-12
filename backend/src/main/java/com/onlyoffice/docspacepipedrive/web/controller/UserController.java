@@ -69,10 +69,6 @@ public class UserController {
                                                    @RequestBody DocspaceAccountRequest request) {
         DocspaceUser docspaceUser = docspaceClient.getUser(request.getUserName());
 
-        if (docspaceUser.getIsVisitor()) {
-            throw new DocspaceAccessDeniedException(request.getUserName());
-        }
-
         DocspaceAccount docspaceAccount = DocspaceAccount.builder()
                 .uuid(docspaceUser.getId())
                 .email(docspaceUser.getEmail())
