@@ -61,7 +61,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           button: {
             text: t("button.reload", "Reload"),
             onClick: () => reloadAppContext(),
-          }
+          },
         });
         break;
       }
@@ -175,10 +175,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
       case AppErrorType.DOCSPACE_UNREACHABLE: {
         setErrorProps({
           Icon: <NotAvailable />,
-          title: t(
-            "background.error.title.unreached",
-            "Cannot be reached",
-          ),
+          title: t("background.error.title.unreached", "Cannot be reached"),
           subtitle: `${t(
             "docspace.error.unreached",
             "ONLYOFFICE DocSpace cannot be reached",
