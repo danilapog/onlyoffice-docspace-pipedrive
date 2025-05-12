@@ -38,8 +38,8 @@ export const OnlyofficeBackgroundError: React.FC<ErrorProps> = ({
   button,
 }) => (
   <div className="w-full h-full flex justify-center flex-col items-center">
-    <div className="max-w-[526px] max-h-[414px] flex justify-between flex-col items-center">
-      <div className="hidden sm:flex justify-center items-center ">
+    <div className="max-w-[526px] flex justify-between flex-col items-center">
+      <div className="hidden sm:flex justify-center items-center mb-8">
         <DocspaceLogo />
       </div>
       <div className="max-w-[314px] md:max-w-[470px]">
