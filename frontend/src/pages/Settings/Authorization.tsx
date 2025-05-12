@@ -172,22 +172,17 @@ export const AuthorizationSetting: React.FC = () => {
               e.response?.status === 403 &&
               e.response?.data?.provider === "DOCSPACE"
             ) {
-              let message = t(
-                "settings.connection.saving.error.forbidden.guest",
-                "The specified user should be not Guest",
-              );
-
               if (isSystem) {
-                message = t(
+                const message = t(
                   "settings.connection.saving.error.forbidden.not-admin",
                   "The specified user is not a ONLYOFFICE DocSpace administrator",
                 );
-              }
 
-              await sdk.execute(Command.SHOW_SNACKBAR, {
-                message,
-              });
-              return;
+                await sdk.execute(Command.SHOW_SNACKBAR, {
+                  message,
+                });
+                return;
+              }
             }
 
             await sdk.execute(Command.SHOW_SNACKBAR, {

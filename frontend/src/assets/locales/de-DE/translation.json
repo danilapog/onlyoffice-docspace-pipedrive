@@ -63,7 +63,6 @@
   "settings.authorization.inputs.system.help": "Wenn Sie auf diesen Schalter klicken, wird das Plugin Aktionen von Ihrem DocSpace-Konto ausführen",
   "settings.authorization.menu-item": "Autorisierung",
   "settings.connection.saving.error.forbidden.not-admin": "Der angegebene Benutzer ist kein ONLYOFFICE DocSpace-Administrator",
-  "settings.connection.saving.error.forbidden.guest": "Der angegebene Benutzer darf kein Gast sein",
   "settings.connection.saving.error.undefined": "ONLYOFFICE DocSpace-Einstellungen konnten nicht gespeichert werden",
   "settings.connection.saving.ok": "ONLYOFFICE DocSpace-Einstellungen wurden gespeichert",
   "settings.connection.disconnection.description": "Sind Sie sicher, dass Sie die Verbindung zu ONLYOFFICE DocSpace unterbrechen wollen? Dies hat zur Folge, dass alle Verbindungen zwischen Deals und DocSpace-Räumen verloren gehen. Außerdem werden alle Benutzerautorisierungsdaten gelöscht.",
