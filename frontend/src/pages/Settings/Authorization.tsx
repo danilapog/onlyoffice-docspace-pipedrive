@@ -18,7 +18,6 @@ import Authorized from "@assets/authorized.svg";
 import NotAvailable from "@assets/not-available.svg";
 import { OnlyofficeCheckbox } from "@components/checkbox";
 import { OnlyofficeTooltip } from "@components/tooltip";
-import { OnlyofficeHint } from "@components/hint";
 
 const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
