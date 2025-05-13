@@ -48,7 +48,7 @@ public class ClientConfiguration {
     private final SettingsService settingsService;
 
     @Bean
-    DocspaceClient docspaceClient(final SettingsService settingsService) {
+    DocspaceClient docspaceClient() {
         DocspaceAuthorizationApiKeyExchangeFilterFunction docspaceAuthorizationApiKeyExchangeFilterFunction =
                 new DocspaceAuthorizationApiKeyExchangeFilterFunction(settingsService);
 
