@@ -165,7 +165,7 @@ export const ConnectionSettings: React.FC = () => {
           />
         </div>
       </div>
-      <div className="max-w-[320px]">
+      <div className="max-w-[390px]">
         <form onSubmit={handleConnect}>
           <div className="pl-5 pr-5 pb-2">
             <OnlyofficeInput

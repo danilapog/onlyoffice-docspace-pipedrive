@@ -290,7 +290,7 @@ export const AuthorizationSetting: React.FC = () => {
             </>
           )}
           {!user?.docspaceAccount && (
-            <div className="max-w-[320px]">
+            <div className="max-w-[390px]">
               <form onSubmit={handleLogin}>
                 <div className="pl-5 pr-5 pb-2">
                   <OnlyofficeInput
