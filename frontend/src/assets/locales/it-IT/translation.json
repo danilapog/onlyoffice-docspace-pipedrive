@@ -65,6 +65,8 @@
   "settings.connection.disconnection.ok": "ONLYOFFICE DocSpace disconnesso con successo",
   "settings.connection.disconnection.error": "Impossibile disconnettere ONLYOFFICE DocSpace",
   "settings.connection.title": "Configura le impostazioni di connessione dell'app ONLYOFFICE DocSpace",
+  "settings.connection.subtitle.connect": "",
+  "settings.connection.subtitle.change": "",
   "settings.connection.inputs.address": "Indirizzo ONLYOFFICE DocSpace",
   "settings.connection.inputs.api-key.title": "",
   "settings.connection.inputs.api-key.description": "",

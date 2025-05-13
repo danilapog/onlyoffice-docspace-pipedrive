@@ -63,6 +63,8 @@
   "settings.connection.disconnection.ok": "ONLYOFFICE DocSpace succesfully disconnected",
   "settings.connection.disconnection.error": "Could not disconnect ONLYOFFICE DocSpace",
   "settings.connection.title": "Configure connection settings of the ONLYOFFICE DocSpace app",
+  "settings.connection.subtitle.connect": "Connect your ONLYOFFICE DocSpace to Pipedrive",
+  "settings.connection.subtitle.change": "Change address or disconnect your ONLYOFFICE DocSpace from Pipedrive",
   "settings.connection.inputs.address": "ONLYOFFICE DocSpace address",
   "settings.connection.inputs.api-key.title": "ONLYOFFICE DocSpace API Key",
   "settings.connection.inputs.api-key.description": "The API key must be created by a DocSpace admin and should include the following access scopes: Profile (Read), Contacts (Write), and Rooms (Write).",

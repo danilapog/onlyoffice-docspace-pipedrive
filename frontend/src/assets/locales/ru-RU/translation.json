@@ -65,6 +65,8 @@
   "settings.connection.disconnection.ok": "ONLYOFFICE DocSpace успешно отключен",
   "settings.connection.disconnection.error": "Не удалось отключить ONLYOFFICE DocSpace",
   "settings.connection.title": "Настройте подключение приложения ONLYOFFICE DocSpace",
+  "settings.connection.subtitle.connect": "",
+  "settings.connection.subtitle.change": "",
   "settings.connection.inputs.address": "Адрес ONLYOFFICE DocSpace",
   "settings.connection.inputs.api-key.title": "ONLYOFFICE DocSpace API Ключ",
   "settings.connection.inputs.api-key.description": "Автором API ключа должен быть администратор DocSpace и ключ должен иметь права доступа (Профиль - Чтение, Контакты - Запись, Комнаты - Запись).",

@@ -164,6 +164,22 @@ export const ConnectionSettings: React.FC = () => {
             )}
           />
         </div>
+        {!settings?.url && (
+          <div className="pt-3 pb-2">
+            {t(
+              "settings.connection.subtitle.connect",
+              "Connect your ONLYOFFICE DocSpace to Pipedrive",
+            )}
+          </div>
+        )}
+        {!!settings?.url && (
+          <div className="pt-3 pb-2">
+            {t(
+              "settings.connection.subtitle.change",
+              "Change address or disconnect your ONLYOFFICE DocSpace from Pipedrive",
+            )}
+          </div>
+        )}
       </div>
       <div className="max-w-[390px]">
         <form onSubmit={handleConnect}>

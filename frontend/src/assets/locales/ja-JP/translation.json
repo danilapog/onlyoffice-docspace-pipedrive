@@ -65,6 +65,8 @@
   "settings.connection.disconnection.ok": "ONLYOFFICE DocSpaceの切断に成功しました",
   "settings.connection.disconnection.error": "ONLYOFFICE DocSpaceの切断に失敗しました",
   "settings.connection.title": "ONLYOFFICE DocSpaceアプリの接続設定を確認してください",
+  "settings.connection.subtitle.connect": "",
+  "settings.connection.subtitle.change": "",
   "settings.connection.inputs.address": "ONLYOFFICE DocSpaceアドレス",
   "settings.connection.inputs.api-key.title": "",
   "settings.connection.inputs.api-key.description": "",
