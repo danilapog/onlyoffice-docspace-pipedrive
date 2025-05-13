@@ -16,20 +16,8 @@
  *
  */
 
-import { useTranslation } from "react-i18next";
-
-export function useErrorMessage() {
-  const { t } = useTranslation();
-
-  const getSettingsErrorMessage = (code: string): string => {
-    const key = `settings.connection.saving.error.${code}`;
-    return t(key, {
-      defaultValue: t(
-        "settings.connection.saving.error.undefined",
-        "Could not save ONLYOFFICE DocSpace settings",
-      ),
-    });
-  };
-
-  return getSettingsErrorMessage;
-}
+export type ErrorResponse = {
+  cause: string;
+  message: string;
+  params: Record<string, string>;
+};

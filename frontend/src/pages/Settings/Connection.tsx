@@ -27,15 +27,14 @@ import { OnlyofficeTitle } from "@components/title";
 import { deleteSettings, putSettings } from "@services/settings";
 
 import { stripTrailingSlash } from "@utils/url";
-import { useErrorMessage } from "@utils/message";
 
 import { AppContext } from "@context/AppContext";
-import { SettingsErrorResponse, SettingsResponse } from "src/types/settings";
+import { SettingsResponse } from "src/types/settings";
 import { AxiosError } from "axios";
+import { ErrorResponse } from "src/types/error";
 
 export const ConnectionSettings: React.FC = () => {
   const { t } = useTranslation();
-  const getSettingsErrorMessage = useErrorMessage();
   const {
     user,
     setUser,
@@ -52,6 +51,16 @@ export const ConnectionSettings: React.FC = () => {
   const [showValidationMessage, setShowValidationMessage] = useState(false);
   const [address, setAddress] = useState<string>(settings?.url || "");
   const [apiKey, setApiKey] = useState<string>(settings?.apiKey || "");
+
+  const getSettingsValidationsMessage = (code: string): string => {
+    const key = `settings.connection.saving.error.${code}`;
+    return t(key, {
+      defaultValue: t(
+        "settings.connection.saving.error.undefined",
+        "Could not save ONLYOFFICE DocSpace settings",
+      ),
+    });
+  };
 
   const handleConnect = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -74,10 +83,15 @@ export const ConnectionSettings: React.FC = () => {
           }
         })
         .catch(async (e: AxiosError) => {
-          if (e?.response?.status === 400) {
-            const data = e?.response?.data as SettingsErrorResponse;
+          const data = e?.response?.data as ErrorResponse;
+          if (
+            e?.response?.status === 400 &&
+            data?.cause === "SettingsValidationException"
+          ) {
             await sdk.execute(Command.SHOW_SNACKBAR, {
-              message: getSettingsErrorMessage(data.errorCode),
+              message: getSettingsValidationsMessage(
+                data.params.validationError,
+              ),
             });
           } else {
             await sdk.execute(Command.SHOW_SNACKBAR, {
