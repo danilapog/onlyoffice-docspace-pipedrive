@@ -31,6 +31,7 @@ import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIsNotPresentInResponse;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
@@ -124,14 +125,10 @@ public class DocspaceActionManager {
                     Collections.singletonList(docspaceAccountId),
                     null
             );
-        } catch (WebClientResponseException | SharedGroupIdNotFoundException e) {
-            if (e instanceof SharedGroupIdNotFoundException) {
-                initSharedGroup();
-                return;
-            }
-
-            if (e instanceof WebClientResponseException
-                    && ((WebClientResponseException) e).getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+        } catch (SharedGroupIdNotFoundException e) {
+            initSharedGroup();
+        } catch (DocspaceWebClientResponseException e) {
+            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 settingsService.saveSharedGroup(
                         currentUser.getClientId(),
                         null
@@ -139,6 +136,8 @@ public class DocspaceActionManager {
 
                 initSharedGroup();
             }
+
+            throw e;
         }
     }
 
