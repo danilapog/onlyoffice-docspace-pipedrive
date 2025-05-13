@@ -78,7 +78,7 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(
                         new ErrorResponse(
-                                DocspaceUrlNotFoundException.class.getName(),
+                                DocspaceUrlNotFoundException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
                                 null
                         )
@@ -90,7 +90,7 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(
                         new ErrorResponse(
-                                DocspaceAccountAlreadyExistsException.class.getName(),
+                                DocspaceAccountAlreadyExistsException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
                                 null
                         )
@@ -118,7 +118,7 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(
                         new ErrorResponse(
-                                DocspaceApiKeyNotFoundException.class.getName(),
+                                DocspaceApiKeyNotFoundException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
                                 null
                         )
@@ -130,7 +130,7 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(
                         new ErrorResponse(
-                                DocspaceApiKeyInvalidException.class.getName(),
+                                DocspaceApiKeyInvalidException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
                                 null
                         )
