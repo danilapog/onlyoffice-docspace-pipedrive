@@ -105,7 +105,7 @@ public class UserController {
         );
 
         if (Objects.nonNull(docspaceAccount)) {
-            docspaceAccountService.deleteById(currentUser.getUserId());
+            docspaceAccountService.deleteByClientIdAndUserId(currentUser.getClientId(), currentUser.getUserId());
 
             eventPublisher.publishEvent(new DocspaceLogoutUserEvent(
                     this, docspaceAccount
