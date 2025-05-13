@@ -16,16 +16,6 @@
  *
  */
 
-export type DocspaceResponse<T> = {
-  response: T;
-  status: number;
-  statusCode: number;
-};
-
-export type CSPSettings = {
-  domains: Array<string>;
-};
-
 export type DocspaceUser = {
   isOwner: boolean;
   isAdmin: boolean;
