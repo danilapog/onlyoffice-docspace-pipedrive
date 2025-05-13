@@ -18,15 +18,12 @@
 
 package com.onlyoffice.docspacepipedrive.web.controller;
 
-import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
-import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.events.user.DocspaceLoginUserEvent;
 import com.onlyoffice.docspacepipedrive.events.user.DocspaceLogoutUserEvent;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
@@ -43,6 +40,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -51,7 +50,6 @@ public class UserController {
     private final DocspaceAccountService docspaceAccountService;
     private final UserMapper userMapper;
     private final PipedriveClient pipedriveClient;
-    private final DocspaceClient docspaceClient;
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
@@ -67,11 +65,9 @@ public class UserController {
     @Transactional
     public ResponseEntity<Void> putDocspaceAccount(@AuthenticationPrincipal User currentUser,
                                                    @RequestBody DocspaceAccountRequest request) {
-        DocspaceUser docspaceUser = docspaceClient.getUser(request.getUserName());
-
         DocspaceAccount docspaceAccount = DocspaceAccount.builder()
-                .uuid(docspaceUser.getId())
-                .email(docspaceUser.getEmail())
+                .uuid(UUID.fromString(request.getId()))
+                .email(request.getUserName())
                 .passwordHash(request.getPasswordHash())
                 .build();
 

@@ -47,6 +47,7 @@ export const getUser = async (pipedriveToken: PipedriveToken) => {
 
 export const putDocspaceAccount = async (
   pipedriveToken: PipedriveToken,
+  id: string,
   userName: string,
   passwordHash: string,
 ) => {
@@ -67,6 +68,7 @@ export const putDocspaceAccount = async (
       Authorization: `Bearer ${token}`,
     },
     data: {
+      id,
       userName,
       passwordHash,
     },

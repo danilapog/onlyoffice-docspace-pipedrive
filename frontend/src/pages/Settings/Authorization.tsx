@@ -96,7 +96,11 @@ export const AuthorizationSetting: React.FC = () => {
         });
         setSaving(false);
       } else {
-        putDocspaceAccount(pipedriveToken, email, passwordHash)
+        const userInfo = (await docspaceInstance.getUserInfo()) as {
+          id: string;
+        };
+
+        putDocspaceAccount(pipedriveToken, userInfo.id, email, passwordHash)
           .then(async () => {
             if (user) {
               setUser({
@@ -104,7 +108,6 @@ export const AuthorizationSetting: React.FC = () => {
                 docspaceAccount: {
                   userName: email,
                   passwordHash: "",
-                  canCreateRoom: false,
                 },
               });
             }
