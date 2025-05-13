@@ -203,15 +203,15 @@ export const AuthorizationSetting: React.FC = () => {
             user?.isAdmin
               ? `${t(
                   "background.error.subtitle.docspace-connection",
-                  "You are not connected to ONLYOFFICE DocSpace",
-                )}. ${t(
+                  "You are not connected to ONLYOFFICE DocSpace.",
+                )} ${t(
                   "background.error.hint.admin.docspace-connection",
                   "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
                 )}`
               : `${t(
                   "background.error.subtitle.plugin.not-active.message",
-                  "ONLYOFFICE DocSpace App is not yet available",
-                )}. ${t(
+                  "ONLYOFFICE DocSpace App is not yet available.",
+                )} ${t(
                   "background.error.subtitle.plugin.not-active.help",
                   "Please wait until a Pipedrive Administrator configures the app settings.",
                 )}`
@@ -232,7 +232,7 @@ export const AuthorizationSetting: React.FC = () => {
           title={t("background.error.title.not-available", "Not yet available")}
           subtitle={`${t(
             "background.error.title.docspace-invalid-api-key",
-            "ONLYOFFICE DocSpace API Key is invalid",
+            "The ONLYOFFICE DocSpace API Key is invalid.",
           )} ${
             user?.isAdmin
               ? t(

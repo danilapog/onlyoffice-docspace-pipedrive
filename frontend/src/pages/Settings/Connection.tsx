@@ -188,7 +188,7 @@ export const ConnectionSettings: React.FC = () => {
               )}
               description={t(
                 "settings.connection.inputs.api-key.description",
-                "API key author should be DocSpace admin and key should have access sopes(Profile - Read, Contacts - Write, Rooms - Write)",
+                "The API key must be created by a DocSpace admin and should include the following access scopes: Profile (Read), Contacts (Write), and Rooms (Write).",
               )}
               valid={showValidationMessage ? !!apiKey : true}
               disabled={(connecting || !!settings?.url) && !changing}
