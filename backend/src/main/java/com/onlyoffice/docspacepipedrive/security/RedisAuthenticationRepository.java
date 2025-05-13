@@ -19,13 +19,13 @@
 package com.onlyoffice.docspacepipedrive.security;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -34,15 +34,29 @@ public class RedisAuthenticationRepository {
 
     private final RedisTemplate<String, Authentication> authenticationRedisTemplate;
 
-    public Authentication getAuthentication(final String key) {
-        return authenticationRedisTemplate.opsForValue().get(KEY_PREFIX + DigestUtils.sha256Hex(key));
+    public Authentication getAuthentication(final String username, final String credentials) {
+        Authentication authentication = authenticationRedisTemplate.opsForValue().get(KEY_PREFIX + username);
+
+        if (Objects.isNull(authentication)) {
+            return null;
+        }
+
+        if (!credentials.equals(authentication.getCredentials())) {
+            return null;
+        }
+
+        return authentication;
     }
 
-    public void saveAuthentication(final String key, final Authentication value, final Instant expiresAt) {
+    public void saveAuthentication(final String username, final Authentication value, final Instant expiresAt) {
         authenticationRedisTemplate.opsForValue().set(
-                KEY_PREFIX + DigestUtils.sha256Hex(key),
+                KEY_PREFIX + username,
                 value,
                 Duration.between(Instant.now(), expiresAt)
         );
+    }
+
+    public void deleteAuthentication(final String username) {
+        authenticationRedisTemplate.delete(KEY_PREFIX + username);
     }
 }

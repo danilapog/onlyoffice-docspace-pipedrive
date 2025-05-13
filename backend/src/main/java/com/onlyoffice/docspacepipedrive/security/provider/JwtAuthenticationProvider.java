@@ -19,6 +19,7 @@
 package com.onlyoffice.docspacepipedrive.security.provider;
 
 import com.onlyoffice.docspacepipedrive.security.RedisAuthenticationRepository;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveAuthenticationToken;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,14 +77,14 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             throw new InvalidBearerTokenException(e.getMessage(), e);
         }
 
+        Map<String, Object> body = jwt.getClaims();
+        Long clientId = (Long) body.get(clientNameAttribute);
+        Long userId = (Long) body.get(userNameAttribute);
+
         OAuth2AuthenticationToken resultAuthentication = (OAuth2AuthenticationToken)
-                redisAuthenticationRepository.getAuthentication(bearer.getToken());
+                redisAuthenticationRepository.getAuthentication(clientId + ":" + userId, bearer.getToken());
 
         if (Objects.isNull(resultAuthentication)) {
-            Map<String, Object> body = jwt.getClaims();
-            Long clientId = (Long) body.get(clientNameAttribute);
-            Long userId = (Long) body.get(userNameAttribute);
-
             OAuth2User oAuth2User;
             try {
                 oAuth2User = oAuth2PipedriveUserService.loadUser(clientId, userId);
@@ -91,9 +92,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
                 throw new InvalidBearerTokenException(e.getMessage(), e);
             }
 
-            resultAuthentication = createSuccessAuthentication(oAuth2User, authentication);
+            resultAuthentication = createSuccessAuthentication(oAuth2User, bearer.getToken(), authentication);
             redisAuthenticationRepository.saveAuthentication(
-                    bearer.getToken(),
+                    clientId + ":" + userId,
                     resultAuthentication,
                     jwt.getExpiresAt()
             );
@@ -107,11 +108,13 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         return BearerTokenAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    protected OAuth2AuthenticationToken createSuccessAuthentication(final OAuth2User oAuth2User,
+    protected OAuth2PipedriveAuthenticationToken createSuccessAuthentication(final OAuth2User oAuth2User,
+                                                                    final String credentials,
                                                                     final Authentication authentication) {
-        OAuth2AuthenticationToken result = new OAuth2AuthenticationToken(
+        OAuth2PipedriveAuthenticationToken result = new OAuth2PipedriveAuthenticationToken(
                 oAuth2User,
                 oAuth2User.getAuthorities(),
+                credentials,
                 "pipedrive"
         );
 
