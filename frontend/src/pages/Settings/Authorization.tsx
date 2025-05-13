@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
 import { DocSpace } from "@onlyoffice/docspace-react";
 import { TFrameConfig } from "@onlyoffice/docspace-sdk-js/dist/types/types";
@@ -16,7 +16,6 @@ import { putDocspaceAccount, deleteDocspaceAccount } from "@services/user";
 
 import Authorized from "@assets/authorized.svg";
 import NotAvailable from "@assets/not-available.svg";
-import { OnlyofficeHint } from "@components/hint";
 
 const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
@@ -117,22 +116,7 @@ export const AuthorizationSetting: React.FC = () => {
               ),
             });
           })
-          .catch(async (e) => {
-            if (
-              e.response?.status === 403 &&
-              e.response?.data?.provider === "DOCSPACE"
-            ) {
-              let message = t(
-                "settings.connection.saving.error.forbidden.guest",
-                "The specified user should be not Guest",
-              );
-
-              await sdk.execute(Command.SHOW_SNACKBAR, {
-                message,
-              });
-              return;
-            }
-
+          .catch(async () => {
             await sdk.execute(Command.SHOW_SNACKBAR, {
               message: t(
                 "settings.authorization.saving.error",

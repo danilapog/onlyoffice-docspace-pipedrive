@@ -56,7 +56,6 @@
   "settings.authorization.inputs.email": "Электронная почта",
   "settings.authorization.inputs.password": "Пароль",
   "settings.authorization.menu-item": "Авторизация",
-  "settings.connection.saving.error.forbidden.guest": "Указанный пользователь не должен являться Гостем",
   "settings.connection.saving.error.undefined": "Не удалось сохранить настройки ONLYOFFICE DocSpace",
   "settings.connection.saving.error.DOCSPACE_CAN_NOT_BE_REACHED": "ONLYOFFICE DocSpace недоступен",
   "settings.connection.saving.error.DOCSPACE_API_KEY_IS_INVALID": "DocSpace API ключ недействительный",

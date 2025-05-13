@@ -56,7 +56,6 @@
   "settings.authorization.inputs.email": "Email",
   "settings.authorization.inputs.password": "パスワード",
   "settings.authorization.menu-item": "認証",
-  "settings.connection.saving.error.forbidden.guest": "指定したユーザーはゲストユーザーにできません",
   "settings.connection.saving.error.undefined": "ONLYOFFICE DocSpace設定を保存できませんでした",
   "settings.connection.saving.error.DOCSPACE_CAN_NOT_BE_REACHED": "",
   "settings.connection.saving.error.DOCSPACE_API_KEY_IS_INVALID": "",

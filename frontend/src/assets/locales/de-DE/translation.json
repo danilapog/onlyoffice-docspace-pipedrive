@@ -56,7 +56,6 @@
   "settings.authorization.inputs.email": "E-Mail",
   "settings.authorization.inputs.password": "Passwort",
   "settings.authorization.menu-item": "Autorisierung",
-  "settings.connection.saving.error.forbidden.guest": "Der angegebene Benutzer darf kein Gast sein",
   "settings.connection.saving.error.undefined": "ONLYOFFICE DocSpace-Einstellungen konnten nicht gespeichert werden",
   "settings.connection.saving.error.DOCSPACE_CAN_NOT_BE_REACHED": "",
   "settings.connection.saving.error.DOCSPACE_API_KEY_IS_INVALID": "",
