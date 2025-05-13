@@ -16,13 +16,21 @@ import { putDocspaceAccount, deleteDocspaceAccount } from "@services/user";
 
 import Authorized from "@assets/authorized.svg";
 import NotAvailable from "@assets/not-available.svg";
+import { ErrorResponse } from "src/types/error";
 
 const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
 export const AuthorizationSetting: React.FC = () => {
   const { t } = useTranslation();
-  const { user, settings, setUser, sdk, pipedriveToken, reloadAppContext } =
-    useContext(AppContext);
+  const {
+    user,
+    settings,
+    setSettings,
+    setUser,
+    sdk,
+    pipedriveToken,
+    reloadAppContext,
+  } = useContext(AppContext);
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -119,7 +127,48 @@ export const AuthorizationSetting: React.FC = () => {
               ),
             });
           })
-          .catch(async () => {
+          .catch(async (e) => {
+            const data = e?.response?.data as ErrorResponse;
+            if (
+              e?.response?.status === 503 &&
+              data?.cause === "DocspaceUrlNotFoundException"
+            ) {
+              if (settings) {
+                setSettings({
+                  ...settings,
+                  url: "",
+                });
+              }
+              return;
+            }
+
+            if (
+              e?.response?.status === 503 &&
+              data?.cause === "DocspaceApiKeyNotFoundException"
+            ) {
+              if (settings) {
+                setSettings({
+                  ...settings,
+                  apiKey: "",
+                  isApiKeyValid: false,
+                });
+              }
+              return;
+            }
+
+            if (
+              e?.response?.status === 503 &&
+              data?.cause === "DocspaceApiKeyInvalidException"
+            ) {
+              if (settings) {
+                setSettings({
+                  ...settings,
+                  isApiKeyValid: false,
+                });
+              }
+              return;
+            }
+
             await sdk.execute(Command.SHOW_SNACKBAR, {
               message: t(
                 "settings.authorization.saving.error",
