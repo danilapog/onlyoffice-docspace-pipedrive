@@ -135,6 +135,7 @@ public class DocspaceActionManager {
                 );
 
                 initSharedGroup();
+                return;
             }
 
             throw e;
