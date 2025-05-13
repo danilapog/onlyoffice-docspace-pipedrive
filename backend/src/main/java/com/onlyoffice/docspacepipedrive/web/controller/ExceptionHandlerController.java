@@ -18,7 +18,6 @@
 
 package com.onlyoffice.docspacepipedrive.web.controller;
 
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccountAlreadyExistsException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyInvalidException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
@@ -65,18 +64,6 @@ public class ExceptionHandlerController {
     @ExceptionHandler(DocspaceWebClientResponseException.class)
     public ResponseEntity<ErrorResponse> docspaceWebClientResponseException(DocspaceWebClientResponseException e) {
         return ResponseEntity.status(e.getStatusCode())
-                .body(
-                        new ErrorResponse(
-                                DocspaceWebClientResponseException.class.getSimpleName(),
-                                e.getLocalizedMessage(),
-                                null
-                        )
-                );
-    }
-
-    @ExceptionHandler(DocspaceAccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> docspaceAccessDeniedException(DocspaceAccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(
                         new ErrorResponse(
                                 DocspaceWebClientResponseException.class.getSimpleName(),
