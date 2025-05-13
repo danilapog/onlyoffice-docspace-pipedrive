@@ -31,6 +31,7 @@ import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundExceptio
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIsNotPresentInResponse;
 import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
+import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,7 @@ public class DealEventListener {
     private final PipedriveClient pipedriveClient;
     private final UserService userService;
     private final RoomService roomService;
+    private final DocspaceAccountService docspaceAccountService;
 
     @EventListener
     public void listen(final AddRoomToPipedriveDealEvent event) {
@@ -89,24 +91,12 @@ public class DealEventListener {
         // Invite all deal followers to room
         List<PipedriveDealFollower> dealFollowers = pipedriveClient.getDealFollowers(pipedriveDeal.getId());
 
-        List<User> users = new ArrayList<>();
-        for (PipedriveDealFollower dealFollower : dealFollowers) {
-            try {
-                users.add(
-                        userService.findByClientIdAndUserId(
-                                event.getClientId(),
-                                dealFollower.getUserId()
-                        )
-                );
-            } catch (UserNotFoundException e) {
-                // Do nothing if the UserNotFoundException
-            }
-        }
-
-        List<DocspaceAccount> docspaceAccounts = users.stream()
-                .filter(user -> user.getDocspaceAccount() != null)
-                .map(user -> user.getDocspaceAccount())
-                .toList();
+        List<DocspaceAccount> docspaceAccounts = docspaceAccountService.findAllByClientIdAndUserIds(
+                event.getClientId(),
+                dealFollowers.stream()
+                        .map(PipedriveDealFollower::getUserId)
+                        .toList()
+        );
 
         docspaceActionManager.inviteListDocspaceAccountsToRoom(roomId, docspaceAccounts);
     }
