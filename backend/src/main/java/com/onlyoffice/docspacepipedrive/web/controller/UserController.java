@@ -87,6 +87,7 @@ public class UserController {
                 .build();
 
         DocspaceAccount savedDocspaceAccount = docspaceAccountService.save(
+                currentUser.getClientId(),
                 currentUser.getUserId(),
                 docspaceAccount
         );

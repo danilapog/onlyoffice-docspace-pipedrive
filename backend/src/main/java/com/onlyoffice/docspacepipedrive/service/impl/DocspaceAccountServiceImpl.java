@@ -51,8 +51,8 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     }
 
     @Override
-    public DocspaceAccount save(final Long id, final DocspaceAccount docspaceAccount) {
-        User user = userService.findById(id);
+    public DocspaceAccount save(final Long clientId, final Long userId, final DocspaceAccount docspaceAccount) {
+        User user = userService.findByClientIdAndUserId(clientId, userId);
 
         docspaceAccount.setUser(user);
         user.setDocspaceAccount(docspaceAccount);
