@@ -33,6 +33,7 @@ import DenniedError from "@assets/dennied-error.svg";
 import { Command, View } from "@pipedrive/app-extensions-sdk";
 import { requestAccessToRoom } from "@services/room";
 import { getCurrentURL } from "@utils/url";
+import { ErrorResponse } from "src/types/error";
 
 type ErrorPageProps = {
   children?: JSX.Element | JSX.Element[];
@@ -49,7 +50,9 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
   useEffect(() => {
     const { parameters } = getCurrentURL();
 
-    sdk.execute(Command.RESIZE, { height: 400 }).catch(() => {});
+    if (appError) {
+      sdk.execute(Command.RESIZE, { height: 400 }).catch(() => {});
+    }
 
     switch (appError) {
       case AppErrorType.COMMON_ERROR: {
@@ -160,7 +163,32 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
                   });
                   setAppError(undefined);
                 })
-                .catch(async () => {
+                .catch(async (e) => {
+                  const data = e?.response?.data as ErrorResponse;
+                  if (
+                    e?.response?.status === 503 &&
+                    data?.cause === "DocspaceUrlNotFoundException"
+                  ) {
+                    setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+                    return;
+                  }
+
+                  if (
+                    e?.response?.status === 503 &&
+                    data?.cause === "DocspaceApiKeyNotFoundException"
+                  ) {
+                    setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+                    return;
+                  }
+
+                  if (
+                    e?.response?.status === 503 &&
+                    data?.cause === "DocspaceApiKeyInvalidException"
+                  ) {
+                    setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
+                    return;
+                  }
+
                   await sdk.execute(Command.SHOW_SNACKBAR, {
                     message: t(
                       "room.request-access.error",

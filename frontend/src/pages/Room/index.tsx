@@ -43,6 +43,7 @@ import { SDKInstance } from "@onlyoffice/docspace-sdk-js/dist/types/instance";
 import { DocspaceUser } from "src/types/docspace";
 import { RoomResponse } from "src/types/room";
 import { ButtonColor, OnlyofficeButton } from "@components/button";
+import { ErrorResponse } from "src/types/error";
 
 const DOCSPACE_FRAME_ID = "docspace-frame";
 const DOCSPACE_ROOM_TYPES = [
@@ -79,12 +80,6 @@ const RoomPage: React.FC = () => {
   const docspaceInstance = useRef<SDKInstance | null>(null);
 
   useEffect(() => {
-    if (settings?.apiKey && !settings?.isApiKeyValid) {
-      setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
-      setLoading(false);
-      return;
-    }
-
     if (!user?.docspaceAccount) {
       sdk.execute(Command.RESIZE, { height: 128 });
       setLoading(false);
@@ -156,6 +151,31 @@ const RoomPage: React.FC = () => {
       Number(parameters.get("selectedIds")),
       roomId,
     ).catch((e) => {
+      const data = e?.response?.data as ErrorResponse;
+      if (
+        e?.response?.status === 503 &&
+        data?.cause === "DocspaceUrlNotFoundException"
+      ) {
+        setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+        return;
+      }
+
+      if (
+        e?.response?.status === 503 &&
+        data?.cause === "DocspaceApiKeyNotFoundException"
+      ) {
+        setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+        return;
+      }
+
+      if (
+        e?.response?.status === 503 &&
+        data?.cause === "DocspaceApiKeyInvalidException"
+      ) {
+        setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
+        return;
+      }
+
       if (e?.response?.status === 401) {
         setAppError(AppErrorType.TOKEN_ERROR);
       } else {
