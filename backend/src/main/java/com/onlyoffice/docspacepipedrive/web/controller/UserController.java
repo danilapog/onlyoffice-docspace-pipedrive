@@ -107,10 +107,6 @@ public class UserController {
             }
         }, currentClient.getSystemUser());
 
-        if (docspaceUser.getIsVisitor()) {
-            throw new DocspaceAccessDeniedException(request.getUserName());
-        }
-
         DocspaceAccount docspaceAccount = DocspaceAccount.builder()
                 .uuid(docspaceUser.getId())
                 .email(docspaceUser.getEmail())

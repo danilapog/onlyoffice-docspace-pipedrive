@@ -18,7 +18,6 @@ import Authorized from "@assets/authorized.svg";
 import NotAvailable from "@assets/not-available.svg";
 import { OnlyofficeCheckbox } from "@components/checkbox";
 import { OnlyofficeTooltip } from "@components/tooltip";
-import { OnlyofficeHint } from "@components/hint";
 
 const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
@@ -172,22 +171,17 @@ export const AuthorizationSetting: React.FC = () => {
               e.response?.status === 403 &&
               e.response?.data?.provider === "DOCSPACE"
             ) {
-              let message = t(
-                "settings.connection.saving.error.forbidden.guest",
-                "The specified user should be not Guest",
-              );
-
               if (isSystem) {
-                message = t(
+                const message = t(
                   "settings.connection.saving.error.forbidden.not-admin",
                   "The specified user is not a ONLYOFFICE DocSpace administrator",
                 );
-              }
 
-              await sdk.execute(Command.SHOW_SNACKBAR, {
-                message,
-              });
-              return;
+                await sdk.execute(Command.SHOW_SNACKBAR, {
+                  message,
+                });
+                return;
+              }
             }
 
             await sdk.execute(Command.SHOW_SNACKBAR, {
@@ -258,22 +252,6 @@ export const AuthorizationSetting: React.FC = () => {
                 )}
               />
             </div>
-            {!user?.docspaceAccount && (
-              <OnlyofficeHint>
-                <p>
-                  <Trans
-                    i18nKey="settings.authorization.hint.login.message"
-                    defaults="DocSpace users with the <semibold>{{role}}</semibold> type can't log into Pipedrive"
-                    values={{
-                      role: t("docspace.roles.guest", "Guest"),
-                    }}
-                    components={{
-                      semibold: <span className="font-semibold" />,
-                    }}
-                  />
-                </p>
-              </OnlyofficeHint>
-            )}
           </div>
           {user?.docspaceAccount && (
             <>

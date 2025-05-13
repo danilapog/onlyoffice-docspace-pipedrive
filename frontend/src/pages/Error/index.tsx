@@ -196,10 +196,10 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           button: user?.isAdmin
             ? {
                 text: t("button.settings", "Go to Settings"),
-                onClick: () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
+                onClick: () =>
+                  sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS }),
               }
-            : undefined
-          ,
+            : undefined,
         });
         break;
       }
