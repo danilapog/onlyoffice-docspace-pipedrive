@@ -186,6 +186,7 @@ export const ConnectionSettings: React.FC = () => {
                 "settings.connection.inputs.api-key.title",
                 "ONLYOFFICE DocSpace API key",
               )}
+              placeholder="***********"
               description={t(
                 "settings.connection.inputs.api-key.description",
                 "The API key must be created by a DocSpace admin and should include the following access scopes: Profile (Read), Contacts (Write), and Rooms (Write).",

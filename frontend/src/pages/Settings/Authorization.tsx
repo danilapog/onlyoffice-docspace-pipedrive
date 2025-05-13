@@ -295,6 +295,10 @@ export const AuthorizationSetting: React.FC = () => {
                 <div className="pl-5 pr-5 pb-2">
                   <OnlyofficeInput
                     text={t("settings.authorization.inputs.email", "Email")}
+                    placeholder={t(
+                      "settings.authorization.inputs.email",
+                      "Email",
+                    )}
                     valid={showValidationMessage ? !!email : true}
                     value={email}
                     disabled={saving}
@@ -304,6 +308,10 @@ export const AuthorizationSetting: React.FC = () => {
                 <div className="pl-5 pr-5 pb-2">
                   <OnlyofficeInput
                     text={t(
+                      "settings.authorization.inputs.password",
+                      "Password",
+                    )}
+                    placeholder={t(
                       "settings.authorization.inputs.password",
                       "Password",
                     )}
