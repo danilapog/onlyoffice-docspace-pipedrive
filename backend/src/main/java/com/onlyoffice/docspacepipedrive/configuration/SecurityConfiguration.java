@@ -26,7 +26,6 @@ import com.onlyoffice.docspacepipedrive.security.provider.ClientRegistrationAuth
 import com.onlyoffice.docspacepipedrive.security.provider.JwtAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.provider.WebhookAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
-import com.onlyoffice.docspacepipedrive.service.UserService;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -67,6 +67,7 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableWebSecurity
 @EnableRedisHttpSession
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfiguration {
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
@@ -209,10 +210,9 @@ public class SecurityConfiguration {
     @Bean
     public OAuth2AuthenticationSuccessHandler auth2AuthenticationSuccessHandler(
             final ClientRegistrationRepository clientRegistrationRepository,
-            final PipedriveActionManager pipedriveActionManager,
-            final SettingsService settingsService, final UserService userService) {
+            final PipedriveActionManager pipedriveActionManager, final SettingsService settingsService) {
         return new OAuth2AuthenticationSuccessHandler(clientRegistrationRepository, pipedriveActionManager,
-                settingsService, userService);
+                settingsService);
     }
 
     @Bean

@@ -18,10 +18,17 @@
 
 package com.onlyoffice.docspacepipedrive.events.settings;
 
+import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
+
+@Getter
 public class SettingsDeleteEvent extends ApplicationEvent {
-    public SettingsDeleteEvent(final Object source) {
+    private final Long clientId;
+
+    public SettingsDeleteEvent(final Object source, final Long clientId) {
         super(source);
+
+        this.clientId = clientId;
     }
 }

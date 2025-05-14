@@ -18,10 +18,9 @@
 
 package com.onlyoffice.docspacepipedrive.security.provider;
 
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
 import com.onlyoffice.docspacepipedrive.exceptions.WebhookNotFoundException;
-import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.service.WebhookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +32,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -72,7 +74,11 @@ public class WebhookAuthenticationProvider implements AuthenticationProvider {
             );
         }
 
-        return createSuccessAuthentication(webhook.getUser(), authentication);
+        return createSuccessAuthentication(
+                webhook.getUser().getUserId(),
+                webhook.getUser().getClient().getId(),
+                authentication
+        );
     }
 
     @Override
@@ -80,11 +86,20 @@ public class WebhookAuthenticationProvider implements AuthenticationProvider {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    protected Authentication createSuccessAuthentication(final User principal, final Authentication authentication) {
-        UserAuthenticationToken result = new UserAuthenticationToken(principal);
-        result.setDetails(authentication.getDetails());
+    protected Authentication createSuccessAuthentication(final Long userId, final Long clientId,
+                                                         final Authentication authentication) {
+        OAuth2AuthenticationToken result = new OAuth2AuthenticationToken(
+                new OAuth2PipedriveUser(
+                        Map.of(
+                                "id", userId,
+                                "company_id", clientId
+                        )
+                ),
+                List.of(),
+                "pipedrive"
+        );
 
-        log.debug("Authenticated user");
+        result.setDetails(authentication.getDetails());
         return result;
     }
 }

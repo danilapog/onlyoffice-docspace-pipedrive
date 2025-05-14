@@ -21,12 +21,13 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollower;
-import com.onlyoffice.docspacepipedrive.entity.Client;
+import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.events.deal.AddRoomToPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
+import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
@@ -55,6 +56,7 @@ import java.util.Objects;
 @Slf4j
 public class RoomController {
     private final RoomService roomService;
+    private final DocspaceAccountService docspaceAccountService;
     private final RoomMapper roomMapper;
     private final PipedriveClient pipedriveClient;
     private final DocspaceActionManager docspaceActionManager;
@@ -62,14 +64,14 @@ public class RoomController {
 
     @GetMapping("/{dealId}")
     public ResponseEntity<RoomResponse> findByDealId(
-            @AuthenticationPrincipal(expression = "client") Client currentClient,
+            @AuthenticationPrincipal OAuth2PipedriveUser currentUser,
             @PathVariable Long dealId
     ) {
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
 
         Room room;
         try {
-            room = roomService.findByClientIdAndDealId(currentClient.getId(), dealId);
+            room = roomService.findByClientIdAndDealId(currentUser.getClientId(), dealId);
         } catch (RoomNotFoundException e) {
             room = Room.builder()
                     .dealId(dealId)
@@ -83,14 +85,14 @@ public class RoomController {
                         MessageFormat.format(
                                 "{0} - Pipedrive ({1})",
                                 pipedriveDeal.getTitle(),
-                                currentClient.getCompanyName()
+                                currentUser.getAttribute("company_name")
                         )
                 )
         );
     }
 
     @PostMapping("/{dealId}")
-    public ResponseEntity<RoomResponse> save(@AuthenticationPrincipal(expression = "client") Client currentClient,
+    public ResponseEntity<RoomResponse> save(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
                                                @PathVariable Long dealId,
                                                @RequestBody RoomRequest request) {
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
@@ -102,14 +104,18 @@ public class RoomController {
 
         Room createdRoom;
         try {
-            createdRoom = roomService.update(currentClient.getId(), room);
+            createdRoom = roomService.update(currentUser.getClientId(), room);
         } catch (RoomNotFoundException e) {
-            createdRoom = roomService.create(currentClient.getId(), room);
+            createdRoom = roomService.create(currentUser.getClientId(), room);
         }
 
         try {
             eventPublisher.publishEvent(
-                    new AddRoomToPipedriveDealEvent(this, pipedriveDeal, createdRoom.getRoomId())
+                    new AddRoomToPipedriveDealEvent(this,
+                            currentUser.getClientId(),
+                            pipedriveDeal,
+                            createdRoom.getRoomId()
+                    )
             );
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
@@ -119,10 +125,9 @@ public class RoomController {
     }
 
     @PostMapping("/{dealId}/request-access")
-    public ResponseEntity<Void> requestAccess(@AuthenticationPrincipal User currentUser,
-                                     @AuthenticationPrincipal(expression = "client") Client currentClient,
-                                     @PathVariable Long dealId) {
-        Room room = roomService.findByClientIdAndDealId(currentClient.getId(), dealId);
+    public ResponseEntity<Void> requestAccess(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
+                                              @PathVariable Long dealId) {
+        Room room = roomService.findByClientIdAndDealId(currentUser.getClientId(), dealId);
 
         List<PipedriveDealFollower> dealFollowers = pipedriveClient.getDealFollowers(dealId);
 
@@ -132,9 +137,14 @@ public class RoomController {
                 .isPresent();
 
         if (currentUserIsDealFollower) {
+            DocspaceAccount docspaceAccount = docspaceAccountService.findByClientIdAndUserId(
+                    currentUser.getClientId(),
+                    currentUser.getUserId()
+            );
+
             docspaceActionManager.inviteListDocspaceAccountsToRoom(
                     room.getRoomId(),
-                    Collections.singletonList(currentUser.getDocspaceAccount())
+                    Collections.singletonList(docspaceAccount)
             );
         } else {
             docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());

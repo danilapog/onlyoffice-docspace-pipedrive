@@ -25,10 +25,15 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 public class AddVisibleEveryoneForPipedriveDealEvent extends ApplicationEvent {
+    private final Long clientId;
     private final PipedriveDeal pipedriveDeal;
 
-    public AddVisibleEveryoneForPipedriveDealEvent(final Object source, final PipedriveDeal pipedriveDeal) {
+    public AddVisibleEveryoneForPipedriveDealEvent(final Object source,
+                                                   final Long clientId,
+                                                   final PipedriveDeal pipedriveDeal
+    ) {
         super(source);
+        this.clientId = clientId;
         this.pipedriveDeal = pipedriveDeal;
     }
 }

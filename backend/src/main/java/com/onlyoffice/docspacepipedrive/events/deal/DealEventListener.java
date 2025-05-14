@@ -23,7 +23,6 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollower;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollowerEvent;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.entity.User;
@@ -32,7 +31,6 @@ import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundExceptio
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIsNotPresentInResponse;
 import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -59,8 +57,6 @@ public class DealEventListener {
         PipedriveDeal pipedriveDeal = event.getPipedriveDeal();
         Long roomId = event.getRoomId();
 
-        Client currentClient = SecurityUtils.getCurrentClient();
-
         PipedriveUserSettings pipedriveUserSettings = pipedriveClient.getUserSettings();
 
         int visibleToEveryone = PipedriveDeal.VisibleTo.EVERYONE.integer();
@@ -76,14 +72,14 @@ public class DealEventListener {
                 log.warn(e.getMessage());
                 log.warn(MessageFormat.format(
                         "Try re-init Shared Group for Client ID({0})",
-                        currentClient.getId().toString()
+                        event.getClientId().toString()
                 ));
 
                 docspaceActionManager.initSharedGroup();
 
                 log.warn(MessageFormat.format(
                         "Shared Group successfully initialized for Client ID({0})",
-                        currentClient.getId().toString()
+                        event.getClientId().toString()
                 ));
 
                 docspaceActionManager.inviteSharedGroupToRoom(roomId);
@@ -98,7 +94,7 @@ public class DealEventListener {
             try {
                 users.add(
                         userService.findByClientIdAndUserId(
-                                currentClient.getId(),
+                                event.getClientId(),
                                 dealFollower.getUserId()
                         )
                 );
@@ -118,11 +114,10 @@ public class DealEventListener {
     @EventListener
     public void listen(final AddVisibleEveryoneForPipedriveDealEvent event) {
         PipedriveDeal pipedriveDeal = event.getPipedriveDeal();
-        Client currentClient = SecurityUtils.getCurrentClient();
 
         Room room;
         try {
-            room = roomService.findByClientIdAndDealId(currentClient.getId(), pipedriveDeal.getId());
+            room = roomService.findByClientIdAndDealId(event.getClientId(), pipedriveDeal.getId());
         } catch (RoomNotFoundException e) {
             // Ignore it if there is no DocSpace room for the Pipedrive deal
             return;
@@ -134,14 +129,14 @@ public class DealEventListener {
             log.warn(e.getMessage());
             log.warn(MessageFormat.format(
                     "Try re-init Shared Group for Client ID({0})",
-                    currentClient.getId().toString()
+                    event.getClientId().toString()
             ));
 
             docspaceActionManager.initSharedGroup();
 
             log.warn(MessageFormat.format(
                     "Shared Group successfully initialized for Client ID({0})",
-                    currentClient.getId().toString()
+                    event.getClientId().toString()
             ));
 
             docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
@@ -151,27 +146,25 @@ public class DealEventListener {
     @EventListener
     public void listen(final RemoveVisibleEveryoneForPipedriveDealEvent event) {
         PipedriveDeal pipedriveDeal = event.getPipedriveDeal();
-        Client currentClient = SecurityUtils.getCurrentClient();
 
         Room room;
         try {
-            room = roomService.findByClientIdAndDealId(currentClient.getId(), pipedriveDeal.getId());
+            room = roomService.findByClientIdAndDealId(event.getClientId(), pipedriveDeal.getId());
         } catch (RoomNotFoundException e) {
             // Ignore it if there is no DocSpace room for the Pipedrive deal
             return;
         }
 
-        docspaceActionManager.removeSharedGroupFromRoom(room.getRoomId());
+        docspaceActionManager.removeSharedGroupFromRoom(event.getClientId(), room.getRoomId());
     }
 
     @EventListener
     public void listen(final AddFollowersToPipedriveDealEvent event) {
         PipedriveDeal pipedriveDeal = event.getPipedriveDeal();
-        Client currentClient = SecurityUtils.getCurrentClient();
 
         Room room;
         try {
-            room = roomService.findByClientIdAndDealId(currentClient.getId(), pipedriveDeal.getId());
+            room = roomService.findByClientIdAndDealId(event.getClientId(), pipedriveDeal.getId());
         } catch (RoomNotFoundException e) {
             // Ignore it if there is no DocSpace room for the Pipedrive deal
             return;
@@ -190,7 +183,7 @@ public class DealEventListener {
         List<User> addedFollowers = new ArrayList<>();
         for (Long userId : userIdsAddedFollowers) {
             try {
-                addedFollowers.add(userService.findByClientIdAndUserId(currentClient.getId(), userId));
+                addedFollowers.add(userService.findByClientIdAndUserId(event.getClientId(), userId));
             } catch (UserNotFoundException e) {
                 // Do nothing if the UserNotFoundException
             }
@@ -207,11 +200,10 @@ public class DealEventListener {
     @EventListener
     public void listen(final RemoveFollowersFromPipedriveDealEvent event) {
         PipedriveDeal pipedriveDeal = event.getPipedriveDeal();
-        Client currentClient = SecurityUtils.getCurrentClient();
 
         Room room;
         try {
-            room = roomService.findByClientIdAndDealId(currentClient.getId(), pipedriveDeal.getId());
+            room = roomService.findByClientIdAndDealId(event.getClientId(), pipedriveDeal.getId());
         } catch (RoomNotFoundException e) {
             // Ignore it if there is no DocSpace room for the Pipedrive deal
             return;
@@ -230,7 +222,7 @@ public class DealEventListener {
         List<User> removedFollowers = new ArrayList<>();
         for (Long userId : userIdsRemovedFollowers) {
             try {
-                removedFollowers.add(userService.findByClientIdAndUserId(currentClient.getId(), userId));
+                removedFollowers.add(userService.findByClientIdAndUserId(event.getClientId(), userId));
             } catch (UserNotFoundException e) {
                 // Do nothing if UserNotFoundException
             }

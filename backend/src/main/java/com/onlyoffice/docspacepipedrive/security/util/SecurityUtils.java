@@ -18,14 +18,15 @@
 
 package com.onlyoffice.docspacepipedrive.security.util;
 
-import com.onlyoffice.docspacepipedrive.entity.Client;
-import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.security.token.UserAuthenticationToken;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
+
+import java.util.List;
+import java.util.Map;
 
 
 @Component
@@ -33,37 +34,35 @@ public final class SecurityUtils {
     private SecurityUtils() {
     }
 
-    public static Client getCurrentClient() {
-        User currentUser = getCurrentUser();
-
-        if (currentUser != null) {
-            return currentUser.getClient();
-        }
-
-        return null;
-    }
-
-    public static User getCurrentUser() {
+    public static OAuth2PipedriveUser getCurrentUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
 
         if (authentication != null) {
-            if (authentication.getPrincipal() instanceof User) {
-                return (User) authentication.getPrincipal();
+            if (authentication.getPrincipal() instanceof OAuth2PipedriveUser) {
+                return (OAuth2PipedriveUser) authentication.getPrincipal();
             }
         }
 
         return null;
     }
 
-    public static <R> R runAs(final RunAsWork<R> runAsWork, final User user) {
-        Assert.notNull(user, "User must not be null!");
+    public static <R> R runAs(final RunAsWork<R> runAsWork, final Long clientId, final Long userId) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication currentAuthentication = securityContext.getAuthentication();
 
         final R result;
         try {
-            securityContext.setAuthentication(new UserAuthenticationToken(user));
+            securityContext.setAuthentication(new OAuth2AuthenticationToken(
+                    new OAuth2PipedriveUser(
+                            Map.of(
+                                    "id", userId,
+                                    "company_id", clientId
+                            )
+                    ),
+                    List.of(),
+                    "pipedrive"
+            ));
 
             result = runAsWork.doWork();
             return result;

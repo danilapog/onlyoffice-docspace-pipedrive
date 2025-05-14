@@ -26,8 +26,9 @@ import java.util.UUID;
 
 public interface WebhookService {
     boolean existsByClientIdAndName(Long clientId, String name);
+    List<Webhook> findAllByClientId(Long clientId);
+    List<Webhook> findAllByClientIdAndUserId(Long clientId, Long userId);
     Webhook findById(UUID id);
-    List<Webhook> findAllByUserId(Long userId);
-    Webhook save(Webhook webhook);
+    Webhook save(Long clientId, Long userId, Webhook webhook);
     void deleteById(UUID id);
 }

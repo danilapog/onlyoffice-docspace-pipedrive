@@ -18,15 +18,16 @@
 
 package com.onlyoffice.docspacepipedrive.events.user;
 
-import com.onlyoffice.docspacepipedrive.entity.Client;
-import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.entity.Webhook;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.service.WebhookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 
 @Component
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Component;
 public class UserEventListener {
     private final DocspaceActionManager docspaceActionManager;
     private final PipedriveActionManager pipedriveActionManager;
+    private final WebhookService webhookService;
 
     @EventListener
     public void listen(final DocspaceLoginUserEvent event) {
@@ -54,27 +56,9 @@ public class UserEventListener {
 
     @EventListener
     public void listen(final UserOwnerWebhooksIsLostEvent event) {
-        User user = event.getUser();
-        Client client = user.getClient();
+        List<Webhook> webhooks = webhookService.findAllByClientIdAndUserId(event.getClientId(), event.getUserId());
 
-        pipedriveActionManager.deleteWebhooks(user.getWebhooks());
+        pipedriveActionManager.deleteWebhooks(webhooks);
 
-        try {
-            User newWebhookOwner = pipedriveActionManager.findDealAdmin(client.getId());
-
-            if (newWebhookOwner == null) {
-                log.warn("No sales admin found for clientId: {}", client.getId());
-                return;
-            }
-
-            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-                public Void doWork() {
-                    pipedriveActionManager.initWebhooks();
-                    return null;
-                }
-            }, newWebhookOwner);
-        } catch (Exception e) {
-            log.warn("Error reinit Webhooks for client {}: {}", client.getId(), e.getMessage());
-        }
     }
 }

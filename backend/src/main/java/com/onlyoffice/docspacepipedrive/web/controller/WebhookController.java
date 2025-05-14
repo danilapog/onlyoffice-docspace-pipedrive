@@ -22,9 +22,7 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.events.deal.AddFollowersToPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.deal.AddVisibleEveryoneForPipedriveDealEvent;
@@ -36,6 +34,7 @@ import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsValidationException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceSettingsValidator;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
@@ -50,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @RestController
@@ -66,19 +66,19 @@ public class WebhookController {
     private final ApplicationEventPublisher eventPublisher;
 
     @PostMapping("/deal")
-    public void updatedDeal(@AuthenticationPrincipal(expression = "client") Client currentClient,
+    public void updatedDeal(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
                             @RequestBody WebhookRequest<PipedriveDeal> request) {
         PipedriveDeal currentDeal = request.getCurrent();
         PipedriveDeal previousDeal = request.getPrevious();
 
         try {
-            validateClient(currentClient);
+            validateClient(currentUser.getClientId());
         } catch (DocspaceApiKeyNotFoundException | SettingsValidationException e) {
             return;
         }
 
         try {
-            roomService.findByClientIdAndDealId(currentClient.getId(), currentDeal.getId());
+            roomService.findByClientIdAndDealId(currentUser.getClientId(), currentDeal.getId());
         } catch (RoomNotFoundException e) {
             // Ignore it if there is no DocSpace room for the Pipedrive deal
             return;
@@ -95,11 +95,19 @@ public class WebhookController {
             }
 
             if (currentDeal.getVisibleTo().equals(visibleToEveryone)) {
-                eventPublisher.publishEvent(new AddVisibleEveryoneForPipedriveDealEvent(this, currentDeal));
+                eventPublisher.publishEvent(new AddVisibleEveryoneForPipedriveDealEvent(
+                        this,
+                        currentUser.getClientId(),
+                        currentDeal
+                ));
             }
 
             if (previousDeal.getVisibleTo().equals(visibleToEveryone)) {
-                eventPublisher.publishEvent(new RemoveVisibleEveryoneForPipedriveDealEvent(this, currentDeal));
+                eventPublisher.publishEvent(new RemoveVisibleEveryoneForPipedriveDealEvent(
+                        this,
+                        currentUser.getClientId(),
+                        currentDeal
+                ));
             }
         }
 
@@ -107,19 +115,26 @@ public class WebhookController {
         if (!currentDeal.getFollowersCount().equals(previousDeal.getFollowersCount())) {
             // If added follower
             if (currentDeal.getFollowersCount() > previousDeal.getFollowersCount()) {
-                eventPublisher.publishEvent(new AddFollowersToPipedriveDealEvent(this, currentDeal));
+                eventPublisher.publishEvent(new AddFollowersToPipedriveDealEvent(
+                        this,
+                        currentUser.getClientId(),
+                        currentDeal)
+                );
             }
 
             // If removed follower
             if (currentDeal.getFollowersCount() < previousDeal.getFollowersCount()) {
-                eventPublisher.publishEvent(new RemoveFollowersFromPipedriveDealEvent(this, currentDeal));
+                eventPublisher.publishEvent(new RemoveFollowersFromPipedriveDealEvent(
+                        this,
+                        currentUser.getClientId(),
+                        currentDeal
+                ));
             }
         }
     }
 
     @PostMapping("/user")
-    public void updatedUser(@AuthenticationPrincipal User currentUser,
-                            @AuthenticationPrincipal(expression = "client") Client currentClient,
+    public void updatedUser(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
                             @RequestBody WebhookRequest<List<PipedriveUser>> request) {
         List<PipedriveUser> currentUsers = request.getCurrent();
         List<PipedriveUser> previousUsers = request.getPrevious();
@@ -142,21 +157,27 @@ public class WebhookController {
                 .orElse(null) != null;
 
         if (isOwnerWebhookIsNotSalesAdmin) {
-            eventPublisher.publishEvent(new UserOwnerWebhooksIsLostEvent(this, currentUser));
+            eventPublisher.publishEvent(new UserOwnerWebhooksIsLostEvent(
+                    this,
+                    currentUser.getClientId(),
+                    currentUser.getUserId()
+            ));
         }
     }
 
-    private void validateClient(final Client client) {
-        Settings settings = client.getSettings();
+    private void validateClient(final Long clientId) {
+        Settings settings = settingsService.findByClientId(clientId);
         ApiKey apiKey = settings.getApiKey();
+
+        if (Objects.isNull(apiKey)) {
+            throw new DocspaceApiKeyNotFoundException(clientId);
+        }
 
         if (apiKey.isValid()) {
             return;
         }
 
         Settings validSettings = docspaceSettingsValidator.validate(settings);
-        Settings savedSettings = settingsService.put(client.getId(), validSettings);
-
-        client.setSettings(savedSettings);
+        settingsService.put(clientId, validSettings);
     }
 }

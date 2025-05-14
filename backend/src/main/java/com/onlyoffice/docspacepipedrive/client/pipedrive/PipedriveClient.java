@@ -25,9 +25,12 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveResponse;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveWebhook;
+import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -42,6 +45,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Component
@@ -52,6 +56,7 @@ public class PipedriveClient {
     @Value("${pipedrive.base-api-url}")
     private String baseApiUrl;
 
+    private final ClientService clientService;
     private final WebClient pipedriveWebClient;
 
     public PipedriveDeal getDeal(final Long id) {
@@ -91,7 +96,7 @@ public class PipedriveClient {
                     })
                     .block();
 
-            dealFollowers.addAll(response.getData());
+            dealFollowers.addAll(Optional.ofNullable(response.getData()).orElse(List.of()));
 
             moreItemInCollection = response.getAdditionalData().getPagination().getMoreItemsInCollection();
             if (moreItemInCollection) {
@@ -257,10 +262,11 @@ public class PipedriveClient {
     }
 
     private String getBaseUrl() {
-        String clientUrl = SecurityUtils.getCurrentClient().getUrl();
+        OAuth2PipedriveUser currentUser = SecurityUtils.getCurrentUser();
+        Client client = clientService.findById(currentUser.getClientId());
 
-        if (StringUtils.hasText(clientUrl)) {
-            return clientUrl;
+        if (StringUtils.hasText(client.getUrl())) {
+            return client.getUrl();
         }
 
         return baseApiUrl;

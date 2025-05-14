@@ -32,7 +32,9 @@ import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIsNotPresentInResponse;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -53,14 +55,16 @@ import java.util.UUID;
 public class DocspaceActionManager {
     private final DocspaceClient docspaceClient;
     private final SettingsService settingsService;
+    private final ClientService clientService;
     private final UserService userService;
 
     public void initSharedGroup() {
-        Client currentClient = SecurityUtils.getCurrentClient();
-        Settings settings = currentClient.getSettings();
+        OAuth2PipedriveUser currentUser = SecurityUtils.getCurrentUser();
+        Client client = clientService.findById(currentUser.getClientId());
+        Settings settings = settingsService.findByClientId(currentUser.getClientId());
         ApiKey apiKey = settings.getApiKey();
 
-        List<User> users = userService.findAllByClientId(currentClient.getId());
+        List<User> users = userService.findAllByClientId(currentUser.getClientId());
         List<UUID> members = users.stream()
                 .filter(user -> user.getDocspaceAccount() != null)
                 .map(user -> user.getDocspaceAccount().getUuid())
@@ -68,16 +72,15 @@ public class DocspaceActionManager {
 
         if (!settings.existSharedGroupId()) {
             DocspaceGroup docspaceGroup = docspaceClient.createGroup(
-                    MessageFormat.format("Pipedrive Users ({0})", currentClient.getCompanyName()),
+                    MessageFormat.format("Pipedrive Users ({0})", client.getCompanyName()),
                     apiKey.getOwnerId(),
                     members
             );
 
-            Settings savedSetting = settingsService.saveSharedGroup(
-                    currentClient.getId(),
+            settingsService.saveSharedGroup(
+                    currentUser.getClientId(),
                     docspaceGroup.getId()
             );
-            currentClient.setSettings(savedSetting);
         } else {
             try {
                 docspaceClient.updateGroup(
@@ -89,11 +92,10 @@ public class DocspaceActionManager {
                 );
             } catch (WebClientResponseException e) {
                 if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                    Settings savedSetting = settingsService.saveSharedGroup(
-                            currentClient.getId(),
+                    settingsService.saveSharedGroup(
+                            currentUser.getClientId(),
                             null
                     );
-                    currentClient.setSettings(savedSetting);
 
                     initSharedGroup();
                     return;
@@ -105,11 +107,12 @@ public class DocspaceActionManager {
     }
 
     public void inviteDocspaceAccountToSharedGroup(final UUID docspaceAccountId) {
-        Client currentClient = SecurityUtils.getCurrentClient();
+        OAuth2PipedriveUser currentUser = SecurityUtils.getCurrentUser();
+        Settings settings = settingsService.findByClientId(currentUser.getClientId());
 
         try {
             docspaceClient.updateGroup(
-                    currentClient.getSettings().getSharedGroupId(),
+                    settings.getSharedGroupId(),
                     null,
                     null,
                     Collections.singletonList(docspaceAccountId),
@@ -123,11 +126,10 @@ public class DocspaceActionManager {
 
             if (e instanceof WebClientResponseException
                     && ((WebClientResponseException) e).getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                Settings savedSetting = settingsService.saveSharedGroup(
-                        currentClient.getId(),
+                settingsService.saveSharedGroup(
+                        currentUser.getClientId(),
                         null
                 );
-                currentClient.setSettings(savedSetting);
 
                 initSharedGroup();
             }
@@ -135,10 +137,11 @@ public class DocspaceActionManager {
     }
 
     public void removeDocspaceAccountFromSharedGroup(final UUID docspaceAccountId) {
-        Client currentClient = SecurityUtils.getCurrentClient();
+        OAuth2PipedriveUser currentUser = SecurityUtils.getCurrentUser();
+        Settings settings = settingsService.findByClientId(currentUser.getClientId());
 
         docspaceClient.updateGroup(
-                currentClient.getSettings().getSharedGroupId(),
+                settings.getSharedGroupId(),
                 null,
                 null,
                 null,
@@ -147,8 +150,9 @@ public class DocspaceActionManager {
     }
 
     public void inviteSharedGroupToRoom(final Long roomId) {
-        Client currentClient = SecurityUtils.getCurrentClient();
-        UUID sharedGroupId = currentClient.getSettings().getSharedGroupId();
+        OAuth2PipedriveUser currentUser = SecurityUtils.getCurrentUser();
+        Settings settings = settingsService.findByClientId(currentUser.getClientId());
+        UUID sharedGroupId = settings.getSharedGroupId();
 
         DocspaceRoomInvitation docspaceRoomInvitation =
                 new DocspaceRoomInvitation(
@@ -173,9 +177,9 @@ public class DocspaceActionManager {
         }
     }
 
-    public void removeSharedGroupFromRoom(final Long roomId) {
-        Client currentClient = SecurityUtils.getCurrentClient();
-        UUID sharedGroupId = currentClient.getSettings().getSharedGroupId();
+    public void removeSharedGroupFromRoom(final Long clientId, final Long roomId) {
+        Settings settings = settingsService.findByClientId(clientId);
+        UUID sharedGroupId = settings.getSharedGroupId();
 
         DocspaceRoomInvitation docspaceRoomInvitation =
                 new DocspaceRoomInvitation(

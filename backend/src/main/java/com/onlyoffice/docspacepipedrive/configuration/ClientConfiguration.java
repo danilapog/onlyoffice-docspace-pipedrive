@@ -21,10 +21,11 @@ package com.onlyoffice.docspacepipedrive.configuration;
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.filter.DocspaceAuthorizationApiKeyExchangeFilterFunction;
 import com.onlyoffice.docspacepipedrive.client.docspace.impl.DocspaceClientImpl;
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -42,9 +43,12 @@ import java.net.URI;
 
 
 @Configuration
+@AllArgsConstructor
 public class ClientConfiguration {
+    private final SettingsService settingsService;
+
     @Bean
-    DocspaceClient docspaceClient(final SettingsService settingsService) {
+    DocspaceClient docspaceClient() {
         DocspaceAuthorizationApiKeyExchangeFilterFunction docspaceAuthorizationApiKeyExchangeFilterFunction =
                 new DocspaceAuthorizationApiKeyExchangeFilterFunction(settingsService);
 
@@ -71,8 +75,8 @@ public class ClientConfiguration {
 
     private ExchangeFilterFunction docspaceBaseUrlFilter() {
         return ExchangeFilterFunction.ofRequestProcessor(request -> {
-            Client currentClient = SecurityUtils.getCurrentClient();
-            Settings settings = currentClient.getSettings();
+            OAuth2PipedriveUser currentClient = SecurityUtils.getCurrentUser();
+            Settings settings = settingsService.findByClientId(currentClient.getClientId());
 
             UriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(settings.getUrl());
             UriBuilder uriBuilder = uriBuilderFactory.uriString(request.url().toString());

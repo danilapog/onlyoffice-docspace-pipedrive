@@ -19,14 +19,13 @@
 package com.onlyoffice.docspacepipedrive.events.settings;
 
 import com.onlyoffice.docspacepipedrive.entity.Client;
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
+import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
-import com.onlyoffice.docspacepipedrive.service.UserService;
+import com.onlyoffice.docspacepipedrive.service.WebhookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,16 +34,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class SettingsEventListener {
+    private final ClientService clientService;
     private final RoomService roomService;
-    private final UserService userService;
     private final DocspaceAccountService docspaceAccountService;
+    private final WebhookService webhookService;
     private final DocspaceActionManager docspaceActionManager;
     private final PipedriveActionManager pipedriveActionManager;
 
@@ -53,7 +52,7 @@ public class SettingsEventListener {
 
     @EventListener
     public void listen(final SettingsUpdateEvent event) {
-        Client client = SecurityUtils.getCurrentClient();
+        Client client = clientService.findById(event.getClientId());
         client.setSettings(event.getSettings());
 
         docspaceActionManager.addDomainsToCSPSettings(Arrays.asList(client.getUrl(), frontendUrl));
@@ -63,24 +62,10 @@ public class SettingsEventListener {
 
     @EventListener
     public void listen(final SettingsDeleteEvent event) {
-        Client client = SecurityUtils.getCurrentClient();
+        roomService.deleteAllByClientId(event.getClientId());
+        docspaceAccountService.deleteByClientId(event.getClientId());
 
-        roomService.deleteAllByClientId(client.getId());
-
-        List<User> users = userService.findAllByClientId(client.getId());
-
-        List<Long> docspaceAccountIds = users.stream()
-                .filter(user -> user.getDocspaceAccount() != null)
-                .map(user -> user.getId())
-                .collect(Collectors.toList());
-
-        docspaceAccountService.deleteAllByIdInBatch(docspaceAccountIds);
-
-        List<Webhook> webhooks = users.stream()
-                .filter(user -> Objects.nonNull(user.getWebhooks()) && !user.getWebhooks().isEmpty())
-                .flatMap(user -> user.getWebhooks().stream())
-                .toList();
-
+        List<Webhook> webhooks = webhookService.findAllByClientId(event.getClientId());
         pipedriveActionManager.deleteWebhooks(webhooks);
     }
 }

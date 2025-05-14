@@ -20,7 +20,6 @@ package com.onlyoffice.docspacepipedrive.client.docspace.impl;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceApiKey;
-import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAuthentication;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceCSPSettings;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceMembers;
@@ -29,9 +28,7 @@ import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoom;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitationRequest;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomType;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -51,27 +48,6 @@ public class DocspaceClientImpl implements DocspaceClient {
     private static final int PAGINATION_COUNT = 100;
 
     private final WebClient webClient;
-
-    @Override
-    public DocspaceAuthentication login(final String userName, final String passwordHash) {
-        User user = SecurityUtils.getCurrentUser();
-
-        Map<String, String> map = new HashMap<>();
-
-        map.put("userName", userName);
-        map.put("passwordHash", passwordHash);
-
-        return WebClient.builder().build().post()
-                .uri(user.getClient().getSettings().getUrl() + "/api/2.0/authentication")
-                .bodyValue(map)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceAuthentication>>() { })
-                .map(DocspaceResponse<DocspaceAuthentication>::getResponse)
-                .onErrorResume(WebClientResponseException.class, e -> {
-                    return Mono.error(new DocspaceWebClientResponseException(e));
-                })
-                .block();
-    }
 
     public DocspaceCSPSettings getCSPSettings() {
         return webClient.get()

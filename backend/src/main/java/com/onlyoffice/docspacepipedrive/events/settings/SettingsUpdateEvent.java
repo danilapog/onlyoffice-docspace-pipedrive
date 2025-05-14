@@ -24,11 +24,16 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 public class SettingsUpdateEvent extends ApplicationEvent {
+    private final Long clientId;
     private final Settings settings;
 
-    public SettingsUpdateEvent(final Object source, final Settings settings) {
+    public SettingsUpdateEvent(final Object source,
+                               final Long clientId,
+                               final Settings settings
+    ) {
         super(source);
 
+        this.clientId = clientId;
         this.settings = settings;
     }
 }

@@ -19,12 +19,10 @@
 package com.onlyoffice.docspacepipedrive.security.oauth;
 
 import com.onlyoffice.docspacepipedrive.entity.Client;
-import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.user.AccessToken;
 import com.onlyoffice.docspacepipedrive.entity.user.RefreshToken;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
-import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,26 +33,27 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedClientRepository {
     private final ClientService clientService;
     private final UserService userService;
-    private final SettingsService settingsService;
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Override
     public <T extends OAuth2AuthorizedClient> T loadAuthorizedClient(final String clientRegistrationId,
                                                                      final Authentication authentication,
                                                                      final HttpServletRequest request) {
-        User user = (User) authentication.getPrincipal();
+        User user = userService.findByClientIdAndUserId(
+                        Long.parseLong(authentication.getName().split(":")[0]),
+                        Long.parseLong(authentication.getName().split(":")[1])
+                );
 
         OAuth2AccessToken accessToken = new OAuth2AccessToken(
                 OAuth2AccessToken.TokenType.BEARER,
@@ -92,49 +91,52 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
                 .issuedAt(authorizedClient.getRefreshToken().getIssuedAt())
                 .build();
 
-        String[] partsRefreshToken = refreshToken.getValue().split(":");
+        String userName = authentication.getName();
 
-        if (authentication.getPrincipal() instanceof OAuth2User) {
-            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-            Map<String, Object> userData = oAuth2User.getAttribute("data");
-            String companyName = (String) userData.get("company_name");
-            String domain = (String) userData.get("company_domain");
+        if (authentication.getPrincipal() instanceof OAuth2PipedriveUser) {
+            OAuth2PipedriveUser oAuth2PipedriveUser = (OAuth2PipedriveUser) authentication.getPrincipal();
+            String companyName = oAuth2PipedriveUser.getAttribute("company_name");
+            String domain = oAuth2PipedriveUser.getAttribute("company_domain");
 
-            UriComponents clientUri = UriComponentsBuilder.newInstance()
-                    .scheme("https")
-                    .host(domain + ".pipedrive.com")
-                    .build();
+            if (Objects.nonNull(companyName) && !companyName.isEmpty()
+                && Objects.nonNull(domain) && !domain.isEmpty()
+            ) {
+                UriComponents clientUri = UriComponentsBuilder.newInstance()
+                        .scheme("https")
+                        .host(domain + ".pipedrive.com")
+                        .build();
 
-            Client client = Client.builder()
-                    .id(Long.parseLong(partsRefreshToken[0]))
-                    .url(clientUri.toUriString())
-                    .companyName(companyName)
-                    .build();
+                Client client = Client.builder()
+                        .id(Long.parseLong(userName.split(":")[0]))
+                        .url(clientUri.toUriString())
+                        .companyName(companyName)
+                        .build();
 
-            if (!clientService.existById(client.getId())) {
-                clientService.create(client);
-                settingsService.put(client.getId(),
-                        Settings.builder().build()
-                );
-            } else {
-                clientService.update(client);
+                if (!clientService.existById(client.getId())) {
+                    clientService.create(client);
+                } else {
+                    clientService.update(client);
+                }
             }
         }
 
         User user = User.builder()
-                .userId(Long.parseLong(partsRefreshToken[1]))
+                .userId(Long.parseLong(userName.split(":")[1]))
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
 
-        userService.put(Long.parseLong(partsRefreshToken[0]), user);
+        userService.put(Long.parseLong(userName.split(":")[0]), user);
     }
 
     @Override
     public void removeAuthorizedClient(final String clientRegistrationId, final Authentication authentication,
                                        final HttpServletRequest request, final HttpServletResponse response) {
-        User user = (User) authentication.getPrincipal();
+        String userName = authentication.getName();
 
-        userService.deleteByUserIdAndClientId(user.getUserId(), user.getClient().getId());
+        userService.deleteByUserIdAndClientId(
+                Long.parseLong(userName.split(":")[1]),
+                Long.parseLong(userName.split(":")[0])
+        );
     }
 }

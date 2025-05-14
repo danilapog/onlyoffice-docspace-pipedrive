@@ -22,6 +22,7 @@ import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.UserNotFoundException;
 import com.onlyoffice.docspacepipedrive.repository.UserRepository;
+import com.onlyoffice.docspacepipedrive.security.RedisAuthenticationRepository;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final ClientService clientService;
     private final UserRepository userRepository;
+    private final RedisAuthenticationRepository redisAuthenticationRepository;
 
     @Override
     public User findById(final Long id) {
@@ -79,5 +81,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteByUserIdAndClientId(final Long userId, final Long clientId) {
         userRepository.delete(findByClientIdAndUserId(clientId, userId));
+        redisAuthenticationRepository.deleteAuthentication(clientId + ":" + userId);
     }
 }

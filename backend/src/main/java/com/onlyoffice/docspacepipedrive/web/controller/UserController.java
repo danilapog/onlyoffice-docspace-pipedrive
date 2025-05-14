@@ -18,20 +18,18 @@
 
 package com.onlyoffice.docspacepipedrive.web.controller;
 
-import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.events.user.DocspaceLoginUserEvent;
 import com.onlyoffice.docspacepipedrive.events.user.DocspaceLogoutUserEvent;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountRequest;
-import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
-import com.onlyoffice.docspacepipedrive.web.mapper.UserMapper;
+import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +38,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -48,22 +48,37 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     private final DocspaceAccountService docspaceAccountService;
-    private final UserMapper userMapper;
-    private final PipedriveClient pipedriveClient;
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
-    public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal User currentUser) {
-        PipedriveUser pipedriveUser = pipedriveClient.getUser();
+    public ResponseEntity<Map<String, Object>> getUser(@AuthenticationPrincipal OAuth2PipedriveUser currentUser) {
+        DocspaceAccount docspaceAccount = docspaceAccountService.findByClientIdAndUserId(
+                currentUser.getClientId(),
+                currentUser.getUserId()
+        );
+
+        Map<String, Object> userResponse = currentUser.getAttributes();
+        userResponse.put("isAdmin", currentUser.getAuthorities().contains(
+                new SimpleGrantedAuthority("DEAL_ADMIN")
+        ));
+        if (Objects.nonNull(docspaceAccount)) {
+            userResponse.put("docspaceAccount", new DocspaceAccountResponse(
+                    docspaceAccount.getEmail(),
+                    docspaceAccount.getPasswordHash()
+            ));
+        } else {
+            userResponse.put("docspaceAccount", null);
+        }
+
 
         return ResponseEntity.ok(
-                userMapper.userToUserResponse(pipedriveUser, currentUser.getDocspaceAccount())
+                userResponse
         );
     }
 
     @PutMapping(path = "/docspace-account")
     @Transactional
-    public ResponseEntity<Void> putDocspaceAccount(@AuthenticationPrincipal User currentUser,
+    public ResponseEntity<Void> putDocspaceAccount(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
                                                    @RequestBody DocspaceAccountRequest request) {
         DocspaceAccount docspaceAccount = DocspaceAccount.builder()
                 .uuid(UUID.fromString(request.getId()))
@@ -71,8 +86,11 @@ public class UserController {
                 .passwordHash(request.getPasswordHash())
                 .build();
 
-        DocspaceAccount savedDocspaceAccount = docspaceAccountService.save(currentUser.getId(), docspaceAccount);
-        currentUser.setDocspaceAccount(savedDocspaceAccount);
+        DocspaceAccount savedDocspaceAccount = docspaceAccountService.save(
+                currentUser.getClientId(),
+                currentUser.getUserId(),
+                docspaceAccount
+        );
 
         eventPublisher.publishEvent(new DocspaceLoginUserEvent(this, savedDocspaceAccount));
 
@@ -80,10 +98,19 @@ public class UserController {
     }
 
     @DeleteMapping("/docspace-account")
-    public ResponseEntity<Void> deleteDocspaceAccount(@AuthenticationPrincipal User currentUser) {
-        docspaceAccountService.deleteById(currentUser.getId());
+    public ResponseEntity<Void> deleteDocspaceAccount(@AuthenticationPrincipal OAuth2PipedriveUser currentUser) {
+        DocspaceAccount docspaceAccount = docspaceAccountService.findByClientIdAndUserId(
+                currentUser.getClientId(),
+                currentUser.getUserId()
+        );
 
-        eventPublisher.publishEvent(new DocspaceLogoutUserEvent(this, currentUser.getDocspaceAccount()));
+        if (Objects.nonNull(docspaceAccount)) {
+            docspaceAccountService.deleteByClientIdAndUserId(currentUser.getClientId(), currentUser.getUserId());
+
+            eventPublisher.publishEvent(new DocspaceLogoutUserEvent(
+                    this, docspaceAccount
+            ));
+        }
 
         return ResponseEntity.noContent().build();
     }

@@ -19,11 +19,10 @@
 package com.onlyoffice.docspacepipedrive.manager;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveWebhook;
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.security.util.RandomPasswordGenerator;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.UserService;
@@ -49,12 +48,6 @@ public class PipedriveActionManager {
     @Value("${app.base-url}")
     private String baseUrl;
 
-    public boolean isWebhooksInstalled() {
-        Client currentClient = SecurityUtils.getCurrentClient();
-
-        return isWebhooksInstalled(currentClient.getId());
-    }
-
     public boolean isWebhooksInstalled(final Long clientId) {
         return webhookService.existsByClientIdAndName(
                 clientId,
@@ -79,20 +72,18 @@ public class PipedriveActionManager {
     }
 
     private void initWebhook(final String eventObject, final String eventAction) {
-        User user = SecurityUtils.getCurrentUser();
-        Client client = SecurityUtils.getCurrentClient();
+        OAuth2PipedriveUser currentUser = SecurityUtils.getCurrentUser();
 
-        if (webhookService.existsByClientIdAndName(client.getId(), eventObject + "." + eventAction)) {
+        if (webhookService.existsByClientIdAndName(currentUser.getClientId(), eventObject + "." + eventAction)) {
             return;
         }
 
         Webhook webhook = Webhook.builder()
                 .name(eventObject + "." + eventAction)
-                .user(user)
                 .password(RandomPasswordGenerator.generatePassword(WEBHOOK_PASSWORD_LENGTH))
                 .build();
 
-        Webhook savedWebhook = webhookService.save(webhook);
+        Webhook savedWebhook = webhookService.save(currentUser.getClientId(), currentUser.getUserId(), webhook);
 
         PipedriveWebhook pipedriveWebhook = PipedriveWebhook.builder()
                 .subscriptionUrl(baseUrl + "/api/v1/webhook/" + eventObject)
@@ -106,37 +97,23 @@ public class PipedriveActionManager {
         pipedriveWebhook = pipedriveClient.createWebhook(pipedriveWebhook);
 
         savedWebhook.setWebhookId(pipedriveWebhook.getId());
-        webhookService.save(savedWebhook);
+        webhookService.save(currentUser.getClientId(), currentUser.getUserId(), savedWebhook);
     }
 
     private void deleteWebhook(final Webhook webhook) {
+        User webhookOwner = webhook.getUser();
+
         try {
             SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
                 public Void doWork() {
                     pipedriveClient.deleteWebhook(webhook.getWebhookId());
                     return null;
                 }
-            }, webhook.getUser());
+            }, webhookOwner.getClient().getId(), webhookOwner.getUserId());
         } catch (Exception e) {
             log.warn("Error deleting webhook in Pipedrive (WebhookID: {})", webhook.getWebhookId(), e);
         } finally {
             webhookService.deleteById(webhook.getId());
         }
-    }
-
-    public User findDealAdmin(final Long clientId) {
-        List<PipedriveUser> pipedriveUsers = pipedriveClient.getUsers();
-        List<User> users = userService.findAllByClientId(clientId);
-
-        List<Long> salesAdminIds = pipedriveUsers.stream()
-                .filter(PipedriveUser::isSalesAdmin)
-                .filter(PipedriveUser::getActiveFlag)
-                .map(PipedriveUser::getId)
-                .toList();
-
-        return users.stream()
-                .filter(user -> salesAdminIds.contains(user.getUserId()))
-                .findFirst()
-                .orElse(null);
     }
 }

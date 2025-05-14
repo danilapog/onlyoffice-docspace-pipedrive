@@ -22,7 +22,6 @@ import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccountAlreadyExistsException;
 import com.onlyoffice.docspacepipedrive.repository.DocspaceAccountRepository;
-import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DocspaceAccountServiceImpl implements DocspaceAccountService {
-    private final ClientService clientService;
     private final UserService userService;
     private final DocspaceAccountRepository docspaceAccountRepository;
 
@@ -47,8 +45,14 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     }
 
     @Override
-    public DocspaceAccount save(final Long id, final DocspaceAccount docspaceAccount) {
-        User user = userService.findById(id);
+    public DocspaceAccount findByClientIdAndUserId(final Long clientId, final Long userId) {
+        return docspaceAccountRepository.findByUser_Client_IdAndUser_UserId(clientId, userId)
+                .orElse(null);
+    }
+
+    @Override
+    public DocspaceAccount save(final Long clientId, final Long userId, final DocspaceAccount docspaceAccount) {
+        User user = userService.findByClientIdAndUserId(clientId, userId);
 
         docspaceAccount.setUser(user);
         user.setDocspaceAccount(docspaceAccount);
@@ -61,9 +65,14 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     }
 
     @Override
+    public void deleteByClientId(final Long clientId) {
+        docspaceAccountRepository.deleteByUser_Client_Id(clientId);
+    }
+
+    @Override
     @Transactional
-    public void deleteById(final Long id) {
-        docspaceAccountRepository.deleteById(id);
+    public void deleteByClientIdAndUserId(final Long clientId, final Long userId) {
+        docspaceAccountRepository.deleteByUser_Client_IdAndUser_UserId(clientId, userId);
     }
 
     @Override

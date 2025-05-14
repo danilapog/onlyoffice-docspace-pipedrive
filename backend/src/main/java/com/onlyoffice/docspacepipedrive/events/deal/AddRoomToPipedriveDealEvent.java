@@ -25,11 +25,17 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 public class AddRoomToPipedriveDealEvent extends ApplicationEvent {
+    private final Long clientId;
     private final PipedriveDeal pipedriveDeal;
     private final Long roomId;
 
-    public AddRoomToPipedriveDealEvent(final Object source, final PipedriveDeal pipedriveDeal, final Long roomId) {
+    public AddRoomToPipedriveDealEvent(final Object source,
+                                       final Long clientId,
+                                       final PipedriveDeal pipedriveDeal,
+                                       final Long roomId
+    ) {
         super(source);
+        this.clientId = clientId;
         this.pipedriveDeal = pipedriveDeal;
         this.roomId = roomId;
     }

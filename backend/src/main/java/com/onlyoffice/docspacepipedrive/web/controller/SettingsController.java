@@ -18,20 +18,16 @@
 
 package com.onlyoffice.docspacepipedrive.web.controller;
 
-import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.events.settings.SettingsDeleteEvent;
 import com.onlyoffice.docspacepipedrive.events.settings.SettingsUpdateEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
-import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceSettingsValidator;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
@@ -39,8 +35,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,16 +55,15 @@ public class SettingsController {
     private static final int API_KEY_SUFFIX_LENGTH = 4;
 
     private final SettingsService settingsService;
-    private final PipedriveClient pipedriveClient;
     private final PipedriveActionManager pipedriveActionManager;
     private final DocspaceSettingsValidator docspaceSettingsValidator;
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping
-    public ResponseEntity<SettingsResponse> get(@AuthenticationPrincipal(expression = "client") Client currentClient) {
+    public ResponseEntity<SettingsResponse> get(@AuthenticationPrincipal OAuth2PipedriveUser currentUser) {
         Settings settings;
         try {
-            settings = settingsService.findByClientId(currentClient.getId());
+            settings = settingsService.findByClientId(currentUser.getClientId());
         } catch (SettingsNotFoundException e) {
             settings = new Settings();
         }
@@ -89,21 +84,15 @@ public class SettingsController {
             settingsResponse.setIsApiKeyValid(false);
         }
 
-        settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled());
+        settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled(currentUser.getClientId()));
 
         return ResponseEntity.ok(settingsResponse);
     }
 
     @PutMapping
-    public ResponseEntity<SettingsResponse> save(@AuthenticationPrincipal User currentUser,
-                                                 @AuthenticationPrincipal(expression = "client") Client currentClient,
+    @PreAuthorize("hasAuthority('DEAL_ADMIN')")
+    public ResponseEntity<SettingsResponse> save(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
                                                  @RequestBody SettingsRequest request) {
-        PipedriveUser pipedriveUser = pipedriveClient.getUser();
-
-        if (!pipedriveUser.isSalesAdmin()) {
-            throw new PipedriveAccessDeniedException(currentUser.getUserId());
-        }
-
         ApiKey apiKey = ApiKey.builder()
                 .value(request.getApiKey())
                 .valid(true)
@@ -116,12 +105,9 @@ public class SettingsController {
                         .build()
         );
 
-        Settings savedSettings = settingsService.put(
-                currentClient.getId(),
-                settings
-        );
+        Settings savedSettings = settingsService.put(currentUser.getClientId(), settings);
 
-        eventPublisher.publishEvent(new SettingsUpdateEvent(this, savedSettings));
+        eventPublisher.publishEvent(new SettingsUpdateEvent(this, currentUser.getClientId(), savedSettings));
 
         SettingsResponse settingsResponse = new SettingsResponse();
 
@@ -129,7 +115,9 @@ public class SettingsController {
             settingsResponse.setUrl(savedSettings.getUrl());
             settingsResponse.setApiKey(formatApiKey(savedSettings.getApiKey().getValue()));
             settingsResponse.setIsApiKeyValid(savedSettings.getApiKey().isValid());
-            settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled());
+            settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled(
+                    currentUser.getClientId()
+            ));
         } catch (DocspaceUrlNotFoundException e) {
             settingsResponse.setUrl("");
         }
@@ -138,31 +126,23 @@ public class SettingsController {
     }
 
     @DeleteMapping
-    @Transactional
-    public ResponseEntity<Void> delete(@AuthenticationPrincipal User currentUser,
-                                       @AuthenticationPrincipal(expression = "client") Client currentClient) {
-        PipedriveUser pipedriveUser = pipedriveClient.getUser();
+    @PreAuthorize("hasAuthority('DEAL_ADMIN')")
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal OAuth2PipedriveUser currentUser) {
+        settingsService.clear(currentUser.getClientId());
 
-        if (!pipedriveUser.isSalesAdmin()) {
-            throw new PipedriveAccessDeniedException(currentUser.getUserId());
-        }
-
-        settingsService.clear(currentClient.getId());
-
-        eventPublisher.publishEvent(new SettingsDeleteEvent(this));
+        eventPublisher.publishEvent(new SettingsDeleteEvent(this, currentUser.getClientId()));
 
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("validate-api-key")
-    public ResponseEntity<SettingsResponse> validateApiKey(
-            @AuthenticationPrincipal(expression = "client") Client currentClient) {
-        Settings currentSettings = currentClient.getSettings();
+    public ResponseEntity<SettingsResponse> validateApiKey(@AuthenticationPrincipal OAuth2PipedriveUser currentUser) {
+        Settings currentSettings = settingsService.findByClientId(currentUser.getClientId());
 
         Settings settings = docspaceSettingsValidator.validate(currentSettings);
 
         Settings savedSettings = settingsService.put(
-                currentClient.getId(),
+                currentUser.getClientId(),
                 settings
         );
 
@@ -170,7 +150,7 @@ public class SettingsController {
         settingsResponse.setUrl(savedSettings.getUrl());
         settingsResponse.setApiKey(formatApiKey(savedSettings.getApiKey().getValue()));
         settingsResponse.setIsApiKeyValid(settings.getApiKey().isValid());
-        settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled());
+        settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled(currentUser.getClientId()));
 
         return ResponseEntity.ok(settingsResponse);
     }

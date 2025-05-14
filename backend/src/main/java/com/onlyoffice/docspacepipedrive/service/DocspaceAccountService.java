@@ -25,7 +25,9 @@ import java.util.List;
 
 public interface DocspaceAccountService {
     DocspaceAccount findById(Long id);
-    DocspaceAccount save(Long id, DocspaceAccount docspaceAccount);
-    void deleteById(Long id);
+    DocspaceAccount findByClientIdAndUserId(Long clientId, Long userId);
+    DocspaceAccount save(Long clientId, Long userId, DocspaceAccount docspaceAccount);
+    void deleteByClientId(Long clientId);
+    void deleteByClientIdAndUserId(Long clientId, Long userId);
     void deleteAllByIdInBatch(List<Long> ids);
 }
