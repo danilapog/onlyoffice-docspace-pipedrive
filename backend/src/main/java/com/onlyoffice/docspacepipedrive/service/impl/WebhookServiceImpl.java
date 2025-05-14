@@ -46,14 +46,14 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
-    public Webhook findById(final UUID id) {
-        return webhookRepository.findById(id)
-                .orElseThrow(() -> new WebhookNotFoundException(id));
+    public List<Webhook> findAllByClientIdAndUserId(final Long clientId, final Long userId) {
+        return webhookRepository.findAllByUser_Client_IdAndUser_UserId(clientId, userId);
     }
 
     @Override
-    public List<Webhook> findAllByUserId(final Long userId) {
-        return webhookRepository.findAllByUserId(userId);
+    public Webhook findById(final UUID id) {
+        return webhookRepository.findById(id)
+                .orElseThrow(() -> new WebhookNotFoundException(id));
     }
 
     @Override

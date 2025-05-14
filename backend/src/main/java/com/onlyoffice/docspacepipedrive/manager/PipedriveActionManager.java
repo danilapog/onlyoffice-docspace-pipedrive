@@ -19,7 +19,6 @@
 package com.onlyoffice.docspacepipedrive.manager;
 
 import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
-import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveWebhook;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.Webhook;
@@ -116,21 +115,5 @@ public class PipedriveActionManager {
         } finally {
             webhookService.deleteById(webhook.getId());
         }
-    }
-
-    public User findDealAdmin(final Long clientId) {
-        List<PipedriveUser> pipedriveUsers = pipedriveClient.getUsers();
-        List<User> users = userService.findAllByClientId(clientId);
-
-        List<Long> salesAdminIds = pipedriveUsers.stream()
-                .filter(PipedriveUser::isSalesAdmin)
-                .filter(PipedriveUser::getActiveFlag)
-                .map(PipedriveUser::getId)
-                .toList();
-
-        return users.stream()
-                .filter(user -> salesAdminIds.contains(user.getUserId()))
-                .findFirst()
-                .orElse(null);
     }
 }

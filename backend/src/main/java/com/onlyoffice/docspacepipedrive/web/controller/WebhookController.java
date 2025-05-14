@@ -22,9 +22,7 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.PipedriveClient;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDeal;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUserSettings;
-import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
-import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.events.deal.AddFollowersToPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.events.deal.AddVisibleEveryoneForPipedriveDealEvent;
@@ -136,8 +134,7 @@ public class WebhookController {
     }
 
     @PostMapping("/user")
-    public void updatedUser(@AuthenticationPrincipal User currentUser,
-                            @AuthenticationPrincipal(expression = "client") Client currentClient,
+    public void updatedUser(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
                             @RequestBody WebhookRequest<List<PipedriveUser>> request) {
         List<PipedriveUser> currentUsers = request.getCurrent();
         List<PipedriveUser> previousUsers = request.getPrevious();
@@ -160,7 +157,11 @@ public class WebhookController {
                 .orElse(null) != null;
 
         if (isOwnerWebhookIsNotSalesAdmin) {
-            eventPublisher.publishEvent(new UserOwnerWebhooksIsLostEvent(this, currentUser));
+            eventPublisher.publishEvent(new UserOwnerWebhooksIsLostEvent(
+                    this,
+                    currentUser.getClientId(),
+                    currentUser.getUserId()
+            ));
         }
     }
 

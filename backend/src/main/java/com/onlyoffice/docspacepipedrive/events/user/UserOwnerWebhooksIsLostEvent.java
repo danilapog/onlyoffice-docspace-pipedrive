@@ -18,19 +18,18 @@
 
 package com.onlyoffice.docspacepipedrive.events.user;
 
-import com.onlyoffice.docspacepipedrive.entity.User;
+import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
+@Getter
 public class UserOwnerWebhooksIsLostEvent extends ApplicationEvent {
-    private final User user;
+    private final Long clientId;
+    private final Long userId;
 
-    public UserOwnerWebhooksIsLostEvent(final Object source, final User user) {
+    public UserOwnerWebhooksIsLostEvent(final Object source, final Long clientId, final Long userId) {
         super(source);
 
-        this.user = user;
-    }
-
-    public User getUser() {
-        return user;
+        this.clientId = clientId;
+        this.userId = userId;
     }
 }
