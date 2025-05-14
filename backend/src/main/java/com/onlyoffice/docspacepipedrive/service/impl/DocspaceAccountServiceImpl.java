@@ -65,6 +65,11 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     }
 
     @Override
+    public void deleteByClientId(final Long clientId) {
+        docspaceAccountRepository.deleteByUser_Client_Id(clientId);
+    }
+
+    @Override
     @Transactional
     public void deleteByClientIdAndUserId(final Long clientId, final Long userId) {
         docspaceAccountRepository.deleteByUser_Client_IdAndUser_UserId(clientId, userId);

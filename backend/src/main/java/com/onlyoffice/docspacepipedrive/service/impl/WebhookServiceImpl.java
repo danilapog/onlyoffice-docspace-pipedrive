@@ -46,6 +46,11 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
+    public List<Webhook> findAllByClientId(final Long clientId) {
+        return webhookRepository.findAllByUser_Client_Id(clientId);
+    }
+
+    @Override
     public List<Webhook> findAllByClientIdAndUserId(final Long clientId, final Long userId) {
         return webhookRepository.findAllByUser_Client_IdAndUser_UserId(clientId, userId);
     }
