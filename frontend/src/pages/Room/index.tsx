@@ -28,7 +28,7 @@ import {
 
 import { AppContext, AppErrorType } from "@context/AppContext";
 
-import { getRoom, postRoom } from "@services/room";
+import { deleteRoom, getRoom, postRoom } from "@services/room";
 import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 
 import { OnlyofficeSpinner } from "@components/spinner";
@@ -142,46 +142,57 @@ const RoomPage: React.FC = () => {
   };
 
   const onNotFound = () => {
+    deleteRoom(pipedriveToken, Number(parameters.get("selectedIds"))).catch(
+      (e) => {
+        if (e?.response?.status === 401) {
+          setAppError(AppErrorType.TOKEN_ERROR);
+        } else {
+          setAppError(AppErrorType.COMMON_ERROR);
+        }
+      },
+    );
     setRoom({ ...room, id: null } as RoomResponse);
   };
 
   const saveRoom = (roomId: string) => {
-    postRoom(
-      pipedriveToken,
-      Number(parameters.get("selectedIds")),
-      roomId,
-    ).catch((e) => {
-      const data = e?.response?.data as ErrorResponse;
-      if (
-        e?.response?.status === 503 &&
-        data?.cause === "DocspaceUrlNotFoundException"
-      ) {
-        setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
-        return;
-      }
+    postRoom(pipedriveToken, Number(parameters.get("selectedIds")), roomId)
+      .then((response) => {
+        if (response.id && roomId !== response.id) {
+          setRoom({ ...room, id: response.id } as RoomResponse);
+        }
+      })
+      .catch((e) => {
+        const data = e?.response?.data as ErrorResponse;
+        if (
+          e?.response?.status === 503 &&
+          data?.cause === "DocspaceUrlNotFoundException"
+        ) {
+          setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+          return;
+        }
 
-      if (
-        e?.response?.status === 503 &&
-        data?.cause === "DocspaceApiKeyNotFoundException"
-      ) {
-        setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
-        return;
-      }
+        if (
+          e?.response?.status === 503 &&
+          data?.cause === "DocspaceApiKeyNotFoundException"
+        ) {
+          setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+          return;
+        }
 
-      if (
-        e?.response?.status === 503 &&
-        data?.cause === "DocspaceApiKeyInvalidException"
-      ) {
-        setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
-        return;
-      }
+        if (
+          e?.response?.status === 503 &&
+          data?.cause === "DocspaceApiKeyInvalidException"
+        ) {
+          setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
+          return;
+        }
 
-      if (e?.response?.status === 401) {
-        setAppError(AppErrorType.TOKEN_ERROR);
-      } else {
-        setAppError(AppErrorType.COMMON_ERROR);
-      }
-    });
+        if (e?.response?.status === 401) {
+          setAppError(AppErrorType.TOKEN_ERROR);
+        } else {
+          setAppError(AppErrorType.COMMON_ERROR);
+        }
+      });
   };
 
   const handleCreateRoom = (roomType: string) => {

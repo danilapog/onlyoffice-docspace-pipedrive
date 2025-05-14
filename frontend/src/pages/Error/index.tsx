@@ -50,7 +50,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
   useEffect(() => {
     const { parameters } = getCurrentURL();
 
-    if (appError) {
+    if (appError !== undefined) {
       sdk.execute(Command.RESIZE, { height: 400 }).catch(() => {});
     }
 

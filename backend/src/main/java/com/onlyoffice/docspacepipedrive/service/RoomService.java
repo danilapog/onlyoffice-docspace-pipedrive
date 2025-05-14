@@ -25,4 +25,5 @@ public interface RoomService {
     Room create(Long clientId, Room room);
     Room update(Long clientId, Room room);
     void deleteAllByClientId(Long clientId);
+    void deleteByClientIdAndDealId(Long clientId, Long dealId);
 }

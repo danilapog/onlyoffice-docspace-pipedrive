@@ -93,3 +93,21 @@ export const requestAccessToRoom = async (
 
   return response.data;
 };
+
+export const deleteRoom = async (
+  pipedriveToken: PipedriveToken,
+  dealId: number,
+) => {
+  const token = await pipedriveToken.getValue();
+  const client = axios.create({ baseURL: process.env.BACKEND_URL });
+
+  await client<RoomResponse>({
+    method: "DELETE",
+    url: `/api/v1/room/${dealId}`,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    timeout: 10000,
+  });
+};

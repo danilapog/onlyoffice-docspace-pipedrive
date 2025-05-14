@@ -31,12 +31,12 @@ import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
-import com.onlyoffice.docspacepipedrive.web.mapper.RoomMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,7 +57,6 @@ import java.util.Objects;
 public class RoomController {
     private final RoomService roomService;
     private final DocspaceAccountService docspaceAccountService;
-    private final RoomMapper roomMapper;
     private final PipedriveClient pipedriveClient;
     private final DocspaceActionManager docspaceActionManager;
     private final ApplicationEventPublisher eventPublisher;
@@ -97,29 +96,30 @@ public class RoomController {
                                                @RequestBody RoomRequest request) {
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
 
-        Room room = Room.builder()
-                .roomId(request.getRoomId())
-                .dealId(pipedriveDeal.getId())
-                .build();
-
-        Room createdRoom;
+        Room relatedRoom;
         try {
-            createdRoom = roomService.update(currentUser.getClientId(), room);
+            relatedRoom = roomService.findByClientIdAndDealId(currentUser.getClientId(), dealId);
         } catch (RoomNotFoundException e) {
-            createdRoom = roomService.create(currentUser.getClientId(), room);
-        }
+            relatedRoom = roomService.create(
+                    currentUser.getClientId(),
+                    Room.builder()
+                            .roomId(request.getRoomId())
+                            .dealId(pipedriveDeal.getId())
+                            .build()
+            );
 
-        eventPublisher.publishEvent(
-                new AddRoomToPipedriveDealEvent(this,
-                        currentUser.getClientId(),
-                        pipedriveDeal,
-                        createdRoom.getRoomId()
-                )
-        );
+            eventPublisher.publishEvent(
+                    new AddRoomToPipedriveDealEvent(this,
+                            currentUser.getClientId(),
+                            pipedriveDeal,
+                            relatedRoom.getRoomId()
+                    )
+            );
+        }
 
         return ResponseEntity.ok(
                 new RoomResponse(
-                        createdRoom.getRoomId().toString(),
+                        relatedRoom.getRoomId().toString(),
                         null
                 )
         );
@@ -152,5 +152,13 @@ public class RoomController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{dealId}")
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
+                                       @PathVariable Long dealId) {
+        roomService.deleteByClientIdAndDealId(currentUser.getClientId(), dealId);
+
+        return ResponseEntity.noContent().build();
     }
 }
