@@ -50,6 +50,7 @@
   "settings.authorization.saving.ok": "La autorización de ONLYOFFICE DocSpace se ha guardado correctamente",
   "settings.authorization.saving.error": "No se ha podido guardar la autorización de ONLYOFFICE DocSpace",
   "settings.authorization.title": "Iniciar sesión en la cuenta de ONLYOFFICE DocSpace",
+  "settings.authorization.subtitle.address": "",
   "settings.authorization.status.authorized": "Ha iniciado sesión con éxito en su cuenta de ONLYOFFICE DocSpace",
   "settings.authorization.inputs.email": "Correo electrónico",
   "settings.authorization.inputs.password": "Contraseña",

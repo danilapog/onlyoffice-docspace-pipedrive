@@ -52,6 +52,7 @@
   "settings.authorization.saving.ok": "ONLYOFFICE DocSpace認証が正常に保存されました",
   "settings.authorization.saving.error": "ONLYOFFICE DocSpace認証を保存できませんでした",
   "settings.authorization.title": "ONLYOFFICE DocSpaceアカウントにログイン",
+  "settings.authorization.subtitle.address": "",
   "settings.authorization.status.authorized": "ONLYOFFICE DocSpaceアカウントに正常にログインしました",
   "settings.authorization.inputs.email": "Email",
   "settings.authorization.inputs.password": "パスワード",

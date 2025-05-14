@@ -50,6 +50,7 @@
   "settings.authorization.saving.ok": "ONLYOFFICE DocSpace authorization has been successfully saved",
   "settings.authorization.saving.error": "Could not save ONLYOFFICE DocSpace authorization",
   "settings.authorization.title": "Login to ONLYOFFICE DocSpace account",
+  "settings.authorization.subtitle.address": "Your connected DocSpace address is",
   "settings.authorization.status.authorized": "You have successfully logged in to your ONLYOFFICE DocSpace account",
   "settings.authorization.inputs.email": "Email",
   "settings.authorization.inputs.password": "Password",

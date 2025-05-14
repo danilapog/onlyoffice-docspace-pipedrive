@@ -265,6 +265,17 @@ export const AuthorizationSetting: React.FC = () => {
                 )}
               />
             </div>
+            {!user?.docspaceAccount && (
+              <div className="pt-3 pb-2">
+                {t(
+                  "settings.authorization.subtitle.address",
+                  "Your connected DocSpace address is",
+                )}{" "}
+                <span className="font-semibold text-pipedrive-color-light-green-600 dark:text-pipedrive-color-dark-green-600">
+                  {settings.url}
+                </span>
+              </div>
+            )}
           </div>
           {user?.docspaceAccount && (
             <>

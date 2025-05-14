@@ -52,6 +52,7 @@
   "settings.authorization.saving.ok": "Авторизация ONLYOFFICE DocSpace успешно сохранена",
   "settings.authorization.saving.error": "Не удалось сохранить авторизацию ONLYOFFICE DocSpace",
   "settings.authorization.title": "Войти в учетную запись ONLYOFFICE DocSpace",
+  "settings.authorization.subtitle.address": "",
   "settings.authorization.status.authorized": "Вы успешно вошли в свою учетную запись ONLYOFFICE DocSpace",
   "settings.authorization.inputs.email": "Электронная почта",
   "settings.authorization.inputs.password": "Пароль",
