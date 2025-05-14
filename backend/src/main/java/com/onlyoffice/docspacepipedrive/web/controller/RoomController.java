@@ -117,7 +117,12 @@ public class RoomController {
                 )
         );
 
-        return ResponseEntity.ok(roomMapper.roomToRoomResponse(createdRoom));
+        return ResponseEntity.ok(
+                new RoomResponse(
+                        createdRoom.getRoomId().toString(),
+                        null
+                )
+        );
     }
 
     @PostMapping("/{dealId}/request-access")
