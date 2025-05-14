@@ -146,6 +146,10 @@ public abstract class AbstractControllerTest {
         registry.add("spring.data.redis.host", REDIS_CONTAINER::getHost);
         registry.add("spring.data.redis.port", () -> REDIS_CONTAINER.getMappedPort(6379).toString());
 
+        registry.add(
+                "spring.security.oauth2.client.provider.pipedrive.user-info-uri",
+                () -> WIREMOCK_PIPEDRIVE_SERVER.baseUrl() + "/v1/users/me"
+        );
         registry.add("pipedrive.base-api-url", WIREMOCK_PIPEDRIVE_SERVER::baseUrl);
     }
 
@@ -179,7 +183,8 @@ public abstract class AbstractControllerTest {
                 .build());
 
         testDocspaceAccount = docspaceAccountService.save(
-                testUserSalesAdmin.getId(),
+                testUserSalesAdmin.getClient().getId(),
+                testUserSalesAdmin.getUserId(),
                 TestUtils.createDocspaceAccount(1L)
         );
 

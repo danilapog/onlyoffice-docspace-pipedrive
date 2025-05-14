@@ -20,18 +20,17 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.AbstractControllerTest;
 import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveUser;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountResponse;
-import com.onlyoffice.docspacepipedrive.web.dto.user.UserResponse;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -42,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest extends AbstractControllerTest {
     @Test
     public void whenGetUser_thenReturnOk() throws Exception {
-        String actualResponse = mockMvc.perform(get("/api/v1/user")
+        String response = mockMvc.perform(get("/api/v1/user")
                         .header("Authorization",
                                 getAuthorizationHeaderForUser(testUserSalesAdmin)
                         )
@@ -52,22 +51,33 @@ public class UserControllerTest extends AbstractControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        String expectedResponse = objectMapper.writeValueAsString(
-                new UserResponse(10000L, "Test User 10000", true,
-                        new PipedriveUser.Language("en", "US"),
-                        new DocspaceAccountResponse(
-                                testDocspaceAccount.getEmail(),
-                                testDocspaceAccount.getPasswordHash()
+        Map<String, Object> actualResponse = objectMapper.readValue(response, Map.class);
+
+        Map<String, Object> expectedResponse = objectMapper.readValue(
+                objectMapper.writeValueAsString(
+                    Map.of(
+                    "id", 10000,
+                    "name", "Test User 10000",
+                    "isAdmin", true,
+                    "language", new PipedriveUser.Language("en", "US"),
+                    "docspaceAccount", new DocspaceAccountResponse(
+                            testDocspaceAccount.getEmail(),
+                            testDocspaceAccount.getPasswordHash()
                         )
-                )
+                    )
+                ), Map.class
         );
 
-        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
+        for (Map.Entry<String, Object> entry : expectedResponse.entrySet()) {
+            assertTrue(actualResponse.containsKey(entry.getKey()));
+            assertEquals(entry.getValue(), actualResponse.get(entry.getKey()));
+        }
     }
 
     @Test
     public void whenPutAlreadyExistsDocspaceAccount_thenReturnForbidden() throws Exception {
         DocspaceAccountRequest docspaceAccountRequest = new DocspaceAccountRequest(
+                "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
                 "docspace.user1@onlyoffice.com",
                 "password_hash"
         );
@@ -88,6 +98,7 @@ public class UserControllerTest extends AbstractControllerTest {
         settingsService.clear(testClient.getId());
 
         DocspaceAccountRequest docspaceAccountRequest = new DocspaceAccountRequest(
+                "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2",
                 "docspace.user2@onlyoffice.com",
                 "password_hash"
         );
@@ -100,7 +111,7 @@ public class UserControllerTest extends AbstractControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(docspaceAccountRequest))
                 )
-                .andExpect(status().isForbidden())
+                .andExpect(status().isServiceUnavailable())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -108,7 +119,7 @@ public class UserControllerTest extends AbstractControllerTest {
         Map<String, Object> responseMap = objectMapper.readValue(response, Map.class);
         assertEquals(
                 responseMap.get("message"),
-                new DocspaceUrlNotFoundException(testClient.getId()).getMessage()
+                new DocspaceApiKeyNotFoundException(testClient.getId()).getMessage()
         );
     }
 

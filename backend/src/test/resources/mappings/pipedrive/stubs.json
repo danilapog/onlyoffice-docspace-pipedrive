@@ -96,7 +96,7 @@
           "data": {
             "id": 1,
             "title": "Deal 1",
-            "visibleTo": 3,
+            "visible_to": 3,
             "followersCount": 1
           }
         }
@@ -116,7 +116,7 @@
           "data": {
             "id": 1,
             "title": "Deal 2",
-            "visibleTo": 3,
+            "visible_to": 3,
             "followersCount": 1
           }
         }
@@ -148,8 +148,8 @@
           "data": {
             "id": 4,
             "title": "Deal 4",
-            "visibleTo": 3,
-            "followersCount": 1
+            "visible_to": 3,
+            "followers_count": 1
           }
         }
       }
@@ -166,6 +166,47 @@
         "jsonBody": {
           "success": true,
           "data": {
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/v1/userSettings" ,
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "success": true,
+          "data": {
+            "advanced_permissions": false
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPath": "/v1/deals/4/followers",
+        "method": "GET"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "success": true,
+          "data": [
+
+          ],
+          "additional_data": {
+            "pagination": {
+              "more_items_in_collection": false,
+              "next_start": 0,
+              "limit": 100
+            }
           }
         }
       }

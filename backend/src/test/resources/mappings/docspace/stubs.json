@@ -167,7 +167,8 @@
           ]
         }
       }
-    },{
+    },
+    {
       "request": {
         "url": "/api/2.0/security/csp",
         "method": "GET"
@@ -183,7 +184,8 @@
           }
         }
       }
-    },{
+    },
+    {
       "request": {
         "url": "/api/2.0/security/csp",
         "method": "POST"
@@ -199,7 +201,29 @@
           }
         }
       }
+    },
+    {
+      "request": {
+        "url": "/api/2.0/files/rooms/10000/share",
+        "method": "PUT"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "statusCode": 200,
+          "response": {
+            "members": [
+              {
+                "sharedTo": {
+                  "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+                }
+              }
+            ]
+          }
+        }
+      }
     }
-
   ]
 }

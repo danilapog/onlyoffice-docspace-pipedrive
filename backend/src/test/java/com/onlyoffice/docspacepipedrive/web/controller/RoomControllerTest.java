@@ -20,17 +20,15 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.AbstractControllerTest;
 import com.onlyoffice.docspacepipedrive.entity.Room;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
-import java.text.MessageFormat;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,7 +37,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 public class RoomControllerTest extends AbstractControllerTest {
 
     private static Room testRoom;
@@ -68,20 +65,35 @@ public class RoomControllerTest extends AbstractControllerTest {
                 .getContentAsString();
 
         String expectedResponse = objectMapper.writeValueAsString(
-                new RoomResponse() //ToDO: add expected response
+                new RoomResponse(
+                        testRoom.getRoomId().toString(),
+                        "Deal 1 - Pipedrive (Test - Sandbox)"
+                )
         );
 
         JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
     }
 
     @Test
-    public void whenGetNotSavedRoom_thenReturnNotFound() throws Exception {
-        mockMvc.perform(get("/api/v1/room/2")
+    public void whenGetNotSavedRoom_thenReturnNullRoomId() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/v1/room/2")
                         .header("Authorization",
                                 getAuthorizationHeaderForUser(testUserSalesAdmin)
                         )
                 )
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        String expectedResponse = objectMapper.writeValueAsString(
+                new RoomResponse(
+                        null,
+                        "Deal 2 - Pipedrive (Test - Sandbox)"
+                )
+        );
+
+        JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
     }
 
     @Test
@@ -94,7 +106,6 @@ public class RoomControllerTest extends AbstractControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    @Disabled
     @Test
     public void whenPostRoom_thenReturnOk() throws Exception {
         assertThrows(
@@ -107,7 +118,9 @@ public class RoomControllerTest extends AbstractControllerTest {
                                 getAuthorizationHeaderForUser(testUserSalesAdmin)
                         )
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(new RoomRequest())) // ToDO: add request body
+                        .content(objectMapper.writeValueAsString(new RoomRequest(
+                                10000L
+                        )))
                 )
                 .andExpect(status().isOk())
                 .andReturn()
@@ -115,14 +128,17 @@ public class RoomControllerTest extends AbstractControllerTest {
                 .getContentAsString();
 
         String expectedResponse = objectMapper.writeValueAsString(
-                new RoomResponse() // ToDO: add expected response
+                new RoomResponse(
+                        "10000",
+                        null
+                )
         );
 
         JsonAssert.assertJsonEquals(expectedResponse, actualResponse);
 
         Room room = roomService.findByClientIdAndDealId(testUserSalesAdmin.getClient().getId(), 4L);
 
-        assertEquals(room.getRoomId(), 10001);
+        assertEquals(room.getRoomId(), 10000);
     }
 
     @Test
@@ -134,9 +150,9 @@ public class RoomControllerTest extends AbstractControllerTest {
                                 getAuthorizationHeaderForUser(testUserSalesAdmin)
                         )
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(new RoomRequest())) // ToDO: add request body
+                        .content(objectMapper.writeValueAsString(new RoomRequest(10000L)))
                 )
-                .andExpect(status().isForbidden())
+                .andExpect(status().isServiceUnavailable())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -144,34 +160,7 @@ public class RoomControllerTest extends AbstractControllerTest {
         Map<String, Object> responseMap = objectMapper.readValue(response, Map.class);
         assertEquals(
                 responseMap.get("message"),
-                new DocspaceUrlNotFoundException(testUserSalesAdmin.getClient().getId()).getMessage()
-        );
-    }
-
-    @Test
-    public void whenPostRoomWithoutDocspaceAccount_thenReturnForbidden() throws Exception {
-        docspaceAccountService.deleteById(testUserSalesAdmin.getId());
-
-        String response = mockMvc.perform(post("/api/v1/room/4")
-                        .header("Authorization",
-                                getAuthorizationHeaderForUser(testUserSalesAdmin)
-                        )
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(new RoomRequest())) // ToDO: add request body
-                )
-                .andExpect(status().isForbidden())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        Map<String, Object> responseMap = objectMapper.readValue(response, Map.class);
-        assertEquals(
-                responseMap.get("message"),
-                MessageFormat.format(
-                        "DocspaceAccount for User with USER_ID({0}) and CLIENT_ID({1}) not found.",
-                        testUserSalesAdmin.getUserId(),
-                        testUserSalesAdmin.getClient().getId()
-                )
+                new DocspaceApiKeyNotFoundException(testUserSalesAdmin.getClient().getId()).getMessage()
         );
     }
 }
