@@ -19,6 +19,7 @@
 package com.onlyoffice.docspacepipedrive.security.oauth;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,6 +38,9 @@ import java.util.Map;
 public class OAuth2PipedriveUserService extends DefaultOAuth2UserService {
     private final WebClient pipedriveWebClient;
 
+    @Value("${spring.security.oauth2.client.provider.pipedrive.user-info-uri}")
+    private String userInfoUri;
+
     @Override
     public OAuth2User loadUser(final OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
          OAuth2User user = super.loadUser(userRequest);
@@ -46,7 +50,7 @@ public class OAuth2PipedriveUserService extends DefaultOAuth2UserService {
 
     public OAuth2User loadUser(final Long clientId, final Long userId) {
         Map<String, Object> response = pipedriveWebClient.get()
-                .uri("https://api.pipedrive.com/v1/users/me")
+                .uri(userInfoUri)
                 .attribute(Authentication.class.getName(), createAuthentication(clientId + ":" + userId))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() { })
