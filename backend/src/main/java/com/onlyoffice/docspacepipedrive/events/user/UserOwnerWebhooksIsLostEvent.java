@@ -16,11 +16,21 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.exceptions;
+package com.onlyoffice.docspacepipedrive.events.user;
 
+import com.onlyoffice.docspacepipedrive.entity.User;
+import org.springframework.context.ApplicationEvent;
 
-public class SystemUserNotFoundException extends RuntimeException {
-    public SystemUserNotFoundException() {
-        super("System user not found.");
+public class UserOwnerWebhooksIsLostEvent extends ApplicationEvent {
+    private final User user;
+
+    public UserOwnerWebhooksIsLostEvent(final Object source, final User user) {
+        super(source);
+
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
     }
 }

@@ -25,6 +25,7 @@ import java.util.UUID;
 
 
 public interface WebhookService {
+    boolean existsByClientIdAndName(Long clientId, String name);
     Webhook findById(UUID id);
     List<Webhook> findAllByUserId(Long userId);
     Webhook save(Webhook webhook);

@@ -35,8 +35,12 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -90,16 +94,31 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
 
         String[] partsRefreshToken = refreshToken.getValue().split(":");
 
-        Client client = Client.builder()
-                .id(Long.parseLong(partsRefreshToken[0]))
-                .url("")
-                .build();
+        if (authentication.getPrincipal() instanceof OAuth2User) {
+            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+            Map<String, Object> userData = oAuth2User.getAttribute("data");
+            String companyName = (String) userData.get("company_name");
+            String domain = (String) userData.get("company_domain");
 
-        if (!clientService.existById(client.getId())) {
-            clientService.create(client);
-            settingsService.put(client.getId(),
-                    Settings.builder().build()
-            );
+            UriComponents clientUri = UriComponentsBuilder.newInstance()
+                    .scheme("https")
+                    .host(domain + ".pipedrive.com")
+                    .build();
+
+            Client client = Client.builder()
+                    .id(Long.parseLong(partsRefreshToken[0]))
+                    .url(clientUri.toUriString())
+                    .companyName(companyName)
+                    .build();
+
+            if (!clientService.existById(client.getId())) {
+                clientService.create(client);
+                settingsService.put(client.getId(),
+                        Settings.builder().build()
+                );
+            } else {
+                clientService.update(client);
+            }
         }
 
         User user = User.builder()
@@ -108,7 +127,7 @@ public class OAuth2AuthorizedClientRepositoryImpl implements OAuth2AuthorizedCli
                 .refreshToken(refreshToken)
                 .build();
 
-        userService.put(client.getId(), user);
+        userService.put(Long.parseLong(partsRefreshToken[0]), user);
     }
 
     @Override

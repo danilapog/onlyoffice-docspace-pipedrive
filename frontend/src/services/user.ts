@@ -47,9 +47,9 @@ export const getUser = async (pipedriveToken: PipedriveToken) => {
 
 export const putDocspaceAccount = async (
   pipedriveToken: PipedriveToken,
+  id: string,
   userName: string,
   passwordHash: string,
-  system: boolean,
 ) => {
   const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
@@ -62,12 +62,13 @@ export const putDocspaceAccount = async (
 
   await client({
     method: "PUT",
-    url: `/api/v1/user/docspace-account?system=${system}`,
+    url: `/api/v1/user/docspace-account`,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     data: {
+      id,
       userName,
       passwordHash,
     },

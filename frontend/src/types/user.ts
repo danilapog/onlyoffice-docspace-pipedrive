@@ -19,7 +19,6 @@
 export type UserResponse = {
   id: string;
   name: string;
-  isSystem: boolean;
   isAdmin: boolean;
   language: {
     country_code: string;
@@ -31,7 +30,6 @@ export type UserResponse = {
 export type DocspaceAccount = {
   userName: string;
   passwordHash: string;
-  canCreateRoom: boolean;
 };
 
 export type DocspaceSettings = {

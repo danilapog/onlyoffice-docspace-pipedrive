@@ -82,12 +82,4 @@ public class User {
     @JoinColumn(name = "client_id")
     @ToString.Exclude
     private Client client;
-
-    public boolean isSystemUser() {
-        if (this.client.existSystemUser()) {
-           return this.client.getSystemUser().getId().equals(this.id);
-        }
-
-        return false;
-    }
 }

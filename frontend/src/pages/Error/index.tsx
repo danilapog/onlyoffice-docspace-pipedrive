@@ -203,6 +203,64 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
         });
         break;
       }
+      case AppErrorType.DOCSPACE_INVALID_API_KEY: {
+        setErrorProps({
+          Icon: <NotAvailable />,
+          title: t("background.error.title.not-available", "Not yet available"),
+          subtitle: `${t(
+            "background.error.title.docspace-invalid-api-key",
+            "ONLYOFFICE DocSpace API Key is invalid",
+          )} ${
+            user?.isAdmin
+              ? t(
+                  "background.error.hint.admin.docspace-connection",
+                  "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
+                )
+              : t(
+                  "background.error.hint.docspace-connection",
+                  "Please contact the administrator.",
+                )
+          }`,
+          button: {
+            text: user?.isAdmin
+              ? t("button.settings", "Go to Settings")
+              : t("button.reload", "Reload"),
+            onClick: user?.isAdmin
+              ? () => sdk.execute(Command.REDIRECT_TO, { view: View.SETTINGS })
+              : () => reloadAppContext(),
+          },
+        });
+        break;
+      }
+      case AppErrorType.WEBHOOKS_IS_NOT_INSTALLED: {
+        setErrorProps({
+          Icon: <CommonError />,
+          title: t(
+            "background.error.title.webhook.is-not-installed",
+            "Synchronization Warning",
+          ),
+          subtitle: user?.isAdmin
+            ? t(
+                "background.error.hint.webhook.is-not-installed",
+                "The synchronization between Deal followers and Room members is not occurring due to a webhook malfunction.",
+              )
+            : t(
+                "background.error.hint.docspace-connection",
+                "Please contact the administrator.",
+              ),
+          button: user?.isAdmin
+            ? {
+                text: t("button.reinstall", "Reinstall plugin"),
+                onClick: () =>
+                  window.open(
+                    `${process.env.BACKEND_URL}/oauth2/authorization/pipedrive`,
+                    "_blank",
+                  ),
+              }
+            : undefined,
+        });
+        break;
+      }
       default: {
         setErrorProps(undefined);
         break;

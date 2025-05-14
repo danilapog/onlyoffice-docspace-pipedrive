@@ -17,24 +17,25 @@
  */
 
 import React, { useState, useContext } from "react";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { Command } from "@pipedrive/app-extensions-sdk";
 
 import { ButtonColor, OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
-import { OnlyofficeHint } from "@components/hint";
 
 import { deleteSettings, putSettings } from "@services/settings";
 
-import { getCurrentURL, stripTrailingSlash } from "@utils/url";
+import { stripTrailingSlash } from "@utils/url";
+import { useErrorMessage } from "@utils/message";
 
 import { AppContext } from "@context/AppContext";
-import { SettingsResponse } from "src/types/settings";
-import { getCSPSettings } from "@services/docspace";
+import { SettingsErrorResponse, SettingsResponse } from "src/types/settings";
+import { AxiosError } from "axios";
 
 export const ConnectionSettings: React.FC = () => {
   const { t } = useTranslation();
+  const getSettingsErrorMessage = useErrorMessage();
   const {
     user,
     setUser,
@@ -44,81 +45,50 @@ export const ConnectionSettings: React.FC = () => {
     pipedriveToken,
     reloadAppContext,
   } = useContext(AppContext);
-  const { url } = getCurrentURL();
 
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
   const [changing, setChanging] = useState(false);
   const [showValidationMessage, setShowValidationMessage] = useState(false);
   const [address, setAddress] = useState<string>(settings?.url || "");
+  const [apiKey, setApiKey] = useState<string>(settings?.apiKey || "");
 
   const handleConnect = async (event: React.SyntheticEvent) => {
     event.preventDefault();
-    if (address) {
+    if (address && apiKey) {
       setConnecting(true);
-      getCSPSettings(stripTrailingSlash(address))
-        .then(async (cspSettings) => {
-          const allowedDomains = cspSettings.domains.filter(
-            (domain) =>
-              stripTrailingSlash(domain) === stripTrailingSlash(url) ||
-              stripTrailingSlash(domain) ===
-                new URL(document.location.href).origin,
-          );
-
-          if (allowedDomains.length < 2) {
-            await sdk.execute(Command.SHOW_SNACKBAR, {
-              message: t(
-                "docspace.error.csp",
-                "The current domain is not set in the Content Security Policy (CSP) settings. Please add it via the Developer Tools section.",
-              ),
-              link: {
-                url: `${stripTrailingSlash(
-                  address || "",
-                )}/portal-settings/developer-tools/javascript-sdk`,
-                label: t(
-                  "docspace.link.developer-tools",
-                  "Developer Tools section",
-                ),
-              },
-            });
-            setConnecting(false);
-            return;
-          }
-
-          putSettings(pipedriveToken, stripTrailingSlash(address))
-            .then(async (response: SettingsResponse) => {
-              setSettings(response);
-              await sdk.execute(Command.SHOW_SNACKBAR, {
-                message: t(
-                  "settings.connection.saving.ok",
-                  "ONLYOFFICE DocSpace settings have been saved",
-                ),
-              });
-
-              if (changing) {
-                reloadAppContext();
-              }
-            })
-            .catch(async () => {
-              await sdk.execute(Command.SHOW_SNACKBAR, {
-                message: t(
-                  "settings.connection.saving.error.undefined",
-                  "Could not save ONLYOFFICE DocSpace settings",
-                ),
-              });
-            })
-            .finally(() => {
-              setConnecting(false);
-              setChanging(false);
-            });
-        })
-        .catch(async () => {
+      putSettings(pipedriveToken, stripTrailingSlash(address), apiKey)
+        .then(async (response: SettingsResponse) => {
+          setSettings(response);
+          setAddress(response.url);
+          setApiKey(response.apiKey);
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
-              "docspace.error.unreached",
-              "ONLYOFFICE DocSpace cannot be reached",
+              "settings.connection.saving.ok",
+              "ONLYOFFICE DocSpace settings have been saved",
             ),
           });
+
+          if (changing) {
+            reloadAppContext();
+          }
+        })
+        .catch(async (e: AxiosError) => {
+          if (e?.response?.status === 400) {
+            const data = e?.response?.data as SettingsErrorResponse;
+            await sdk.execute(Command.SHOW_SNACKBAR, {
+              message: getSettingsErrorMessage(data.errorCode),
+            });
+          } else {
+            await sdk.execute(Command.SHOW_SNACKBAR, {
+              message: t(
+                "settings.connection.saving.error.undefined",
+                "Could not save ONLYOFFICE DocSpace settings",
+              ),
+            });
+          }
+        })
+        .finally(() => {
           setConnecting(false);
         });
     } else {
@@ -150,9 +120,10 @@ export const ConnectionSettings: React.FC = () => {
           });
           setSettings(undefined);
           if (user) {
-            setUser({ ...user, docspaceAccount: null, isSystem: false });
+            setUser({ ...user, docspaceAccount: null });
           }
           setAddress("");
+          setApiKey("");
         })
         .catch(async () => {
           await sdk.execute(Command.SHOW_SNACKBAR, {
@@ -179,53 +150,6 @@ export const ConnectionSettings: React.FC = () => {
             )}
           />
         </div>
-        {(!settings?.url || changing) && (
-          <OnlyofficeHint>
-            <div>
-              <p className="font-semibold">
-                {t(
-                  "settings.connection.hint.csp.title",
-                  "Check the CSP settings",
-                )}
-              </p>
-              <p>
-                <Trans
-                  i18nKey="settings.connection.hint.csp.message"
-                  defaults="Before connecting the app, please go to the <semibold>{{path}}</semibold> and add the following credentials to the allow list"
-                  values={{
-                    path: t(
-                      "settings.connection.hint.csp.path",
-                      "DocSpace Settings - Developer tools - JavaScript SDK",
-                    ),
-                  }}
-                  components={{ semibold: <span className="font-semibold" /> }}
-                />
-                :
-              </p>
-              <br />
-              <p className="font-semibold">
-                {t(
-                  "settings.connection.hint.csp.pipedrive-adress",
-                  "Pipedrive portal address",
-                )}
-                :{" "}
-                <span className="text-green-700">
-                  {stripTrailingSlash(url)}
-                </span>
-              </p>
-              <p className="font-semibold">
-                {t(
-                  "settings.connection.hint.csp.docspace-adress",
-                  "ONLYOFFICE DocSpace app",
-                )}
-                :{" "}
-                <span className="text-green-700">
-                  {new URL(document.location.href).origin}
-                </span>
-              </p>
-            </div>
-          </OnlyofficeHint>
-        )}
       </div>
       <div className="max-w-[320px]">
         <form onSubmit={handleConnect}>
@@ -240,6 +164,22 @@ export const ConnectionSettings: React.FC = () => {
               disabled={(connecting || !!settings?.url) && !changing}
               value={address}
               onChange={(e) => setAddress(e.target.value.trim())}
+            />
+          </div>
+          <div className="pl-5 pr-5 pb-2">
+            <OnlyofficeInput
+              text={t(
+                "settings.connection.inputs.api-key.title",
+                "ONLYOFFICE DocSpace API key",
+              )}
+              description={t(
+                "settings.connection.inputs.api-key.description",
+                "API key author should be DocSpace admin and key should have access sopes(Profile - Read, Contacts - Write, Rooms - Write)",
+              )}
+              valid={showValidationMessage ? !!apiKey : true}
+              disabled={(connecting || !!settings?.url) && !changing}
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value.trim())}
             />
           </div>
           <div className="flex justify-start items-center mt-4 ml-5 gap-2">
@@ -260,6 +200,7 @@ export const ConnectionSettings: React.FC = () => {
                   disabled={disconnecting}
                   onClick={() => {
                     setChanging(true);
+                    setApiKey("");
                   }}
                 />
                 <OnlyofficeButton
@@ -278,6 +219,7 @@ export const ConnectionSettings: React.FC = () => {
                   onClick={() => {
                     setChanging(false);
                     setAddress(settings?.url || "");
+                    setApiKey(settings?.apiKey || "");
                   }}
                 />
                 <OnlyofficeButton

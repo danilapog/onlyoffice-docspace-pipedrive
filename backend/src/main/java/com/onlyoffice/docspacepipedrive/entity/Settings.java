@@ -18,8 +18,13 @@
 
 package com.onlyoffice.docspacepipedrive.entity;
 
+import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -48,6 +53,12 @@ public class Settings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String url;
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "api_key_value")),
+            @AttributeOverride(name = "ownerId", column = @Column(name = "api_key_owner_id")),
+            @AttributeOverride(name = "valid", column = @Column(name = "api_key_valid"))
+    })
+    private ApiKey apiKey;
     private UUID sharedGroupId;
     @OneToOne
     @JoinColumn(name = "client_id")
@@ -59,9 +70,16 @@ public class Settings {
                 () -> new DocspaceUrlNotFoundException(this.client.getId())
         );
     }
+
     public UUID getSharedGroupId() {
         return Optional.ofNullable(sharedGroupId).orElseThrow(
                 () -> new SharedGroupIdNotFoundException(this.client.getId())
+        );
+    }
+
+    public ApiKey getApiKey() {
+        return Optional.ofNullable(apiKey).orElseThrow(
+                () -> new DocspaceApiKeyNotFoundException(this.client.getId())
         );
     }
 

@@ -19,12 +19,7 @@
 package com.onlyoffice.docspacepipedrive.entity;
 
 import com.onlyoffice.docspacepipedrive.encryption.EncryptionAttributeConverter;
-import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -64,10 +59,4 @@ public class DocspaceAccount {
     private String email;
     @Convert(converter = EncryptionAttributeConverter.class)
     private String passwordHash;
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "token_value", length = 2048)),
-            @AttributeOverride(name = "issuedAt", column = @Column(name = "token_issued_at"))
-    })
-    private DocspaceToken docspaceToken;
 }

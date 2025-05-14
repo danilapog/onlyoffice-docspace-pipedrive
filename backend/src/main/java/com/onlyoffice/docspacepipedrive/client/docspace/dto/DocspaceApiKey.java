@@ -16,4 +16,17 @@
  *
  */
 
-export { OnlyofficeSnackbar } from "./Snackbar";
+package com.onlyoffice.docspacepipedrive.client.docspace.dto;
+
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class DocspaceApiKey {
+    private String id;
+    private String key;
+    private String keyPostfix;
+    private List<String> permissions;
+    private Boolean isActive;
+}

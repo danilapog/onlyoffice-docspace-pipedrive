@@ -16,26 +16,20 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.entity.docspaceaccount;
+package com.onlyoffice.docspacepipedrive.exceptions;
 
-import com.onlyoffice.docspacepipedrive.encryption.EncryptionAttributeConverter;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public enum ErrorCode {
+    DOCSPACE_CAN_NOT_BE_REACHED("DocSpace can not be reached"),
+    DOCSPACE_API_KEY_IS_INVALID("DocSpace API Key is invalid"),
+    DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN("DocSpace API Key owner is not DocSpace Admin");
 
-import java.time.Instant;
+    private final String message;
 
+    ErrorCode(final String message) {
+        this.message = message;
+    }
 
-@AllArgsConstructor
-@Builder
-@Data
-@Embeddable
-@NoArgsConstructor
-public class DocspaceToken {
-    @Convert(converter = EncryptionAttributeConverter.class)
-    private String value;
-    private Instant issuedAt;
+    public String getMessage() {
+        return message;
+    }
 }

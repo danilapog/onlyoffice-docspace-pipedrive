@@ -33,7 +33,6 @@ import { getCurrentURL, stripTrailingSlash } from "@utils/url";
 
 import { OnlyofficeSpinner } from "@components/spinner";
 
-import { OnlyofficeSnackbar } from "@components/snackbar";
 import { getLocaleForDocspace } from "@utils/locale";
 import {
   DropdownButtonColor,
@@ -80,6 +79,12 @@ const RoomPage: React.FC = () => {
   const docspaceInstance = useRef<SDKInstance | null>(null);
 
   useEffect(() => {
+    if (settings?.apiKey && !settings?.isApiKeyValid) {
+      setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
+      setLoading(false);
+      return;
+    }
+
     if (!user?.docspaceAccount) {
       sdk.execute(Command.RESIZE, { height: 128 });
       setLoading(false);
@@ -292,27 +297,6 @@ const RoomPage: React.FC = () => {
               }
             />
           </div>
-        </div>
-      )}
-      {!loading && !settings?.existSystemUser && user?.docspaceAccount && (
-        <div className="w-full">
-          <OnlyofficeSnackbar
-            header={t(
-              "notification.system-user.not-found",
-              "System User is not set.",
-            )}
-            text={`${
-              user?.isAdmin
-                ? t(
-                    "notification.plugin.set-system-user",
-                    "Please go to Settings and set yourself as a System User.",
-                  )
-                : t(
-                    "notification.plugin.functionality-is-limited",
-                    "Plugin functionality is limited.",
-                  )
-            }`}
-          />
         </div>
       )}
       {!loading && !room?.id && user?.docspaceAccount && (

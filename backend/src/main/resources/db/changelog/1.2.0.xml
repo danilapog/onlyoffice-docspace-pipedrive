@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="onlyoffice (generated)" id="1744199693794-1">
+        <addColumn tableName="settings">
+            <column name="api_key_value" type="VARCHAR(255)"/>
+            <column name="api_key_owner_id" type="UUID"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1744199693794-2">
+        <dropColumn tableName="clients" columnName="system_user_id"/>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1744199693794-3" >
+        <addColumn tableName="settings">
+            <column name="api_key_valid" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="onlyoffice (generated)" id="1744199693794-4">
+        <dropColumn tableName="docspace_accounts" columnName="token_issued_at"/>
+        <dropColumn tableName="docspace_accounts" columnName="token_value"/>
+    </changeSet>
+</databaseChangeLog>

@@ -27,7 +27,6 @@ import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.events.deal.AddRoomToPipedriveDealEvent;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
-import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
@@ -132,19 +131,14 @@ public class RoomController {
                 .findFirst()
                 .isPresent();
 
-        SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-            public Void doWork() {
-                if (currentUserIsDealFollower) {
-                    docspaceActionManager.inviteListDocspaceAccountsToRoom(
-                            room.getRoomId(),
-                            Collections.singletonList(currentUser.getDocspaceAccount())
-                    );
-                } else {
-                    docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
-                }
-                return null;
-            }
-        }, currentClient.getSystemUser());
+        if (currentUserIsDealFollower) {
+            docspaceActionManager.inviteListDocspaceAccountsToRoom(
+                    room.getRoomId(),
+                    Collections.singletonList(currentUser.getDocspaceAccount())
+            );
+        } else {
+            docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
+        }
 
         return ResponseEntity.ok().build();
     }

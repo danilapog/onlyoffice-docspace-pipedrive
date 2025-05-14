@@ -38,52 +38,43 @@ public class UserEventListener {
 
     @EventListener
     public void listen(final DocspaceLoginUserEvent event) {
-        User currentUser = SecurityUtils.getCurrentUser();
-        Client currentClient = SecurityUtils.getCurrentClient();
-
-        if (currentUser.isSystemUser()) {
-            docspaceActionManager.initSharedGroup();
-            pipedriveActionManager.initWebhooks();
-        } else {
-            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-                public Void doWork() {
-                    docspaceActionManager.inviteDocspaceAccountToSharedGroup(event.getDocspaceAccount().getUuid());
-                    return null;
-                }
-            }, currentClient.getSystemUser());
-        }
+        docspaceActionManager.inviteDocspaceAccountToSharedGroup(event.getDocspaceAccount().getUuid());
     }
 
     @EventListener
     public void listen(final DocspaceLogoutUserEvent event) {
-        User currentUser = SecurityUtils.getCurrentUser();
-        Client currentClient = SecurityUtils.getCurrentClient();
+        try {
+            docspaceActionManager.removeDocspaceAccountFromSharedGroup(
+                    event.getDocspaceAccount().getUuid()
+            );
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+    }
 
-        if (currentUser.isSystemUser()) {
-            try {
-                docspaceActionManager.removeDocspaceAccountFromSharedGroup(event.getDocspaceAccount().getUuid());
-            } catch (Exception e) {
-                log.warn(e.getMessage(), e);
+    @EventListener
+    public void listen(final UserOwnerWebhooksIsLostEvent event) {
+        User user = event.getUser();
+        Client client = user.getClient();
+
+        pipedriveActionManager.deleteWebhooks(user.getWebhooks());
+
+        try {
+            User newWebhookOwner = pipedriveActionManager.findDealAdmin(client.getId());
+
+            if (newWebhookOwner == null) {
+                log.warn("No sales admin found for clientId: {}", client.getId());
+                return;
             }
 
-            try {
-                pipedriveActionManager.removeWebhooks();
-            } catch (Exception e) {
-                log.warn(e.getMessage(), e);
-            }
-        } else {
-            try {
-                SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-                    public Void doWork() {
-                        docspaceActionManager.removeDocspaceAccountFromSharedGroup(
-                                event.getDocspaceAccount().getUuid()
-                        );
-                        return null;
-                    }
-                }, currentClient.getSystemUser());
-            } catch (Exception e) {
-                log.warn(e.getMessage(), e);
-            }
+            SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
+                public Void doWork() {
+                    pipedriveActionManager.initWebhooks();
+                    return null;
+                }
+            }, newWebhookOwner);
+        } catch (Exception e) {
+            log.warn("Error reinit Webhooks for client {}: {}", client.getId(), e.getMessage());
         }
     }
 }

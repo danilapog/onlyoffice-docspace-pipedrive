@@ -25,7 +25,7 @@ import { AxiosError } from "axios";
 import { OnlyofficeSpinner } from "@components/spinner";
 
 import { getUser } from "@services/user";
-import { getSettings } from "@services/settings";
+import { getSettings, validateApiKey } from "@services/settings";
 
 import { UserResponse } from "src/types/user";
 import { SettingsResponse } from "src/types/settings";
@@ -42,7 +42,9 @@ export enum AppErrorType {
   PLUGIN_NOT_AVAILABLE,
   DOCSPACE_ROOM_NOT_FOUND,
   DOCSPACE_UNREACHABLE,
+  DOCSPACE_INVALID_API_KEY,
   DOCSPACE_ROOM_NO_ACCESS,
+  WEBHOOKS_IS_NOT_INSTALLED,
 }
 
 export interface IAppContext {
@@ -106,15 +108,32 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         try {
           const pipedriveTokenObject = new PipedriveToken(s);
           const userResponse = await getUser(pipedriveTokenObject);
-          const settingsResponse = await getSettings(pipedriveTokenObject);
+          let settingsResponse = await getSettings(pipedriveTokenObject);
 
           await i18next.changeLanguage(
             `${userResponse.language.language_code}-${userResponse.language.country_code}`,
           );
 
+          if (settingsResponse.apiKey && !settingsResponse.isApiKeyValid) {
+            try {
+              settingsResponse = await validateApiKey(pipedriveTokenObject);
+            } catch (e) {
+              if (e instanceof AxiosError && e?.response?.status !== 400) {
+                throw e;
+              }
+            }
+          }
+
           if (location.pathname !== "/settings") {
-            if (!settingsResponse?.url || !settingsResponse.existSystemUser) {
+            if (!settingsResponse?.url || !settingsResponse.apiKey) {
               setAppError(AppErrorType.PLUGIN_NOT_AVAILABLE);
+            } else if (
+              settingsResponse.apiKey &&
+              !settingsResponse.isApiKeyValid
+            ) {
+              setAppError(AppErrorType.DOCSPACE_INVALID_API_KEY);
+            } else if (!settingsResponse.isWebhooksInstalled) {
+              setAppError(AppErrorType.WEBHOOKS_IS_NOT_INSTALLED);
             }
           }
 

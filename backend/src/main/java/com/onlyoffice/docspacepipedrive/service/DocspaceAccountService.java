@@ -19,7 +19,6 @@
 package com.onlyoffice.docspacepipedrive.service;
 
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
-import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 
 import java.util.List;
 
@@ -27,7 +26,6 @@ import java.util.List;
 public interface DocspaceAccountService {
     DocspaceAccount findById(Long id);
     DocspaceAccount save(Long id, DocspaceAccount docspaceAccount);
-    DocspaceToken saveToken(Long id, String value);
     void deleteById(Long id);
     void deleteAllByIdInBatch(List<Long> ids);
 }

@@ -48,6 +48,7 @@ export const getSettings = async (pipedriveToken: PipedriveToken) => {
 export const putSettings = async (
   pipedriveToken: PipedriveToken,
   url: string,
+  apiKey: string,
 ) => {
   const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
@@ -67,6 +68,7 @@ export const putSettings = async (
     },
     data: {
       url,
+      apiKey,
     },
     timeout: 10000,
   });
@@ -87,6 +89,23 @@ export const deleteSettings = async (pipedriveToken: PipedriveToken) => {
   const response = await client({
     method: "DELETE",
     url: `/api/v1/settings`,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    timeout: 15000,
+  });
+
+  return response.data;
+};
+
+export const validateApiKey = async (pipedriveToken: PipedriveToken) => {
+  const token = await pipedriveToken.getValue();
+  const client = axios.create({ baseURL: process.env.BACKEND_URL });
+
+  const response = await client<SettingsResponse>({
+    method: "POST",
+    url: `/api/v1/settings/validate-api-key`,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,

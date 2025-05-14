@@ -18,10 +18,16 @@
 
 package com.onlyoffice.docspacepipedrive.configuration;
 
+import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.security.AuthenticationEntryPointImpl;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2AuthenticationSuccessHandler;
+import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2LoginCancelFilter;
 import com.onlyoffice.docspacepipedrive.security.provider.ClientRegistrationAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.provider.JwtAuthenticationProvider;
 import com.onlyoffice.docspacepipedrive.security.provider.WebhookAuthenticationProvider;
+import com.onlyoffice.docspacepipedrive.service.SettingsService;
+import com.onlyoffice.docspacepipedrive.service.UserService;
+import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +44,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
@@ -76,7 +83,9 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(final HttpSecurity http,
                                                    final BasicAuthenticationFilter clientRegistrationAuthenticationFilter,
                                                    final BearerTokenAuthenticationFilter jwtAuthenticationFilter,
-                                                   final BasicAuthenticationFilter webhookAuthenticationFilter) throws Exception {
+                                                   final BasicAuthenticationFilter webhookAuthenticationFilter,
+                                                   final OAuth2LoginCancelFilter oAuth2LoginCancelFilter,
+                                                   final OAuth2AuthenticationSuccessHandler auth2AuthenticationSuccessHandler) throws Exception {
         http
                 .authorizeHttpRequests(auth -> {
                     auth
@@ -85,8 +94,8 @@ public class SecurityConfiguration {
                             .requestMatchers(HttpMethod.DELETE, "/login/oauth2/code/{registrationId}").authenticated()
                             .anyRequest().permitAll();
                 })
-                .oauth2Client(httpSecurityOAuth2ClientConfigurer -> {
-                    httpSecurityOAuth2ClientConfigurer.init(http);
+                .oauth2Login(oauth -> {
+                    oauth.successHandler(auth2AuthenticationSuccessHandler);
                 })
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
@@ -102,11 +111,22 @@ public class SecurityConfiguration {
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterAfter(new ForwardedHeaderFilter(), WebAsyncManagerIntegrationFilter.class)
-                .addFilterBefore(clientRegistrationAuthenticationFilter, OAuth2AuthorizationCodeGrantFilter.class)
-                .addFilterAfter(jwtAuthenticationFilter, OAuth2AuthorizationCodeGrantFilter.class)
-                .addFilterAfter(webhookAuthenticationFilter, OAuth2AuthorizationCodeGrantFilter.class);
+                .addFilterBefore(oAuth2LoginCancelFilter, OAuth2LoginAuthenticationFilter.class)
+                .addFilterBefore(clientRegistrationAuthenticationFilter, OAuth2LoginAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter, OAuth2LoginAuthenticationFilter.class)
+                .addFilterAfter(webhookAuthenticationFilter, OAuth2LoginAuthenticationFilter.class);
 
-        return http.build();
+        SecurityFilterChain securityFilterChain = http.build();
+
+        for (Filter filter : securityFilterChain.getFilters()) {
+            if (filter instanceof OAuth2LoginAuthenticationFilter) {
+                ((OAuth2LoginAuthenticationFilter) filter).setRequiresAuthenticationRequestMatcher(
+                        new AntPathRequestMatcher("/login/oauth2/code/*", "GET")
+                );
+            }
+        }
+
+        return securityFilterChain;
     }
 
     @Bean
@@ -178,6 +198,21 @@ public class SecurityConfiguration {
                 return new NegatedRequestMatcher(new AntPathRequestMatcher("/api/v1/webhook/**")).matches(request);
             }
         };
+    }
+
+    @Bean
+    public OAuth2LoginCancelFilter oAuth2LoginCancelFilter(
+            final ClientRegistrationRepository clientRegistrationRepository) {
+        return new OAuth2LoginCancelFilter(clientRegistrationRepository);
+    }
+
+    @Bean
+    public OAuth2AuthenticationSuccessHandler auth2AuthenticationSuccessHandler(
+            final ClientRegistrationRepository clientRegistrationRepository,
+            final PipedriveActionManager pipedriveActionManager,
+            final SettingsService settingsService, final UserService userService) {
+        return new OAuth2AuthenticationSuccessHandler(clientRegistrationRepository, pipedriveActionManager,
+                settingsService, userService);
     }
 
     @Bean

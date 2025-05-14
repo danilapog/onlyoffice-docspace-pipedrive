@@ -27,4 +27,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SettingsRequest {
     private String url;
+    private String apiKey;
 }

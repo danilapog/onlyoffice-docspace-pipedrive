@@ -20,7 +20,6 @@ package com.onlyoffice.docspacepipedrive.service.impl;
 
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.User;
-import com.onlyoffice.docspacepipedrive.entity.docspaceaccount.DocspaceToken;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccountAlreadyExistsException;
 import com.onlyoffice.docspacepipedrive.repository.DocspaceAccountRepository;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
@@ -31,7 +30,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 
 
@@ -63,29 +61,9 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     }
 
     @Override
-    public DocspaceToken saveToken(final Long id, final String value) {
-        DocspaceAccount docspaceAccount = findById(id);
-
-        DocspaceToken docspaceToken = DocspaceToken.builder()
-                .value(value)
-                .issuedAt(Instant.now())
-                .build();
-
-        docspaceAccount.setDocspaceToken(docspaceToken);
-
-        return docspaceAccountRepository.save(docspaceAccount).getDocspaceToken();
-    }
-
-    @Override
     @Transactional
     public void deleteById(final Long id) {
-        User user = userService.findById(id);
-
         docspaceAccountRepository.deleteById(id);
-
-        if (user.isSystemUser()) {
-            clientService.unsetSystemUser(user.getClient().getId());
-        }
     }
 
     @Override

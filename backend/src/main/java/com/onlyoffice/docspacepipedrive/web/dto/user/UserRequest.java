@@ -27,6 +27,5 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class UserRequest {
-    private Boolean system;
     private DocspaceAccountRequest docspaceAccount;
 }

@@ -16,15 +16,16 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.web.mapper;
+package com.onlyoffice.docspacepipedrive.web.dto.settings;
 
-import com.onlyoffice.docspacepipedrive.entity.Settings;
-import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface SettingsMapper {
-    Settings settingsRequestToSettings(SettingsRequest settingsRequest);
+@AllArgsConstructor
+@Data
+@NoArgsConstructor
+public class SettingsErrorResponse {
+    private String errorCode;
+    private String message;
 }

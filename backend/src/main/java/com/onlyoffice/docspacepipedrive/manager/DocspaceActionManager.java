@@ -20,6 +20,7 @@ package com.onlyoffice.docspacepipedrive.manager;
 
 import com.onlyoffice.docspacepipedrive.client.docspace.DocspaceClient;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceAccess;
+import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceCSPSettings;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceGroup;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceMembers;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceRoomInvitation;
@@ -28,6 +29,7 @@ import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIsNotPresentInResponse;
 import com.onlyoffice.docspacepipedrive.security.util.SecurityUtils;
@@ -55,8 +57,8 @@ public class DocspaceActionManager {
 
     public void initSharedGroup() {
         Client currentClient = SecurityUtils.getCurrentClient();
-
-        User systemUser = currentClient.getSystemUser();
+        Settings settings = currentClient.getSettings();
+        ApiKey apiKey = settings.getApiKey();
 
         List<User> users = userService.findAllByClientId(currentClient.getId());
         List<UUID> members = users.stream()
@@ -64,48 +66,42 @@ public class DocspaceActionManager {
                 .map(user -> user.getDocspaceAccount().getUuid())
                 .toList();
 
-        SecurityUtils.runAs(new SecurityUtils.RunAsWork<Void>() {
-            public Void doWork() {
-                if (!currentClient.getSettings().existSharedGroupId()) {
-                    DocspaceGroup docspaceGroup = docspaceClient.createGroup(
-                            MessageFormat.format("Pipedrive Users ({0})", currentClient.getCompanyName()),
-                            systemUser.getDocspaceAccount().getUuid(),
-                            members
-                    );
+        if (!settings.existSharedGroupId()) {
+            DocspaceGroup docspaceGroup = docspaceClient.createGroup(
+                    MessageFormat.format("Pipedrive Users ({0})", currentClient.getCompanyName()),
+                    apiKey.getOwnerId(),
+                    members
+            );
 
+            Settings savedSetting = settingsService.saveSharedGroup(
+                    currentClient.getId(),
+                    docspaceGroup.getId()
+            );
+            currentClient.setSettings(savedSetting);
+        } else {
+            try {
+                docspaceClient.updateGroup(
+                        settings.getSharedGroupId(),
+                        null,
+                        apiKey.getOwnerId(),
+                        members,
+                        null
+                );
+            } catch (WebClientResponseException e) {
+                if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                     Settings savedSetting = settingsService.saveSharedGroup(
                             currentClient.getId(),
-                            docspaceGroup.getId()
+                            null
                     );
                     currentClient.setSettings(savedSetting);
-                } else {
-                    try {
-                        docspaceClient.updateGroup(
-                                currentClient.getSettings().getSharedGroupId(),
-                                null,
-                                systemUser.getDocspaceAccount().getUuid(),
-                                members,
-                                null
-                        );
-                    } catch (WebClientResponseException e) {
-                        if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                            Settings savedSetting = settingsService.saveSharedGroup(
-                                    currentClient.getId(),
-                                    null
-                            );
-                            currentClient.setSettings(savedSetting);
 
-                            initSharedGroup();
-                            return null;
-                        }
-
-                        throw e;
-                    }
+                    initSharedGroup();
+                    return;
                 }
 
-                return null;
+                throw e;
             }
-        }, systemUser);
+        }
     }
 
     public void inviteDocspaceAccountToSharedGroup(final UUID docspaceAccountId) {
@@ -232,6 +228,24 @@ public class DocspaceActionManager {
 
             docspaceClient.shareRoom(roomId, docspaceRoomInvitationRequest);
         }
+    }
+
+    public DocspaceCSPSettings addDomainsToCSPSettings(final List<String> domains) {
+        DocspaceCSPSettings docspaceCSPSettings = docspaceClient.getCSPSettings();
+
+        List<String> allowedDomains = docspaceCSPSettings.getDomains();
+
+        List<String> notAllowedDomains = domains.stream()
+                .filter(domain -> !allowedDomains.contains(domain))
+                .toList();
+
+        if (!notAllowedDomains.isEmpty()) {
+            allowedDomains.addAll(notAllowedDomains);
+
+            return docspaceClient.updateCSPSettings(allowedDomains);
+        }
+
+        return docspaceCSPSettings;
     }
 
 }

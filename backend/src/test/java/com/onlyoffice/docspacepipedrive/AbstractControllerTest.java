@@ -26,6 +26,7 @@ import com.onlyoffice.docspacepipedrive.entity.Client;
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
+import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.repository.ClientRepository;
 import com.onlyoffice.docspacepipedrive.service.ClientService;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
@@ -169,6 +170,11 @@ public abstract class AbstractControllerTest {
 
         settingsService.put(testClient.getId(), Settings.builder()
                 .url(WIREMOCK_DOCSPACE_SERVER.baseUrl())
+                .apiKey(ApiKey.builder()
+                        .value("sk-api-key-for-test")
+                        .ownerId(UUID.randomUUID())
+                        .valid(true)
+                        .build())
                 .sharedGroupId(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"))
                 .build());
 
@@ -177,7 +183,6 @@ public abstract class AbstractControllerTest {
                 TestUtils.createDocspaceAccount(1L)
         );
 
-        testClient.setSystemUser(testUserSalesAdmin);
         testClient = clientService.update(testClient);
     }
 

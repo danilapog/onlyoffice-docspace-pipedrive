@@ -16,11 +16,20 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.exceptions;
+import { useTranslation } from "react-i18next";
 
+export function useErrorMessage() {
+  const { t } = useTranslation();
 
-public class DocspaceAuthorizationException extends RuntimeException {
-    public DocspaceAuthorizationException(final String message) {
-        super(message);
-    }
+  const getSettingsErrorMessage = (code: string): string => {
+    const key = `settings.connection.saving.error.${code}`;
+    return t(key, {
+      defaultValue: t(
+        "settings.connection.saving.error.undefined",
+        "Could not save ONLYOFFICE DocSpace settings",
+      ),
+    });
+  };
+
+  return getSettingsErrorMessage;
 }

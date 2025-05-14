@@ -157,6 +157,49 @@ public class PipedriveClient {
                 .block();
     }
 
+    public List<PipedriveUser> getUsers() {
+        List<PipedriveUser> users = new ArrayList<>();
+
+        boolean moreItemInCollection = true;
+        Integer start = 0;
+        Integer limit = PAGINATION_LIMIT;
+
+        while (moreItemInCollection) {
+            PipedriveResponse<List<PipedriveUser>> response = pipedriveWebClient.get()
+                    .uri(UriComponentsBuilder.fromUriString(getBaseUrl())
+                            .path("/v1/users")
+                            .queryParam("start", start)
+                            .queryParam("limit", limit)
+                            .build()
+                            .toUri()
+                    )
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<PipedriveResponse<List<PipedriveUser>>>() { })
+                    .onErrorResume(WebClientResponseException.class, e -> {
+                        return Mono.error(new PipedriveWebClientResponseException(e));
+                    })
+                    .block();
+
+            users.addAll(response.getData());
+
+            try {
+                moreItemInCollection = response.getAdditionalData()
+                        .getPagination()
+                        .getMoreItemsInCollection();
+            } catch (NullPointerException e) {
+                moreItemInCollection = false;
+            }
+
+            if (moreItemInCollection) {
+                start = response.getAdditionalData()
+                        .getPagination()
+                        .getNextStart();
+            }
+        }
+
+        return users;
+    }
+
     public PipedriveUserSettings getUserSettings() {
         return pipedriveWebClient.get()
                 .uri(UriComponentsBuilder.fromUriString(getBaseUrl())

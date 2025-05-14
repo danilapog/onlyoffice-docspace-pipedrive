@@ -8,6 +8,7 @@
     <suppress files=".*java" checks="JavadocVariable"/>
     <suppress files=".*java" checks="MissingJavadocMethod"/>
     <suppress files=".*java" checks="DesignForExtension"/>
+    <suppress files=".*Repository.java" checks="MethodName"/>
 
     <suppress files="Configuration.java" checks="LineLength"/>
     <suppress files="Configuration.java" checks="MagicNumber"/>

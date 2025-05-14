@@ -37,6 +37,11 @@ public class WebhookServiceImpl implements WebhookService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    public boolean existsByClientIdAndName(final Long clientId, final String name) {
+        return webhookRepository.existsByUser_Client_IdAndName(clientId, name);
+    }
+
+    @Override
     public Webhook findById(final UUID id) {
         return webhookRepository.findById(id)
                 .orElseThrow(() -> new WebhookNotFoundException(id));

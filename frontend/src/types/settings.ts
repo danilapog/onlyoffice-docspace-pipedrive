@@ -18,5 +18,12 @@
 
 export type SettingsResponse = {
   url: string;
-  existSystemUser: boolean;
+  apiKey: string;
+  isApiKeyValid: boolean;
+  isWebhooksInstalled: boolean;
+};
+
+export type SettingsErrorResponse = {
+  errorCode: string;
+  message: string;
 };
