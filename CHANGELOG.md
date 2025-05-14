@@ -7,6 +7,7 @@
 
 ## Changed
 - support DocSpace 3.0
+- using DocSpace API Key instead System User
 - invite a "Shared Group" to a room attached to a deal with the "Content Creator" rights
 - invite deal followers to a room attached to a deal with the "Content Creator" rights
 - using API for create room with tags
