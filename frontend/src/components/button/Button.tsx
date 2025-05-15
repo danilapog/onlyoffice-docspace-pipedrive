@@ -46,7 +46,7 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
 }) => {
   const classes = cx({
     "flex justify-center items-center p-3": true,
-    "tracking-wide text-base font-bold text-ellipsis": true,
+    "text-base font-bold text-ellipsis": true,
     "rounded truncate": true,
     "min-w-[62px] h-[32px]": true,
     "w-full": fullWidth,
