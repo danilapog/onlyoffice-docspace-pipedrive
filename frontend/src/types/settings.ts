@@ -22,8 +22,3 @@ export type SettingsResponse = {
   isApiKeyValid: boolean;
   isWebhooksInstalled: boolean;
 };
-
-export type SettingsErrorResponse = {
-  errorCode: string;
-  message: string;
-};

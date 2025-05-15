@@ -64,7 +64,7 @@ const LazyRoutes: React.FC = () => {
 
 function App() {
   return (
-    <div className="w-full h-full font-normal tracking-wide text-pipedrive-color-light-neutral-1000 text-base dark:bg-pipedrive-color-dark-neutral-100 dark:text-pipedrive-color-dark-neutral-1000 flex justify-center items-center">
+    <div className="w-full h-full font-normal text-pipedrive-color-light-neutral-1000 text-base dark:bg-pipedrive-color-dark-neutral-100 dark:text-pipedrive-color-dark-neutral-1000 flex justify-center items-center">
       <Router>
         <LazyRoutes />
       </Router>

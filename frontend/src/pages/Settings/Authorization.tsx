@@ -203,15 +203,15 @@ export const AuthorizationSetting: React.FC = () => {
             user?.isAdmin
               ? `${t(
                   "background.error.subtitle.docspace-connection",
-                  "You are not connected to ONLYOFFICE DocSpace",
-                )}. ${t(
+                  "You are not connected to ONLYOFFICE DocSpace.",
+                )} ${t(
                   "background.error.hint.admin.docspace-connection",
                   "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
                 )}`
               : `${t(
                   "background.error.subtitle.plugin.not-active.message",
-                  "ONLYOFFICE DocSpace App is not yet available",
-                )}. ${t(
+                  "ONLYOFFICE DocSpace App is not yet available.",
+                )} ${t(
                   "background.error.subtitle.plugin.not-active.help",
                   "Please wait until a Pipedrive Administrator configures the app settings.",
                 )}`
@@ -232,7 +232,7 @@ export const AuthorizationSetting: React.FC = () => {
           title={t("background.error.title.not-available", "Not yet available")}
           subtitle={`${t(
             "background.error.title.docspace-invalid-api-key",
-            "ONLYOFFICE DocSpace API Key is invalid",
+            "The ONLYOFFICE DocSpace API Key is invalid.",
           )} ${
             user?.isAdmin
               ? t(
@@ -265,6 +265,17 @@ export const AuthorizationSetting: React.FC = () => {
                 )}
               />
             </div>
+            {!user?.docspaceAccount && (
+              <div className="pt-3 pb-2">
+                {t(
+                  "settings.authorization.subtitle.address",
+                  "Your connected DocSpace address is",
+                )}{" "}
+                <span className="font-semibold text-pipedrive-color-light-green-600 dark:text-pipedrive-color-dark-green-600">
+                  {settings.url}
+                </span>
+              </div>
+            )}
           </div>
           {user?.docspaceAccount && (
             <>
@@ -290,11 +301,15 @@ export const AuthorizationSetting: React.FC = () => {
             </>
           )}
           {!user?.docspaceAccount && (
-            <div className="max-w-[320px]">
+            <div className="max-w-[390px]">
               <form onSubmit={handleLogin}>
                 <div className="pl-5 pr-5 pb-2">
                   <OnlyofficeInput
                     text={t("settings.authorization.inputs.email", "Email")}
+                    placeholder={t(
+                      "settings.authorization.inputs.email",
+                      "Email",
+                    )}
                     valid={showValidationMessage ? !!email : true}
                     value={email}
                     disabled={saving}
@@ -304,6 +319,10 @@ export const AuthorizationSetting: React.FC = () => {
                 <div className="pl-5 pr-5 pb-2">
                   <OnlyofficeInput
                     text={t(
+                      "settings.authorization.inputs.password",
+                      "Password",
+                    )}
+                    placeholder={t(
                       "settings.authorization.inputs.password",
                       "Password",
                     )}

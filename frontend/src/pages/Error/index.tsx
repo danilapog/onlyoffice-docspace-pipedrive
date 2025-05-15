@@ -96,15 +96,15 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           subtitle: user?.isAdmin
             ? `${t(
                 "background.error.subtitle.docspace-connection",
-                "You are not connected to ONLYOFFICE DocSpace",
-              )}. ${t(
+                "You are not connected to ONLYOFFICE DocSpace.",
+              )} ${t(
                 "background.error.hint.admin.docspace-connection",
                 "Please go to the Connection Setting to configure ONLYOFFICE DocSpace app settings.",
               )}`
             : `${t(
                 "background.error.subtitle.plugin.not-active.message",
-                "ONLYOFFICE DocSpace App is not yet available",
-              )}. ${t(
+                "ONLYOFFICE DocSpace App is not yet available.",
+              )} ${t(
                 "background.error.subtitle.plugin.not-active.help",
                 "Please wait until a Pipedrive Administrator configures the app settings.",
               )}`,
@@ -208,8 +208,8 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           title: t("background.error.title.unreached", "Cannot be reached"),
           subtitle: `${t(
             "docspace.error.unreached",
-            "ONLYOFFICE DocSpace cannot be reached",
-          )}. 
+            "ONLYOFFICE DocSpace cannot be reached.",
+          )} 
               ${
                 user?.isAdmin
                   ? t(
@@ -237,7 +237,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           title: t("background.error.title.not-available", "Not yet available"),
           subtitle: `${t(
             "background.error.title.docspace-invalid-api-key",
-            "ONLYOFFICE DocSpace API Key is invalid",
+            "The ONLYOFFICE DocSpace API Key is invalid.",
           )} ${
             user?.isAdmin
               ? t(
@@ -265,7 +265,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
           Icon: <CommonError />,
           title: t(
             "background.error.title.webhook.is-not-installed",
-            "Synchronization Warning",
+            "Synchronization warning",
           ),
           subtitle: user?.isAdmin
             ? t(
@@ -278,7 +278,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
               ),
           button: user?.isAdmin
             ? {
-                text: t("button.reinstall", "Reinstall plugin"),
+                text: t("button.reinstall", "Reinstall app"),
                 onClick: () =>
                   window.open(
                     `${process.env.BACKEND_URL}/oauth2/authorization/pipedrive`,

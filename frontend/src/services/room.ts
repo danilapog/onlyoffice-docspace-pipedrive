@@ -30,7 +30,9 @@ export const getRoom = async (
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
     retries: 2,
-    retryCondition: (error) => error.status !== 200,
+    retryCondition: (error) =>
+      axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+      (error.response?.status !== undefined && error.response.status >= 500),
     retryDelay: (count) => count * 50,
     shouldResetTimeout: true,
   });
@@ -78,12 +80,6 @@ export const requestAccessToRoom = async (
 ) => {
   const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
-  axiosRetry(client, {
-    retries: 1,
-    retryCondition: (error) => error.status === 429,
-    retryDelay: (count) => count * 50,
-    shouldResetTimeout: true,
-  });
 
   const response = await client<RoomResponse>({
     method: "POST",

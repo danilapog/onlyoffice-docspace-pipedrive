@@ -33,8 +33,10 @@ export const OnlyofficeSubtitle: React.FC<SubtitleProps> = ({
   const style = cx({
     "font-normal": !!text,
     "text-center": center,
-    "text-sm": !large,
+    "text-xs": !large,
     "text-base": large,
+    "text-onlyoffice-custom-ligth-subtitle dark:text-onlyoffice-custom-dark-subtitle":
+      true,
   });
 
   return <p className={style}>{text}</p>;

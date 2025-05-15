@@ -54,7 +54,7 @@ export const OnlyofficeDropdownButton: React.FC<DropdownButtonProps> = ({
 }) => {
   const classes = cx({
     "flex justify-center items-center p-1": true,
-    "tracking-wide text-base font-bold text-ellipsis truncate": true,
+    "text-base font-bold text-ellipsis truncate": true,
     "h-[32px]": true,
     "w-full": fullWidth,
     "cursor-pointer": !disabled,
@@ -188,7 +188,7 @@ export const OnlyofficeDropdownButton: React.FC<DropdownButtonProps> = ({
                 <button
                   type="button"
                   className="w-full text-left px-2 py-[6px] rounded
-                    tracking-wide text-base text-ellipsis
+                    text-base text-ellipsis
                     hover:bg-pipedrive-color-light-blue-600 hover:text-white
                     dark:hover:bg-pipedrive-color-dark-blue-600"
                   onClick={() => {

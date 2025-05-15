@@ -31,7 +31,3 @@ export type DocspaceAccount = {
   userName: string;
   passwordHash: string;
 };
-
-export type DocspaceSettings = {
-  url: string;
-};

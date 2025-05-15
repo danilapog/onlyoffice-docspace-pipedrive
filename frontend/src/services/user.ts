@@ -27,7 +27,9 @@ export const getUser = async (pipedriveToken: PipedriveToken) => {
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
   axiosRetry(client, {
     retries: 2,
-    retryCondition: (error) => error.status !== 200,
+    retryCondition: (error) =>
+      axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+      (error.response?.status !== undefined && error.response.status >= 500),
     retryDelay: (count) => count * 50,
     shouldResetTimeout: true,
   });
@@ -53,12 +55,6 @@ export const putDocspaceAccount = async (
 ) => {
   const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
-  axiosRetry(client, {
-    retries: 1,
-    retryCondition: (error) => error.status === 429,
-    retryDelay: (count) => count * 50,
-    shouldResetTimeout: true,
-  });
 
   await client({
     method: "PUT",
@@ -79,12 +75,6 @@ export const putDocspaceAccount = async (
 export const deleteDocspaceAccount = async (pipedriveToken: PipedriveToken) => {
   const token = await pipedriveToken.getValue();
   const client = axios.create({ baseURL: process.env.BACKEND_URL });
-  axiosRetry(client, {
-    retries: 1,
-    retryCondition: (error) => error.status === 429,
-    retryDelay: (count) => count * 50,
-    shouldResetTimeout: true,
-  });
 
   await client({
     method: "DELETE",

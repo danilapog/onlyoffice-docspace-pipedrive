@@ -164,8 +164,24 @@ export const ConnectionSettings: React.FC = () => {
             )}
           />
         </div>
+        {!settings?.url && (
+          <div className="pt-3 pb-2">
+            {t(
+              "settings.connection.subtitle.connect",
+              "Connect your ONLYOFFICE DocSpace to Pipedrive",
+            )}
+          </div>
+        )}
+        {!!settings?.url && (
+          <div className="pt-3 pb-2">
+            {t(
+              "settings.connection.subtitle.change",
+              "Change address or disconnect your ONLYOFFICE DocSpace from Pipedrive",
+            )}
+          </div>
+        )}
       </div>
-      <div className="max-w-[320px]">
+      <div className="max-w-[390px]">
         <form onSubmit={handleConnect}>
           <div className="pl-5 pr-5 pb-2">
             <OnlyofficeInput
@@ -186,9 +202,10 @@ export const ConnectionSettings: React.FC = () => {
                 "settings.connection.inputs.api-key.title",
                 "ONLYOFFICE DocSpace API key",
               )}
+              placeholder="***********"
               description={t(
                 "settings.connection.inputs.api-key.description",
-                "API key author should be DocSpace admin and key should have access sopes(Profile - Read, Contacts - Write, Rooms - Write)",
+                "The API key must be created by a DocSpace admin and should include the following access scopes: Profile (Read), Contacts (Write), and Rooms (Write).",
               )}
               valid={showValidationMessage ? !!apiKey : true}
               disabled={(connecting || !!settings?.url) && !changing}
