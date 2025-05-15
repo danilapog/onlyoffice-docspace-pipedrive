@@ -29,4 +29,20 @@ public class SettingsValidationException extends RuntimeException {
 
         this.errorCode = errorCode;
     }
+
+    public enum ErrorCode {
+        DOCSPACE_CAN_NOT_BE_REACHED("DocSpace can not be reached"),
+        DOCSPACE_API_KEY_IS_INVALID("DocSpace API Key is invalid"),
+        DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN("DocSpace API Key owner is not DocSpace Admin");
+
+        private final String message;
+
+        ErrorCode(final String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
 }

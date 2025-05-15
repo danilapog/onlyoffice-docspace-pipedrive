@@ -109,17 +109,13 @@ public class RoomController {
             createdRoom = roomService.create(currentUser.getClientId(), room);
         }
 
-        try {
-            eventPublisher.publishEvent(
-                    new AddRoomToPipedriveDealEvent(this,
-                            currentUser.getClientId(),
-                            pipedriveDeal,
-                            createdRoom.getRoomId()
-                    )
-            );
-        } catch (Exception e) {
-            log.warn(e.getMessage(), e);
-        }
+        eventPublisher.publishEvent(
+                new AddRoomToPipedriveDealEvent(this,
+                        currentUser.getClientId(),
+                        pipedriveDeal,
+                        createdRoom.getRoomId()
+                )
+        );
 
         return ResponseEntity.ok(roomMapper.roomToRoomResponse(createdRoom));
     }

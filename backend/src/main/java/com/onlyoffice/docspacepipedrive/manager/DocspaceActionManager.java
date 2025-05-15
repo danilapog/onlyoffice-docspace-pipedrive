@@ -30,6 +30,8 @@ import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.User;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
+import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIdNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SharedGroupIsNotPresentInResponse;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
@@ -46,6 +48,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -63,6 +66,10 @@ public class DocspaceActionManager {
         Client client = clientService.findById(currentUser.getClientId());
         Settings settings = settingsService.findByClientId(currentUser.getClientId());
         ApiKey apiKey = settings.getApiKey();
+
+        if (Objects.isNull(apiKey)) {
+            throw new DocspaceApiKeyNotFoundException(currentUser.getClientId());
+        }
 
         List<User> users = userService.findAllByClientId(currentUser.getClientId());
         List<UUID> members = users.stream()
@@ -118,21 +125,20 @@ public class DocspaceActionManager {
                     Collections.singletonList(docspaceAccountId),
                     null
             );
-        } catch (WebClientResponseException | SharedGroupIdNotFoundException e) {
-            if (e instanceof SharedGroupIdNotFoundException) {
-                initSharedGroup();
-                return;
-            }
-
-            if (e instanceof WebClientResponseException
-                    && ((WebClientResponseException) e).getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+        } catch (SharedGroupIdNotFoundException e) {
+            initSharedGroup();
+        } catch (DocspaceWebClientResponseException e) {
+            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 settingsService.saveSharedGroup(
                         currentUser.getClientId(),
                         null
                 );
 
                 initSharedGroup();
+                return;
             }
+
+            throw e;
         }
     }
 

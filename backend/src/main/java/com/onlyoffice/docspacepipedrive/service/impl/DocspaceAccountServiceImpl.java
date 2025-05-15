@@ -39,6 +39,11 @@ public class DocspaceAccountServiceImpl implements DocspaceAccountService {
     private final DocspaceAccountRepository docspaceAccountRepository;
 
     @Override
+    public List<DocspaceAccount> findAllByClientIdAndUserIds(final Long clientId, final List<Long> userIds) {
+        return docspaceAccountRepository.findAllByUser_Client_IdAndUser_UserIdIn(clientId, userIds);
+    }
+
+    @Override
     public DocspaceAccount findById(final Long id) {
         return docspaceAccountRepository.findById(id)
                 .orElse(null);

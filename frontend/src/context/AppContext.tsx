@@ -74,6 +74,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const appContextProviderValue = useMemo(() => {
     const reloadAppContext = () => {
       setReload(!reload);
+      setAppError(undefined);
       setLoading(true);
     };
 

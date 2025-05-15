@@ -18,60 +18,32 @@
 
 package com.onlyoffice.docspacepipedrive.web.controller;
 
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceAccountAlreadyExistsException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyInvalidException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
-import com.onlyoffice.docspacepipedrive.exceptions.PipedriveAccessDeniedException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
-import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsValidationException;
 import com.onlyoffice.docspacepipedrive.web.dto.ErrorResponse;
-import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Map;
 
 @RestControllerAdvice
 public class ExceptionHandlerController {
-    @ExceptionHandler(RoomNotFoundException.class)
-    public ResponseEntity<ErrorResponse> entityNotFound(RoomNotFoundException e) {
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(
-                        new ErrorResponse(
-                                HttpStatus.NOT_FOUND.value(),
-                                e.getLocalizedMessage(),
-                                ErrorResponse.Provider.INTEGRATION_APP
-                        )
-                );
-    }
-
     @ExceptionHandler(PipedriveWebClientResponseException.class)
     public ResponseEntity<ErrorResponse> pipedriveWebClientResponseException(PipedriveWebClientResponseException e) {
         return ResponseEntity.status(e.getStatusCode())
                 .body(
                         new ErrorResponse(
-                                e.getStatusCode().value(),
+                                PipedriveWebClientResponseException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
-                                ErrorResponse.Provider.PIPEDRIVE
-                        )
-                );
-    }
-
-    @ExceptionHandler(PipedriveAccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> pipedriveAccessDeniedException(PipedriveAccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(
-                        new ErrorResponse(
-                                HttpStatus.FORBIDDEN.value(),
-                                e.getLocalizedMessage(),
-                                ErrorResponse.Provider.PIPEDRIVE
+                                null
                         )
                 );
     }
@@ -82,9 +54,9 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(
                         new ErrorResponse(
-                                HttpStatus.UNAUTHORIZED.value(),
+                                PipedriveOAuth2AuthorizationException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
-                                ErrorResponse.Provider.PIPEDRIVE
+                                null
                         )
                 );
     }
@@ -94,33 +66,21 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(e.getStatusCode())
                 .body(
                         new ErrorResponse(
-                                e.getStatusCode().value(),
+                                DocspaceWebClientResponseException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
-                                ErrorResponse.Provider.DOCSPACE
-                        )
-                );
-    }
-
-    @ExceptionHandler(DocspaceAccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> docspaceAccessDeniedException(DocspaceAccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(
-                        new ErrorResponse(
-                                HttpStatus.FORBIDDEN.value(),
-                                e.getLocalizedMessage(),
-                                ErrorResponse.Provider.DOCSPACE
+                                null
                         )
                 );
     }
 
     @ExceptionHandler(DocspaceUrlNotFoundException.class)
     public ResponseEntity<ErrorResponse> docspaceUrlNotFoundException(DocspaceUrlNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(
                         new ErrorResponse(
-                                HttpStatus.FORBIDDEN.value(),
+                                DocspaceUrlNotFoundException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
-                                ErrorResponse.Provider.INTEGRATION_APP
+                                null
                         )
                 );
     }
@@ -130,21 +90,25 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(
                         new ErrorResponse(
-                                HttpStatus.FORBIDDEN.value(),
+                                DocspaceAccountAlreadyExistsException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
-                                ErrorResponse.Provider.INTEGRATION_APP
+                                null
                         )
                 );
     }
 
     @ExceptionHandler(SettingsValidationException.class)
-    public ResponseEntity<SettingsErrorResponse> settingsValidationException(
+    public ResponseEntity<ErrorResponse> settingsValidationException(
             SettingsValidationException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(
-                        new SettingsErrorResponse(
-                                e.getErrorCode().toString(),
-                                e.getErrorCode().getMessage()
+                        new ErrorResponse(
+                                SettingsValidationException.class.getSimpleName(),
+                                e.getMessage(),
+                                Map.of(
+                                        "validationError", e.getErrorCode().toString(),
+                                        "validationMessage", e.getErrorCode().getMessage()
+                                )
                         )
                 );
     }
@@ -154,9 +118,9 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(
                         new ErrorResponse(
-                                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                                DocspaceApiKeyNotFoundException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
-                                ErrorResponse.Provider.INTEGRATION_APP
+                                null
                         )
                 );
     }
@@ -166,9 +130,9 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(
                         new ErrorResponse(
-                                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                                DocspaceApiKeyInvalidException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
-                                ErrorResponse.Provider.INTEGRATION_APP
+                                null
                         )
                 );
     }

@@ -23,7 +23,6 @@ import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceResponse;
 import com.onlyoffice.docspacepipedrive.client.docspace.dto.DocspaceUser;
 import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
-import com.onlyoffice.docspacepipedrive.exceptions.ErrorCode;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -71,7 +70,7 @@ public class DocspaceSettingsValidator {
                 .orElse(null);
 
         if (Objects.isNull(docspaceApiKey)) {
-            throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
+            throw new SettingsValidationException(SettingsValidationException.ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
         }
 
         List<String> scopes = docspaceApiKey.getPermissions();
@@ -81,14 +80,16 @@ public class DocspaceSettingsValidator {
                 || !scopes.contains("accounts:write")
                 || !scopes.contains("rooms:write"))
         ) {
-            throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
+            throw new SettingsValidationException(SettingsValidationException.ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
         }
     }
 
     public UUID checkApiKeyOwner(final WebClient webClient) {
         DocspaceUser docspaceUser = getUser(webClient);
         if (!docspaceUser.getIsAdmin()) {
-            throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN);
+            throw new SettingsValidationException(
+                    SettingsValidationException.ErrorCode.DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN
+            );
         }
 
         return docspaceUser.getId();
@@ -105,11 +106,11 @@ public class DocspaceSettingsValidator {
         } catch (WebClientRequestException e) {
             log.warn("Error while getting DocSpace API keys", e);
 
-            throw new SettingsValidationException(ErrorCode.DOCSPACE_CAN_NOT_BE_REACHED);
+            throw new SettingsValidationException(SettingsValidationException.ErrorCode.DOCSPACE_CAN_NOT_BE_REACHED);
         } catch (WebClientResponseException e) {
             log.warn("Error while getting DocSpace API keys", e);
 
-            throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
+            throw new SettingsValidationException(SettingsValidationException.ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
         }
     }
 
@@ -124,11 +125,13 @@ public class DocspaceSettingsValidator {
         } catch (WebClientRequestException e) {
             log.warn("Error while getting DocSpace API key owner", e);
 
-            throw new SettingsValidationException(ErrorCode.DOCSPACE_CAN_NOT_BE_REACHED);
+            throw new SettingsValidationException(SettingsValidationException.ErrorCode.DOCSPACE_CAN_NOT_BE_REACHED);
         } catch (WebClientResponseException e) {
             log.warn("Error while getting DocSpace API key owner", e);
 
-            throw new SettingsValidationException(ErrorCode.DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN);
+            throw new SettingsValidationException(
+                    SettingsValidationException.ErrorCode.DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN
+            );
         }
     }
 

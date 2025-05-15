@@ -16,16 +16,8 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.web.dto.settings;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@AllArgsConstructor
-@Data
-@NoArgsConstructor
-public class SettingsErrorResponse {
-    private String errorCode;
-    private String message;
-}
+export type ErrorResponse = {
+  cause: string;
+  message: string;
+  params: Record<string, string>;
+};

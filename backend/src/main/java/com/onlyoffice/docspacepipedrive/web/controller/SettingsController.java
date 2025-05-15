@@ -22,9 +22,6 @@ import com.onlyoffice.docspacepipedrive.entity.Settings;
 import com.onlyoffice.docspacepipedrive.entity.settings.ApiKey;
 import com.onlyoffice.docspacepipedrive.events.settings.SettingsDeleteEvent;
 import com.onlyoffice.docspacepipedrive.events.settings.SettingsUpdateEvent;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceApiKeyNotFoundException;
-import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
-import com.onlyoffice.docspacepipedrive.exceptions.SettingsNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceSettingsValidator;
 import com.onlyoffice.docspacepipedrive.manager.PipedriveActionManager;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
@@ -45,6 +42,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 
 @RestController
 @RequestMapping("/api/v1/settings")
@@ -61,29 +60,19 @@ public class SettingsController {
 
     @GetMapping
     public ResponseEntity<SettingsResponse> get(@AuthenticationPrincipal OAuth2PipedriveUser currentUser) {
-        Settings settings;
-        try {
-            settings = settingsService.findByClientId(currentUser.getClientId());
-        } catch (SettingsNotFoundException e) {
-            settings = new Settings();
+        Settings settings = settingsService.findByClientId(currentUser.getClientId());
+
+        ApiKey apiKey = settings.getApiKey();
+
+        if (Objects.isNull(apiKey)) {
+            apiKey = new ApiKey();
         }
 
         SettingsResponse settingsResponse = new SettingsResponse();
 
-        try {
-            settingsResponse.setUrl(settings.getUrl());
-        } catch (DocspaceUrlNotFoundException e) {
-            settingsResponse.setUrl("");
-        }
-
-        try {
-            settingsResponse.setApiKey(formatApiKey(settings.getApiKey().getValue()));
-            settingsResponse.setIsApiKeyValid(settings.getApiKey().isValid());
-        } catch (DocspaceApiKeyNotFoundException e) {
-            settingsResponse.setApiKey("");
-            settingsResponse.setIsApiKeyValid(false);
-        }
-
+        settingsResponse.setUrl(settings.getUrl());
+        settingsResponse.setApiKey(formatApiKey(apiKey.getValue()));
+        settingsResponse.setIsApiKeyValid(apiKey.isValid());
         settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled(currentUser.getClientId()));
 
         return ResponseEntity.ok(settingsResponse);
@@ -106,21 +95,16 @@ public class SettingsController {
         );
 
         Settings savedSettings = settingsService.put(currentUser.getClientId(), settings);
+        ApiKey savedApiKey = savedSettings.getApiKey();
 
         eventPublisher.publishEvent(new SettingsUpdateEvent(this, currentUser.getClientId(), savedSettings));
 
         SettingsResponse settingsResponse = new SettingsResponse();
 
-        try {
-            settingsResponse.setUrl(savedSettings.getUrl());
-            settingsResponse.setApiKey(formatApiKey(savedSettings.getApiKey().getValue()));
-            settingsResponse.setIsApiKeyValid(savedSettings.getApiKey().isValid());
-            settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled(
-                    currentUser.getClientId()
-            ));
-        } catch (DocspaceUrlNotFoundException e) {
-            settingsResponse.setUrl("");
-        }
+        settingsResponse.setUrl(savedSettings.getUrl());
+        settingsResponse.setApiKey(formatApiKey(savedApiKey.getValue()));
+        settingsResponse.setIsApiKeyValid(savedApiKey.isValid());
+        settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled(currentUser.getClientId()));
 
         return ResponseEntity.ok(settingsResponse);
     }
@@ -145,17 +129,23 @@ public class SettingsController {
                 currentUser.getClientId(),
                 settings
         );
+        ApiKey savedApiKey = savedSettings.getApiKey();
 
         SettingsResponse settingsResponse = new SettingsResponse();
+
         settingsResponse.setUrl(savedSettings.getUrl());
-        settingsResponse.setApiKey(formatApiKey(savedSettings.getApiKey().getValue()));
-        settingsResponse.setIsApiKeyValid(settings.getApiKey().isValid());
+        settingsResponse.setApiKey(formatApiKey(savedApiKey.getValue()));
+        settingsResponse.setIsApiKeyValid(savedApiKey.isValid());
         settingsResponse.setIsWebhooksInstalled(pipedriveActionManager.isWebhooksInstalled(currentUser.getClientId()));
 
         return ResponseEntity.ok(settingsResponse);
     }
 
     private String formatApiKey(final String apiKey) {
+        if (Objects.isNull(apiKey) || apiKey.isEmpty()) {
+            return apiKey;
+        }
+
         String prefix = apiKey.substring(0, API_KEY_PREFIX_LENGTH);
         String suffix = apiKey.substring(apiKey.length() - API_KEY_SUFFIX_LENGTH);
 

@@ -22,6 +22,7 @@ import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -30,4 +31,5 @@ public interface DocspaceAccountRepository extends JpaRepository<DocspaceAccount
     Optional<DocspaceAccount> findByUser_Client_IdAndUser_UserId(Long clientId, Long userId);
     void deleteByUser_Client_Id(Long clientId);
     void deleteByUser_Client_IdAndUser_UserId(Long clientId, Long userId);
+    List<DocspaceAccount> findAllByUser_Client_IdAndUser_UserIdIn(Long clientId, List<Long> userIds);
 }

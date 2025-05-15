@@ -24,6 +24,7 @@ import java.util.List;
 
 
 public interface DocspaceAccountService {
+    List<DocspaceAccount> findAllByClientIdAndUserIds(Long clientId, List<Long> userIds);
     DocspaceAccount findById(Long id);
     DocspaceAccount findByClientIdAndUserId(Long clientId, Long userId);
     DocspaceAccount save(Long clientId, Long userId, DocspaceAccount docspaceAccount);

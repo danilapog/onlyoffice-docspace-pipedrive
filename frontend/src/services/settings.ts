@@ -70,7 +70,7 @@ export const putSettings = async (
       url,
       apiKey,
     },
-    timeout: 10000,
+    timeout: 20000,
   });
 
   return response.data;
