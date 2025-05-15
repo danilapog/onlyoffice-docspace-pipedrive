@@ -70,6 +70,7 @@ module.exports = {
             colors: {
                 onlyoffice: "#0F4071",
 
+                "onlyoffice-custom-ligth-subtitle": "#73767C",
                 "pipedrive-color-light-neutral-100": "#f5f5f6",
                 "pipedrive-color-light-neutral-500": "#93949a",
                 "pipedrive-color-light-neutral-700": "#65686f",
@@ -83,6 +84,7 @@ module.exports = {
                 "pipedrive-color-light-green-700": "#077838",
                 "pipedrive-color-light-divider-strong": "rgba(33, 35, 44, .24)",
 
+                "onlyoffice-custom-dark-subtitle": "#72747A",
                 "pipedrive-color-dark-neutral-100": "#1e2029",
                 "pipedrive-color-dark-neutral-200": "#2a2c35",
                 "pipedrive-color-dark-neutral-500": "#686970",
