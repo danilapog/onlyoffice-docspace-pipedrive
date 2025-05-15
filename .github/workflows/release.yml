@@ -2,13 +2,8 @@ name: Release
 
 on:
   push:
-    branches: [master]
-    paths-ignore:
-      - '.github/**'
-      - 'hooks/**'
-      - '**/AUTHORS.md'
-      - '**/LICENSE'
-      - '**/README.md'
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
