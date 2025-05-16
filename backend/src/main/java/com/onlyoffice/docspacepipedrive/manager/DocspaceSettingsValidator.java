@@ -60,7 +60,7 @@ public class DocspaceSettingsValidator {
                 })
                 .build();
 
-        checkApiKey(webClient, apiKey.getValue());
+        checkApiKey(webClient);
         UUID apiKeyOwnerId = checkApiKeyOwner(webClient);
 
         apiKey.setOwnerId(apiKeyOwnerId);
@@ -68,15 +68,8 @@ public class DocspaceSettingsValidator {
         return settings;
     }
 
-    public void checkApiKey(final WebClient webClient, final String apiKey) {
-        List<DocspaceApiKey> docspaceApiKeys = getApiKeys(webClient);
-
-        DocspaceApiKey docspaceApiKey = docspaceApiKeys.stream()
-                .filter(key -> apiKey.endsWith(
-                        key.getKeyPostfix())
-                )
-                .findFirst()
-                .orElse(null);
+    public void checkApiKey(final WebClient webClient) {
+        DocspaceApiKey docspaceApiKey = getApiKey(webClient);
 
         if (Objects.isNull(docspaceApiKey)) {
             throw new SettingsValidationException(SettingsValidationException.ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
@@ -114,13 +107,13 @@ public class DocspaceSettingsValidator {
         return docspaceUser.getId();
     }
 
-    private List<DocspaceApiKey> getApiKeys(final WebClient webClient) {
+    private DocspaceApiKey getApiKey(final WebClient webClient) {
         try {
             return webClient.get()
-                    .uri("api/2.0/keys")
+                    .uri("api/2.0/keys/@self")
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<List<DocspaceApiKey>>>() { })
-                    .map(DocspaceResponse<List<DocspaceApiKey>>::getResponse)
+                    .bodyToMono(new ParameterizedTypeReference<DocspaceResponse<DocspaceApiKey>>() { })
+                    .map(DocspaceResponse<DocspaceApiKey>::getResponse)
                     .block();
         } catch (WebClientRequestException e) {
             log.warn("Error while getting DocSpace API keys", e);
