@@ -205,7 +205,7 @@ const RoomPage: React.FC = () => {
           // @ts-expect-error Error in docspace-sdk-js types
           Number(roomType),
           undefined,
-          ["Pipedrive Deal"],
+          ["Pipedrive Integration"],
         )
         .then(async (data) => {
           const docspaceRoom = data as { id: string; status: number };
