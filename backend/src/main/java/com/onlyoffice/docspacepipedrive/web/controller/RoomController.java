@@ -31,6 +31,7 @@ import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.service.RoomService;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.room.RoomResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -93,7 +94,7 @@ public class RoomController {
     @PostMapping("/{dealId}")
     public ResponseEntity<RoomResponse> save(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
                                                @PathVariable Long dealId,
-                                               @RequestBody RoomRequest request) {
+                                               @Valid @RequestBody RoomRequest request) {
         PipedriveDeal pipedriveDeal = pipedriveClient.getDeal(dealId);
 
         Room relatedRoom;

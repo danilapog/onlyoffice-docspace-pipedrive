@@ -25,6 +25,7 @@ import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.service.DocspaceAccountService;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.docspaceaccount.DocspaceAccountResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
@@ -79,7 +80,7 @@ public class UserController {
     @PutMapping(path = "/docspace-account")
     @Transactional
     public ResponseEntity<Void> putDocspaceAccount(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
-                                                   @RequestBody DocspaceAccountRequest request) {
+                                                   @Valid @RequestBody DocspaceAccountRequest request) {
         DocspaceAccount docspaceAccount = DocspaceAccount.builder()
                 .uuid(UUID.fromString(request.getId()))
                 .email(request.getUserName())

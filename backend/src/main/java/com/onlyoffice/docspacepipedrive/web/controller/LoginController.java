@@ -20,6 +20,7 @@ package com.onlyoffice.docspacepipedrive.web.controller;
 
 import com.onlyoffice.docspacepipedrive.service.UserService;
 import com.onlyoffice.docspacepipedrive.web.dto.login.UninstallRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -42,7 +43,7 @@ public class LoginController {
 
     @DeleteMapping("oauth2/code/pipedrive")
     @Transactional
-    public void uninstall(@RequestBody UninstallRequest request) {
+    public void uninstall(@Valid @RequestBody UninstallRequest request) {
         userService.deleteByUserIdAndClientId(request.getUserId(), request.getCompanyId());
     }
 }

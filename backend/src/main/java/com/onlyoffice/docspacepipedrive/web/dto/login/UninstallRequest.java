@@ -20,6 +20,7 @@ package com.onlyoffice.docspacepipedrive.web.dto.login;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UninstallRequest {
+    @NotNull
     private Long companyId;
+    @NotNull
     private Long userId;
 }

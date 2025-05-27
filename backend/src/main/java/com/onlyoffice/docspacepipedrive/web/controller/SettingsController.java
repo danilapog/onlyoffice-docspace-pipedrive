@@ -28,6 +28,7 @@ import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
 import com.onlyoffice.docspacepipedrive.service.SettingsService;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsRequest;
 import com.onlyoffice.docspacepipedrive.web.dto.settings.SettingsResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -81,7 +82,7 @@ public class SettingsController {
     @PutMapping
     @PreAuthorize("hasAuthority('DEAL_ADMIN')")
     public ResponseEntity<SettingsResponse> save(@AuthenticationPrincipal OAuth2PipedriveUser currentUser,
-                                                 @RequestBody SettingsRequest request) {
+                                                 @Valid @RequestBody SettingsRequest request) {
         ApiKey apiKey = ApiKey.builder()
                 .value(request.getApiKey())
                 .valid(true)
