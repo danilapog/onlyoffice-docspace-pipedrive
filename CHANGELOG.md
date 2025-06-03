@@ -11,6 +11,7 @@
 - invite a "Shared Group" to a room attached to a deal with the "Content Creator" rights
 - invite deal followers to a room attached to a deal with the "Content Creator" rights
 - using API for create room with tags
+- by default create Public Room
 
 ## 1.0.1
 ## Changed

@@ -48,12 +48,12 @@ import { ErrorResponse } from "src/types/error";
 const DOCSPACE_FRAME_ID = "docspace-frame";
 const DOCSPACE_ROOM_TYPES = [
   {
-    id: 2,
-    name: "collaboration",
-  },
-  {
     id: 6,
     name: "public",
+  },
+  {
+    id: 2,
+    name: "collaboration",
   },
   {
     id: 8,
