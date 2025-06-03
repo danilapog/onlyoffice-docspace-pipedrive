@@ -46,6 +46,7 @@
   "room.login.description": "ONLYOFFICE DocSpaceにログインして、取引関連のドキュメントを簡単に共同編集できます。",
   "room.request-access.ok": "ONLYOFFICE DocSpaceルームへのアクセスが許可されました。",
   "room.request-access.error": "ONLYOFFICE DocSpaceルームへのアクセスエラー",
+  "room.request-access.forbidden": "",
   "settings.authorization.deleting.ok": "ONLYOFFICE DocSpace認証が正常に削除されました",
   "settings.authorization.saving.ok": "ONLYOFFICE DocSpace認証が正常に保存されました",
   "settings.authorization.saving.error": "ONLYOFFICE DocSpace認証を保存できませんでした",

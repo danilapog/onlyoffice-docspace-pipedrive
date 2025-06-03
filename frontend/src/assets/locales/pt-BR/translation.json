@@ -46,6 +46,7 @@
   "room.login.description": "Faça login no ONLYOFFICE DocSpace para colaborar facilmente nos documentos relacionados ao Deal.",
   "room.request-access.ok": "Você obteve acesso com sucesso à sala do ONLYOFFICE DocSpace",
   "room.request-access.error": "Erro ao obter acesso à sala do ONLYOFFICE DocSpace",
+  "room.request-access.forbidden": "",
   "settings.authorization.deleting.ok": "A autorização do ONLYOFFICE DocSpace foi excluída com sucesso",
   "settings.authorization.saving.ok": "A autorização do ONLYOFFICE DocSpace foi salva com sucesso",
   "settings.authorization.saving.error": "Não foi possível salvar a autorização do ONLYOFFICE DocSpace",

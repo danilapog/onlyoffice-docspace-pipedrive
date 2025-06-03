@@ -25,6 +25,7 @@ import com.onlyoffice.docspacepipedrive.exceptions.DocspaceUrlNotFoundException;
 import com.onlyoffice.docspacepipedrive.exceptions.DocspaceWebClientResponseException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveOAuth2AuthorizationException;
 import com.onlyoffice.docspacepipedrive.exceptions.PipedriveWebClientResponseException;
+import com.onlyoffice.docspacepipedrive.exceptions.RequestAccessToRoomException;
 import com.onlyoffice.docspacepipedrive.exceptions.SettingsValidationException;
 import com.onlyoffice.docspacepipedrive.web.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -131,6 +132,18 @@ public class ExceptionHandlerController {
                 .body(
                         new ErrorResponse(
                                 DocspaceApiKeyInvalidException.class.getSimpleName(),
+                                e.getLocalizedMessage(),
+                                null
+                        )
+                );
+    }
+
+    @ExceptionHandler(RequestAccessToRoomException.class)
+    public ResponseEntity<ErrorResponse> requestAccessToRoomException(RequestAccessToRoomException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(
+                        new ErrorResponse(
+                                RequestAccessToRoomException.class.getSimpleName(),
                                 e.getLocalizedMessage(),
                                 null
                         )

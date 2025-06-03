@@ -46,6 +46,7 @@
   "room.login.description": "Войдите в ONLYOFFICE DocSpace, чтобы легко работать над документами, связанными со сделкой.",
   "room.request-access.ok": "Вам успешно предоставлен доступ к комнате ONLYOFFICE DocSpace",
   "room.request-access.error": "Ошибка при получении доступа к комнате ONLYOFFICE DocSpace",
+  "room.request-access.forbidden": "",
   "settings.authorization.deleting.ok": "Авторизация ONLYOFFICE DocSpace успешно удалена",
   "settings.authorization.saving.ok": "Авторизация ONLYOFFICE DocSpace успешно сохранена",
   "settings.authorization.saving.error": "Не удалось сохранить авторизацию ONLYOFFICE DocSpace",

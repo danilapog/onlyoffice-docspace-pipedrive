@@ -46,6 +46,7 @@
   "room.login.description": "Melden Sie sich bei ONLYOFFICE DocSpace an, um gemeinsam an den Deal-Dokumenten zu arbeiten.",
   "room.request-access.ok": "Sie haben erfolgreich Zugang zum ONLYOFFICE DocSpace-Raum erhalten",
   "room.request-access.error": "Fehler beim Erhalten des Zugangs zum ONLYOFFICE DocSpace-Raum",
+  "room.request-access.forbidden": "",
   "settings.authorization.deleting.ok": "ONLYOFFICE DocSpace-Autorisierung wurde erfolgreich gelöscht",
   "settings.authorization.saving.ok": "ONLYOFFICE DocSpace-Autorisierung wurde erfolgreich gespeichert",
   "settings.authorization.saving.error": "ONLYOFFICE DocSpace-Autorisierung konnte nicht gespeichert werden",

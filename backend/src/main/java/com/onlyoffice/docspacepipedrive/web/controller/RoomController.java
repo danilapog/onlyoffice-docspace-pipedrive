@@ -24,6 +24,7 @@ import com.onlyoffice.docspacepipedrive.client.pipedrive.dto.PipedriveDealFollow
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import com.onlyoffice.docspacepipedrive.entity.Room;
 import com.onlyoffice.docspacepipedrive.events.deal.AddRoomToPipedriveDealEvent;
+import com.onlyoffice.docspacepipedrive.exceptions.RequestAccessToRoomException;
 import com.onlyoffice.docspacepipedrive.exceptions.RoomNotFoundException;
 import com.onlyoffice.docspacepipedrive.manager.DocspaceActionManager;
 import com.onlyoffice.docspacepipedrive.security.oauth.OAuth2PipedriveUser;
@@ -134,23 +135,21 @@ public class RoomController {
         List<PipedriveDealFollower> dealFollowers = pipedriveClient.getDealFollowers(dealId);
 
         boolean currentUserIsDealFollower = dealFollowers.stream()
-                .filter(dealFollower -> dealFollower.getUserId().equals(currentUser.getUserId()))
-                .findFirst()
-                .isPresent();
+                .anyMatch(dealFollower -> dealFollower.getUserId().equals(currentUser.getUserId()));
 
-        if (currentUserIsDealFollower) {
-            DocspaceAccount docspaceAccount = docspaceAccountService.findByClientIdAndUserId(
-                    currentUser.getClientId(),
-                    currentUser.getUserId()
-            );
-
-            docspaceActionManager.inviteListDocspaceAccountsToRoom(
-                    room.getRoomId(),
-                    Collections.singletonList(docspaceAccount)
-            );
-        } else {
-            docspaceActionManager.inviteSharedGroupToRoom(room.getRoomId());
+        if (!currentUserIsDealFollower) {
+            throw new RequestAccessToRoomException(currentUser.getClientId(), currentUser.getUserId());
         }
+
+        DocspaceAccount docspaceAccount = docspaceAccountService.findByClientIdAndUserId(
+                currentUser.getClientId(),
+                currentUser.getUserId()
+        );
+
+        docspaceActionManager.inviteListDocspaceAccountsToRoom(
+                room.getRoomId(),
+                Collections.singletonList(docspaceAccount)
+        );
 
         return ResponseEntity.ok().build();
     }

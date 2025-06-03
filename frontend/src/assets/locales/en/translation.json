@@ -46,6 +46,7 @@
   "room.login.description": "Log in to ONLYOFFICE DocSpace to easily collaborate on the deal-related documents.",
   "room.request-access.ok": "You have been successfully granted access to the ONLYOFFICE DocSpace room",
   "room.request-access.error": "Error getting access to the ONLYOFFICE DocSpace room",
+  "room.request-access.forbidden": "Error getting access to the ONLYOFFICE DocSpace room, because current user is not deal follower.",
   "settings.authorization.deleting.ok": "ONLYOFFICE DocSpace authorization has been successfully deleted",
   "settings.authorization.saving.ok": "ONLYOFFICE DocSpace authorization has been successfully saved",
   "settings.authorization.saving.error": "Could not save ONLYOFFICE DocSpace authorization",
