@@ -33,7 +33,13 @@ import { SettingsResponse } from "src/types/settings";
 import { AxiosError } from "axios";
 import { ErrorResponse } from "src/types/error";
 
-export const ConnectionSettings: React.FC = () => {
+export type ConnectionSettingsProps = {
+  onChangeSection(): void;
+};
+
+export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
+  onChangeSection,
+}) => {
   const { t } = useTranslation();
   const {
     user,
@@ -80,6 +86,8 @@ export const ConnectionSettings: React.FC = () => {
 
           if (changing) {
             reloadAppContext();
+          } else {
+            onChangeSection();
           }
         })
         .catch(async (e: AxiosError) => {

@@ -84,7 +84,11 @@ const SettingsPage: React.FC = () => {
             ))}
         </div>
         <div className="custom-scroll w-screen h-screen overflow-y-scroll overflow-x-hidden p-2">
-          {selectedSection === "conntection" && <ConnectionSettings />}
+          {selectedSection === "conntection" && (
+            <ConnectionSettings
+              onChangeSection={() => setSelectedSection("authorization")}
+            />
+          )}
           {selectedSection === "authorization" && <AuthorizationSetting />}
         </div>
       </div>
