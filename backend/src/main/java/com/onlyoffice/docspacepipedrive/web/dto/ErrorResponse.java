@@ -28,5 +28,5 @@ import java.util.Map;
 public class ErrorResponse {
     private String cause;
     private String message;
-    private Map<String, String> params;
+    private Map<String, Object> params;
 }

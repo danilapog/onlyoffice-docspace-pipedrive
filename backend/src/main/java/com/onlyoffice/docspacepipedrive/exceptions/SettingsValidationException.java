@@ -20,19 +20,28 @@ package com.onlyoffice.docspacepipedrive.exceptions;
 
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 public class SettingsValidationException extends RuntimeException {
     private final ErrorCode errorCode;
+    private final Map<String, Object> params;
 
     public SettingsValidationException(final ErrorCode errorCode) {
+        this(errorCode, null);
+    }
+
+    public SettingsValidationException(final ErrorCode errorCode, final Map<String, Object> params) {
         super(errorCode.getMessage());
 
         this.errorCode = errorCode;
+        this.params = params;
     }
 
     public enum ErrorCode {
         DOCSPACE_CAN_NOT_BE_REACHED("DocSpace can not be reached"),
         DOCSPACE_API_KEY_IS_INVALID("DocSpace API Key is invalid"),
+        DOCSPACE_API_KEY_IS_NOT_CONTAINS_REQUIRED_SCOPES("DocSpace API Key is not contains required scopes"),
         DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN("DocSpace API Key owner is not DocSpace Admin");
 
         private final String message;

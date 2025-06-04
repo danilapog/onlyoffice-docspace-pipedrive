@@ -32,13 +32,22 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 @Component
 @Slf4j
 public class DocspaceSettingsValidator {
+    private static final List<String> REQUIRED_SCOPES = Arrays.asList(
+            "accounts.self:read",
+            "accounts:write",
+            "rooms:write"
+    );
+
     public Settings validate(final Settings settings) {
         String url = settings.getUrl();
         ApiKey apiKey = settings.getApiKey();
@@ -74,13 +83,23 @@ public class DocspaceSettingsValidator {
         }
 
         List<String> scopes = docspaceApiKey.getPermissions();
-        if (Objects.nonNull(scopes) && !scopes.isEmpty()
-                && docspaceApiKey.getIsActive()
-                && (!scopes.contains("accounts.self:read")
-                || !scopes.contains("accounts:write")
-                || !scopes.contains("rooms:write"))
-        ) {
-            throw new SettingsValidationException(SettingsValidationException.ErrorCode.DOCSPACE_API_KEY_IS_INVALID);
+
+        if (scopes.isEmpty()) {
+            return;
+        }
+
+        List<String> missingScopes = new ArrayList<>();
+        for (String requiredScope: REQUIRED_SCOPES) {
+            if (!scopes.contains(requiredScope)) {
+                missingScopes.add(requiredScope);
+            }
+        }
+
+        if (!missingScopes.isEmpty()) {
+            throw new SettingsValidationException(
+                    SettingsValidationException.ErrorCode.DOCSPACE_API_KEY_IS_NOT_CONTAINS_REQUIRED_SCOPES,
+                    Map.of("missingScopes", missingScopes)
+            );
         }
     }
 
