@@ -338,7 +338,10 @@ const RoomPage: React.FC = () => {
     DOCSPACE_ROOM_TYPES.reduce((createRoomOptions, roomType) => {
       createRoomOptions.push({
         id: String(roomType.id),
-        label: t(`docspace.room.type.${roomType.name}`, roomType.name),
+        label: t(
+          `docspace.room.type.${roomType.name}.short-description`,
+          roomType.name,
+        ),
       });
       return createRoomOptions;
     }, new Array<DropdownButtonOptions>());
