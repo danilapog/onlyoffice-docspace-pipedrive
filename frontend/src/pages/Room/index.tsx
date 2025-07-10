@@ -19,7 +19,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
-import { Command, View } from "@pipedrive/app-extensions-sdk";
+import { Color, Command, View } from "@pipedrive/app-extensions-sdk";
 import { DocSpace } from "@onlyoffice/docspace-react";
 import {
   TFrameConfig,
@@ -48,10 +48,6 @@ import { ErrorResponse } from "src/types/error";
 const DOCSPACE_FRAME_ID = "docspace-frame";
 const DOCSPACE_ROOM_TYPES = [
   {
-    id: 1,
-    name: "form-filling-room",
-  },
-  {
     id: 6,
     name: "public",
   },
@@ -62,6 +58,10 @@ const DOCSPACE_ROOM_TYPES = [
   {
     id: 8,
     name: "vdr",
+  },
+  {
+    id: 1,
+    name: "form-filling-room",
   },
   {
     id: 5,
@@ -199,8 +199,43 @@ const RoomPage: React.FC = () => {
       });
   };
 
-  const handleCreateRoom = (roomType: string) => {
+  const getCreateRoomDialogTitle = (roomType: string) => {
+    const roomTypeName = DOCSPACE_ROOM_TYPES.find(
+      (docspaceRoomType) => String(docspaceRoomType.id) === roomType,
+    )?.name;
+
+    if (!roomTypeName) {
+      return "";
+    }
+
+    return `${t("button.create", "Create")} ${t(`docspace.room.type.${roomTypeName}`, roomTypeName)}`;
+  };
+
+  const getCreateRoomDialogDescription = (roomType: string) => {
+    const roomTypeName = DOCSPACE_ROOM_TYPES.find(
+      (docspaceRoomType) => String(docspaceRoomType.id) === roomType,
+    )?.name;
+
+    if (!roomTypeName) {
+      return "";
+    }
+
+    return t(`docspace.room.type.${roomTypeName}.description`, roomTypeName);
+  };
+
+  const handleCreateRoom = async (roomType: string) => {
     if (docspaceInstance.current && room) {
+      const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
+        title: getCreateRoomDialogTitle(roomType),
+        description: getCreateRoomDialogDescription(roomType),
+        okText: t("button.create", "Create"),
+        okColor: Color.PRIMARY,
+      });
+
+      if (!confirmed) {
+        return;
+      }
+
       setCreating(true);
 
       docspaceInstance.current
