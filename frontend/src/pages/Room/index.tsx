@@ -228,7 +228,7 @@ const RoomPage: React.FC = () => {
       const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
         title: getCreateRoomDialogTitle(roomType),
         description: getCreateRoomDialogDescription(roomType),
-        okText: t("button.create", "Create"),
+        okText: t("button.create.room", "Create room"),
         okColor: Color.PRIMARY,
       });
 
