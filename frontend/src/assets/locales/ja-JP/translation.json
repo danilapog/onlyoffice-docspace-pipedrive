@@ -41,6 +41,7 @@
   "docspace.error.loading": "ONLYOFFICE DocSpace の読み込みエラー",
   "docspace.error.payment": "現在ご契約中のプランのルーム数が上限に達しているため、このルームの作成はできません。",
   "docspace.link.payments": "プランのアップグレード",
+  "docspace.room.type.form-filling-room": "",
   "docspace.room.type.collaboration": "コラボレーションルーム",
   "docspace.room.type.public": "パブリックルーム",
   "docspace.room.type.vdr": "バーチャルデータルーム",

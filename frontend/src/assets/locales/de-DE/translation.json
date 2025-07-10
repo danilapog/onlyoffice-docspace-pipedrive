@@ -41,6 +41,7 @@
   "docspace.error.loading": "Fehler beim Laden von ONLYOFFICE DocSpace",
   "docspace.error.payment": "Das Erstellen dieses Raums ist nicht möglich, da das Limit für die Anzahl der Räume in Ihrem aktuellen Plan erreicht ist.",
   "docspace.link.payments": "Preisplan aktualisieren",
+  "docspace.room.type.form-filling-room": "",
   "docspace.room.type.collaboration": "Raum für Zusammenarbeit",
   "docspace.room.type.public": "Öffentlicher Raum",
   "docspace.room.type.vdr": "Virtueller Datenraum",

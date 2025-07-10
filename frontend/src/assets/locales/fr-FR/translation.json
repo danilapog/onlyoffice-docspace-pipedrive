@@ -41,6 +41,7 @@
   "docspace.error.loading": "Erreur de chargement d'ONLYOFFICE DocSpace",
   "docspace.error.payment": "La création de cette salle n'est pas possible puisque la limite est atteinte pour le nombre de salles incluses dans votre plan actuel.",
   "docspace.link.payments": "Mettre à jour le plan",
+  "docspace.room.type.form-filling-room": "",
   "docspace.room.type.collaboration": "Salle de collaboration",
   "docspace.room.type.public": "Salle publique",
   "docspace.room.type.vdr": "Salle de données virtuelle",
