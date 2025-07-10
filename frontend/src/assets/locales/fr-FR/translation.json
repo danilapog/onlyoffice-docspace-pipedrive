@@ -44,7 +44,7 @@
   "docspace.room.type.form-filling-room": "",
   "docspace.room.type.collaboration": "Salle de collaboration",
   "docspace.room.type.public": "Salle publique",
-  "docspace.room.type.vdr": "Salle de données virtuelle",
+  "docspace.room.type.vdr": "",
   "docspace.room.type.custom": "Salle personnalisée",
   "docspace.room.type.form-filling-room.short-description": "",
   "docspace.room.type.collaboration.short-description": "",

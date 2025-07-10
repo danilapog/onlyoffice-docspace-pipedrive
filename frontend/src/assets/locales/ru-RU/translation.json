@@ -44,7 +44,7 @@
   "docspace.room.type.form-filling-room": "",
   "docspace.room.type.collaboration": "Комната для совместной работы",
   "docspace.room.type.public": "Публичная комната",
-  "docspace.room.type.vdr": "Виртуальная комната данных",
+  "docspace.room.type.vdr": "",
   "docspace.room.type.custom": "Пользовательская комната",
   "docspace.room.type.form-filling-room.short-description": "",
   "docspace.room.type.collaboration.short-description": "",
