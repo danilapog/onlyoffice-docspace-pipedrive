@@ -19,6 +19,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from "react";
 import cx from "classnames";
+import { ButtonColor, OnlyofficeButton } from "@components/button";
+
+import RightArrow from "@assets/right-arrow.svg";
 
 type InputProps = {
   text: string;
@@ -28,9 +31,16 @@ type InputProps = {
   type?: "text" | "password";
   errorText?: string;
   valid?: boolean;
+  required?: boolean;
   disabled?: boolean;
   autocomplete?: boolean;
+  loadingConsent?: boolean;
+  link?: {
+    text: string;
+    href: string;
+  };
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onConsent?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 export const OnlyofficeInput: React.FC<InputProps> = ({
@@ -41,12 +51,16 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
   type = "text",
   errorText = "Please fill out this field",
   valid = true,
+  required = false,
   disabled = false,
   autocomplete = false,
+  loadingConsent = false,
+  link,
   onChange,
+  onConsent,
 }) => {
   const istyle = cx({
-    "appearance-none block select-auto h-8 mt-1 px-2 py-1": true,
+    "appearance-none block select-auto h-8 px-2 py-1": true,
     "dark:bg-pipedrive-color-dark-neutral-100": true,
     "w-full border rounded": true,
     "border-pipedrive-color-light-divider-strong dark:border-pipedrive-color-dark-divider-strong":
@@ -60,24 +74,61 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
     hidden: valid,
   });
 
+  const astyle = cx({
+    "float-right text-sm text-blue-600": true,
+    "cursor-not-allowed text-opacity-50": disabled,
+    "hover:underline": !disabled,
+  });
+
   return (
     <div>
-      <label className="py-2">{text}</label>
-      <input
-        value={value}
-        placeholder={placeholder}
-        className={istyle}
-        required
-        autoCorrect={autocomplete ? undefined : "off"}
-        autoComplete={autocomplete ? undefined : "off"}
-        type={type}
-        onChange={onChange}
-        disabled={disabled}
-      />
-      <p className={`text-red-600 text-xs ${pstyle}`}>{errorText}</p>
-      <div className="mt-1 text-xs text-pipedrive-color-light-neutral-700 dark:text-pipedrive-color-dark-neutral-700">
-        {description}
+      <label className="py-2">
+        {text}
+        {required && <span className="text-red-600">*</span>}
+      </label>
+      <div className="relative mt-1">
+        <input
+          value={value}
+          placeholder={placeholder}
+          className={istyle}
+          required
+          autoCorrect={autocomplete ? undefined : "off"}
+          autoComplete={autocomplete ? undefined : "off"}
+          type={type}
+          onChange={onChange}
+          disabled={disabled}
+        />
+        {onConsent && (
+          <div className="absolute top-0 right-0">
+            <OnlyofficeButton
+              text=""
+              disabled={disabled}
+              embedded={{
+                icon: <RightArrow />,
+              }}
+              loading={loadingConsent}
+              onClick={onConsent}
+              color={ButtonColor.PRIMARY}
+            />
+          </div>
+        )}
       </div>
+      <p className={`text-red-600 text-xs ${pstyle}`}>{errorText}</p>
+      {valid && (
+        <div className="mt-1 text-xs text-pipedrive-color-light-neutral-700 dark:text-pipedrive-color-dark-neutral-700">
+          {description}
+        </div>
+      )}
+      {link && (
+        <a
+          href={disabled ? undefined : link.href}
+          target="_blank"
+          className={astyle}
+          rel="noreferrer noopener"
+        >
+          {link.text}
+        </a>
+      )}
     </div>
   );
 };
