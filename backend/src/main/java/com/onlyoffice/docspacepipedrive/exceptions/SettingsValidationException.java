@@ -20,6 +20,7 @@ package com.onlyoffice.docspacepipedrive.exceptions;
 
 import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -28,7 +29,7 @@ public class SettingsValidationException extends RuntimeException {
     private final Map<String, Object> params;
 
     public SettingsValidationException(final ErrorCode errorCode) {
-        this(errorCode, null);
+        this(errorCode, new HashMap<>());
     }
 
     public SettingsValidationException(final ErrorCode errorCode, final Map<String, Object> params) {
