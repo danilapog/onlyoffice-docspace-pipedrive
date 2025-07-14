@@ -32,6 +32,9 @@ export type ButtonProps = {
   type?: "submit" | "reset" | "button" | undefined;
   color?: ButtonColor;
   fullWidth?: boolean;
+  embedded?: {
+    icon: JSX.Element | JSX.Element[];
+  };
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
@@ -42,13 +45,16 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
   disabled = loading || false,
   color = ButtonColor.SECONDARY,
   fullWidth = false,
+  embedded,
   onClick,
 }) => {
   const classes = cx({
-    "flex justify-center items-center p-3": true,
+    "flex justify-center items-center": true,
+    "p-2": embedded,
     "text-base font-bold text-ellipsis": true,
     "rounded truncate": true,
-    "min-w-[62px] h-[32px]": true,
+    "h-[32px]": true,
+    "min-w-[62px] p-3": !embedded,
     "w-full": fullWidth,
     "cursor-pointer": !disabled,
     "cursor-wait": loading,
@@ -79,6 +85,7 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
     "dark:bg-pipedrive-color-dark-neutral-100": color === ButtonColor.SECONDARY,
     "dark:hover:bg-pipedrive-color-dark-neutral-200":
       color === ButtonColor.SECONDARY && !disabled,
+    "rounded-l-none": embedded,
   });
 
   return (
@@ -90,13 +97,14 @@ export const OnlyofficeButton: React.FC<ButtonProps> = ({
       onClick={onClick}
     >
       {!loading && text}
+      {!loading && embedded && embedded.icon}
       {loading && (
         <div className="text-center">
           <div role="status">
             <svg
               aria-hidden="true"
               role="status"
-              className="inline w-5 h-5  text-white animate-spin"
+              className="w-4 h-4 text-white animate-spin"
               viewBox="0 0 100 101"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
