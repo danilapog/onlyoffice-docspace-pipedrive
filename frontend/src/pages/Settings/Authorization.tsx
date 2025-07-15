@@ -34,19 +34,46 @@ export const AuthorizationSetting: React.FC = () => {
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [showValidationMessage, setShowValidationMessage] = useState(false);
+
   const [email, setEmail] = useState<string | undefined>("");
+  const [isInvalidEmail, setIsInvalidEmail] = useState(false);
+  const [errorTextInvalidEmail, setErrorTextInvalidEmail] = useState("");
+
   const [password, setPassword] = useState<string | undefined>("");
+  const [isInvalidPassword, setIsInvalidPassword] = useState(false);
+  const [errorTextInvalidPassword, setErrorTextInvalidPassword] = useState("");
 
   let docspaceInstance: SDKInstance;
 
   const handleLogin = async (event: React.SyntheticEvent) => {
     event.preventDefault();
-    if (email && password) {
-      setSaving(true);
-    } else {
-      setShowValidationMessage(true);
+
+    if (!email || !password) {
+      if (!email) {
+        setIsInvalidEmail(true);
+        setErrorTextInvalidEmail(
+          t("error.empty-field", "This field is required"),
+        );
+      } else {
+        setIsInvalidEmail(false);
+      }
+
+      if (!password) {
+        setIsInvalidPassword(true);
+        setErrorTextInvalidPassword(
+          t("error.empty-field", "This field is required"),
+        );
+      } else {
+        setIsInvalidPassword(false);
+      }
+
+      return;
     }
+
+    setIsInvalidEmail(false);
+    setIsInvalidPassword(false);
+
+    setSaving(true);
   };
 
   const handleLogout = async () => {
@@ -55,7 +82,6 @@ export const AuthorizationSetting: React.FC = () => {
       .then(async () => {
         setEmail("");
         setPassword("");
-        setShowValidationMessage(false);
         if (user && settings) {
           setUser({ ...user, docspaceAccount: null });
         }
@@ -99,8 +125,16 @@ export const AuthorizationSetting: React.FC = () => {
       clearTimeout(loginTimeout);
 
       if (login.status && login.status !== 200) {
+        setIsInvalidEmail(true);
+        setErrorTextInvalidEmail(
+          t("docspace.error.login", "User authentication failed"),
+        );
+
         await sdk.execute(Command.SHOW_SNACKBAR, {
-          message: t("docspace.error.login", "User authentication failed"),
+          message: t(
+            "settings.authorization.unsuccessful",
+            "Invalid authorization credentials. Please check your Email and password and try to log in again.",
+          ),
         });
         setSaving(false);
       } else {
@@ -310,7 +344,9 @@ export const AuthorizationSetting: React.FC = () => {
                       "settings.authorization.inputs.email",
                       "Email",
                     )}
-                    valid={showValidationMessage ? !!email : true}
+                    required
+                    valid={!isInvalidEmail}
+                    errorText={errorTextInvalidEmail}
                     value={email}
                     disabled={saving}
                     onChange={(e) => setEmail(e.target.value.trim())}
@@ -326,7 +362,9 @@ export const AuthorizationSetting: React.FC = () => {
                       "settings.authorization.inputs.password",
                       "Password",
                     )}
-                    valid={showValidationMessage ? !!password : true}
+                    required
+                    valid={!isInvalidPassword}
+                    errorText={errorTextInvalidPassword}
                     value={password}
                     type="password"
                     disabled={saving}

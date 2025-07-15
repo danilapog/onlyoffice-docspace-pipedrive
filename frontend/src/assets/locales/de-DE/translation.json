@@ -53,6 +53,7 @@
   "room.request-access.error": "Fehler beim Erhalten des Zugangs zum ONLYOFFICE DocSpace-Raum",
   "settings.authorization.deleting.ok": "ONLYOFFICE DocSpace-Autorisierung wurde erfolgreich gelöscht",
   "settings.authorization.saving.ok": "ONLYOFFICE DocSpace-Autorisierung wurde erfolgreich gespeichert",
+  "settings.authorization.unsuccessful": "",
   "settings.authorization.saving.error": "ONLYOFFICE DocSpace-Autorisierung konnte nicht gespeichert werden",
   "settings.authorization.title": "",
   "settings.authorization.subtitle.address": "Ihre verbundene DocSpace-Adresse ist",

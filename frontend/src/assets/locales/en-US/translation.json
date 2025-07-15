@@ -52,6 +52,7 @@
   "room.request-access.ok": "You have been successfully granted access to the ONLYOFFICE DocSpace room",
   "room.request-access.error": "Error getting access to the ONLYOFFICE DocSpace room",
   "settings.authorization.deleting.ok": "ONLYOFFICE DocSpace authorization has been successfully deleted",
+  "settings.authorization.unsuccessful": "Invalid authorization credentials. Please check your Email and password and try to log in again.",
   "settings.authorization.saving.ok": "ONLYOFFICE DocSpace authorization has been successfully saved",
   "settings.authorization.saving.error": "Could not save ONLYOFFICE DocSpace authorization",
   "settings.authorization.title": "Log into your connected ONLYOFFICE DocSpace to start using it within Pipedrive",
