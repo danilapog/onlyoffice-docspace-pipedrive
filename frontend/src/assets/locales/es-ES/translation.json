@@ -75,6 +75,6 @@
   "settings.connection.inputs.url.title": "Dirección de ONLYOFFICE DocSpace",
   "settings.connection.inputs.url.description": "",
   "settings.connection.inputs.api-key.title": "",
-  "settings.connection.inputs.api-key.description": "",
+  "settings.connection.inputs.api-key.tooltip": "",
   "settings.connection.menu-item": "Conexión"
 }

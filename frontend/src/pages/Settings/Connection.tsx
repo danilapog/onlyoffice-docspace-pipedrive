@@ -25,6 +25,7 @@ import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
 
 import Connected from "@assets/authorized.svg";
+import OpenLink from "@assets/open-link.svg";
 
 import { deleteSettings, putSettings } from "@services/settings";
 
@@ -264,6 +265,30 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
     }
   };
 
+  const getApiKeyTooltip = () => (
+    <div className="flex flex-col items-start">
+      <p>
+        {t(
+          "settings.connection.inputs.api-key.tooltip",
+          "Before connecting the app, please go to your DocSpace, create a new API key and enter it here. You can choose Permissions (All) or set restricted access with these required scopes for proper app functionality: Profile (Read), Contacts (Write), and Rooms (Write).",
+        )}
+      </p>
+      <button
+        type="button"
+        className="flex items-center justify-center pt-2 text-sm font-semibold text-pipedrive-color-light-blue-600 dark:text-pipedrive-color-dark-blue-600 cursor-pointer"
+        onClick={() => {
+          window.open(
+            `${stripTrailingSlash(url)}/developer-tools/api-keys`,
+            "_blank",
+          );
+        }}
+      >
+        {t("button.create-api-key", "Create a key")}
+        <OpenLink className="inline-block ml-2" />
+      </button>
+    </div>
+  );
+
   return (
     <>
       <div className="flex flex-col items-start pl-5 pr-5 pt-5 pb-3">
@@ -336,11 +361,8 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
                 "settings.connection.inputs.api-key.title",
                 "ONLYOFFICE DocSpace API key",
               )}
-              description={t(
-                "settings.connection.inputs.api-key.description",
-                "The API key must be created by a DocSpace admin and should include the following access scopes: Profile (Read), Contacts (Write), and Rooms (Write).",
-              )}
               placeholder="***********"
+              tooltip={getApiKeyTooltip()}
               value={apiKey}
               valid={!isInvalidApiKey}
               errorText={errorTextInvalidApiKey}

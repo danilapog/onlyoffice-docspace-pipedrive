@@ -75,6 +75,6 @@
   "settings.connection.inputs.url.title": "Adresse d'ONLYOFFICE DocSpace",
   "settings.connection.inputs.url.description": "",
   "settings.connection.inputs.api-key.title": "Clé de l'API de ONLYOFFICE DocSpace",
-  "settings.connection.inputs.api-key.description": "La clé API doit être créée par un administrateur de DocSpace et doit inclure les champs d'accès suivants : Profil (lecture), Contacts (écriture) et Salles (écriture).",
+  "settings.connection.inputs.api-key.tooltip": "",
   "settings.connection.menu-item": "Connexion"
 }

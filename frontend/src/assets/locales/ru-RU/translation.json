@@ -75,6 +75,6 @@
   "settings.connection.inputs.url.title": "Адрес ONLYOFFICE DocSpace",
   "settings.connection.inputs.url.description": "",
   "settings.connection.inputs.api-key.title": "ONLYOFFICE DocSpace API Ключ",
-  "settings.connection.inputs.api-key.description": "Автором API ключа должен быть администратор DocSpace, и ключ должен иметь права доступа (Профиль - Чтение, Контакты - Запись, Комнаты - Запись).",
+  "settings.connection.inputs.api-key.tooltip": "",
   "settings.connection.menu-item": "Соединение"
 }

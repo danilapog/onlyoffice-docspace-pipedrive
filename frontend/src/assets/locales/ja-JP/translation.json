@@ -75,6 +75,6 @@
   "settings.connection.inputs.url.title": "ONLYOFFICE DocSpaceアドレス",
   "settings.connection.inputs.url.description": "",
   "settings.connection.inputs.api-key.title": "ONLYOFFICE DocSpaceのAPIキー",
-  "settings.connection.inputs.api-key.description": "APIキーはDocSpace管理者によって作成され、次のアクセス範囲を含む必要があります：プロフィール（読み取り）、連絡先（書き込み）、およびルーム（書き込み）。",
+  "settings.connection.inputs.api-key.tooltip": "",
   "settings.connection.menu-item": "接続"
 }

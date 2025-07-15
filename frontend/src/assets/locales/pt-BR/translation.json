@@ -75,6 +75,6 @@
   "settings.connection.inputs.url.title": "Endereço do ONLYOFFICE DocSpace",
   "settings.connection.inputs.url.description": "",
   "settings.connection.inputs.api-key.title": "Chave de API do ONLYOFFICE DocSpace.",
-  "settings.connection.inputs.api-key.description": "A chave de API deve ser criada por um administrador do DocSpace e deve incluir os seguintes escopos de acesso: Perfil (Leitura), Contatos (Escrita) e Salas (Escrita).",
+  "settings.connection.inputs.api-key.tooltip": "",
   "settings.connection.menu-item": "Conexão"
 }
