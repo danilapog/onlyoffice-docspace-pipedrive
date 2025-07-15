@@ -22,6 +22,7 @@ import cx from "classnames";
 import { ButtonColor, OnlyofficeButton } from "@components/button";
 
 import RightArrow from "@assets/right-arrow.svg";
+import { OnlyofficeTooltip } from "@components/tooltip";
 
 type InputProps = {
   text: string;
@@ -29,6 +30,7 @@ type InputProps = {
   description?: string;
   placeholder?: string;
   type?: "text" | "password";
+  tooltip?: JSX.Element | JSX.Element[];
   errorText?: string;
   valid?: boolean;
   required?: boolean;
@@ -49,6 +51,7 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
   description,
   placeholder,
   type = "text",
+  tooltip,
   errorText = "Please fill out this field",
   valid = true,
   required = false,
@@ -82,10 +85,13 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
 
   return (
     <div>
-      <label className="py-2">
-        {text}
-        {required && <span className="text-red-600">*</span>}
-      </label>
+      <div className="flex gap-2">
+        <label>
+          {text}
+          {required && <span className="text-red-600">*</span>}
+        </label>
+        {tooltip && <OnlyofficeTooltip body={tooltip} disabled={disabled} />}
+      </div>
       <div className="relative mt-1">
         <input
           value={value}

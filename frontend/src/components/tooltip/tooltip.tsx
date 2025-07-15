@@ -17,22 +17,44 @@
  */
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React from "react";
+import React, { useState } from "react";
+
+import cx from "classnames";
+
 import Info from "@assets/info.svg";
+import InfoHover from "@assets/info-hover.svg";
 
 type TooltipProps = {
-  text: string;
+  body: JSX.Element | JSX.Element[];
+  disabled?: boolean;
 };
 
-export const OnlyofficeTooltip: React.FC<TooltipProps> = ({ text }) => (
-  <div className="group relative flex flex-col max-w-max p-2 items-center justify-center cursor-pointer">
-    <Info />
+export const OnlyofficeTooltip: React.FC<TooltipProps> = ({
+  body,
+  disabled = false,
+}) => {
+  const [hovered, setHovered] = useState(false);
+
+  const containerStyle = cx({
+    "group relative flex flex-col max-w-max items-center justify-center cursor-pointer z-10":
+      !disabled,
+    "cursor-not-allowed": disabled,
+  });
+
+  return (
     <div
-      className={`absolute left-3/4 w-max max-w-80 transform invisible
-            border border-pipedrive-color-light-divider-strong dark:border-pipedrive-color-dark-divider-strong rounded shadow-md bg-white dark:bg-pipedrive-color-dark-neutral-100 transition-all
-            duration-200 group-hover:translate-x-1 group-hover:visible`}
+      className={containerStyle}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <div className="w-full p-4">{text}</div>
+      {hovered && !disabled ? <InfoHover /> : <Info />}
+      <div
+        className={`absolute top-3/4 w-max max-w-[400px] transform invisible
+              border border-pipedrive-color-light-divider-strong dark:border-pipedrive-color-dark-divider-strong rounded shadow-md bg-white dark:bg-pipedrive-color-dark-neutral-100 transition-all
+              duration-200 group-hover:translate-y-1 group-hover:visible`}
+      >
+        <div className="w-full p-4">{body}</div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
