@@ -394,7 +394,7 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
               <div className="flex justify-start items-center mt-4 ml-5">
                 <OnlyofficeButton
                   text={t("button.logout", "Log out")}
-                  color={ButtonColor.PRIMARY}
+                  color={ButtonColor.NEGATIVE}
                   loading={deleting}
                   onClick={handleLogout}
                 />
