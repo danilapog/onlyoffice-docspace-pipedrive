@@ -261,7 +261,7 @@ export const AuthorizationSetting: React.FC = () => {
               <OnlyofficeTitle
                 text={t(
                   "settings.authorization.title",
-                  "Login to ONLYOFFICE DocSpace account",
+                  "Log into your connected ONLYOFFICE DocSpace to start using it within Pipedrive",
                 )}
               />
             </div>

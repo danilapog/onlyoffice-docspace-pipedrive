@@ -54,7 +54,7 @@
   "settings.authorization.deleting.ok": "L'autorisation d'ONLYOFFICE DocSpace a été supprimée avec succès",
   "settings.authorization.saving.ok": "L'autorisation d'ONLYOFFICE DocSpace a été sauvegardée avec succès",
   "settings.authorization.saving.error": "Impossible de sauvegarder l'autorisation d'ONLYOFFICE DocSpace",
-  "settings.authorization.title": "Connexion au compte ONLYOFFICE DocSpace",
+  "settings.authorization.title": "",
   "settings.authorization.subtitle.address": "Votre adresse DocSpace connectée est",
   "settings.authorization.status.authorized": "Vous vous êtes connecté avec succès à votre compte ONLYOFFICE DocSpace",
   "settings.authorization.inputs.email": "E-mail",
