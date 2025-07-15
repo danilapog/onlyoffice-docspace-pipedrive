@@ -330,6 +330,10 @@ export const AuthorizationSetting: React.FC = () => {
                     value={password}
                     type="password"
                     disabled={saving}
+                    link={{
+                      text: t("button.forgot-password", "Forgot password?"),
+                      href: `${settings.url}/login`,
+                    }}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
