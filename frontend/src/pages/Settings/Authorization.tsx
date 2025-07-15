@@ -20,7 +20,13 @@ import { ErrorResponse } from "src/types/error";
 
 const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
-export const AuthorizationSetting: React.FC = () => {
+export type AuthorizationSettingProps = {
+  showUserGuide(): void;
+};
+
+export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
+  showUserGuide,
+}) => {
   const { t } = useTranslation();
   const {
     user,
@@ -160,6 +166,7 @@ export const AuthorizationSetting: React.FC = () => {
                 "ONLYOFFICE DocSpace authorization has been successfully saved",
               ),
             });
+            showUserGuide();
           })
           .catch(async (e) => {
             const data = e?.response?.data as ErrorResponse;
