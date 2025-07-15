@@ -375,16 +375,21 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
           )}
           {user?.docspaceAccount && (
             <>
-              <div className="inline-flex pl-5 pr-5">
-                <div className="p-1">
+              <div className="flex gap-3 mt-1 pb-2 pl-5 pr-5">
+                <div>
                   <Authorized />
                 </div>
-                <span className="pl-3">
-                  {t(
-                    "settings.authorization.status.authorized",
-                    "You have successfully logged in to your ONLYOFFICE DocSpace account",
-                  )}
-                </span>
+                <div className="flex justify-center items-center">
+                  <p>
+                    {t(
+                      "settings.authorization.status.authorized",
+                      "You have successfully logged in to your ONLYOFFICE DocSpace account",
+                    )}{" "}
+                    <span className="font-semibold text-pipedrive-color-light-green-600 dark:text-pipedrive-color-dark-green-600">
+                      {user.docspaceAccount.userName}
+                    </span>
+                  </p>
+                </div>
               </div>
               <div className="flex justify-start items-center mt-4 ml-5">
                 <OnlyofficeButton
