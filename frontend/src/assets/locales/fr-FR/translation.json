@@ -20,7 +20,7 @@
   "button.reauthorize": "Re-autoriser",
   "button.settings": "Accéder aux paramètres",
   "button.create.room": "Créer une salle",
-  "button.login": "Se connecter",
+  "button.login": "",
   "button.logout": "Déconnexion",
   "button.disconnect": "Déconnecter",
   "button.connect": "Connecter",

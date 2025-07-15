@@ -339,7 +339,7 @@ export const AuthorizationSetting: React.FC = () => {
                 </div>
                 <div className="flex justify-start items-center mt-4 ml-5">
                   <OnlyofficeButton
-                    text={t("button.login", "Login")}
+                    text={t("button.login", "Log in")}
                     type="submit"
                     color={ButtonColor.PRIMARY}
                     loading={saving}

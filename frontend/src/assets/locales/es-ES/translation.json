@@ -20,7 +20,7 @@
   "button.reauthorize": "Volver a autorizar",
   "button.settings": "",
   "button.create.room": "Crear sala",
-  "button.login": "Iniciar sesión",
+  "button.login": "",
   "button.logout": "Cerrar sesión",
   "button.disconnect": "Desconectar",
   "button.connect": "Conectar",

@@ -20,7 +20,7 @@
   "button.reauthorize": "Авторизуйтесь повторно",
   "button.settings": "Перейти в настройки",
   "button.create.room": "Создать комнату",
-  "button.login": "Войти",
+  "button.login": "",
   "button.logout": "Выйти",
   "button.disconnect": "Отключиться",
   "button.connect": "Подключиться",

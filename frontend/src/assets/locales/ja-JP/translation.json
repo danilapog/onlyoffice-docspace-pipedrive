@@ -20,7 +20,7 @@
   "button.reauthorize": "再認証",
   "button.settings": "設定に移動",
   "button.create.room": "ルームの作成",
-  "button.login": "ログイン",
+  "button.login": "",
   "button.logout": "ログアウト",
   "button.disconnect": "切断",
   "button.connect": "接続",
