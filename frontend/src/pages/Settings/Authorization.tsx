@@ -85,6 +85,20 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
   };
 
   const handleLogout = async () => {
+    const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
+      title: t("label.warning", "Warning"),
+      description:
+        t(
+          "settings.authorization.deleting.confirm-message",
+          "Are you sure you want to log out?",
+        ) || "",
+      okText: t("button.logout", "Log out"),
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
     setDeleting(true);
     deleteDocspaceAccount(pipedriveToken)
       .then(async () => {

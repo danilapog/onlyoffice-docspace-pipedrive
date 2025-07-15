@@ -57,6 +57,7 @@
   "room.request-access.ok": "Вам успешно предоставлен доступ к комнате ONLYOFFICE DocSpace",
   "room.request-access.error": "Ошибка при получении доступа к комнате ONLYOFFICE DocSpace",
   "settings.authorization.deleting.ok": "Авторизация ONLYOFFICE DocSpace успешно удалена",
+  "settings.authorization.deleting.confirm-message": "",
   "settings.authorization.saving.ok": "Авторизация ONLYOFFICE DocSpace успешно сохранена",
   "settings.authorization.unsuccessful": "",
   "settings.authorization.saving.error": "Не удалось сохранить авторизацию ONLYOFFICE DocSpace",
