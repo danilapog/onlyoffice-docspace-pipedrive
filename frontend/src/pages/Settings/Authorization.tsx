@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Command } from "@pipedrive/app-extensions-sdk";
+import { Command, View } from "@pipedrive/app-extensions-sdk";
 import { DocSpace } from "@onlyoffice/docspace-react";
 import { TFrameConfig } from "@onlyoffice/docspace-sdk-js/dist/types/types";
 import { SDKInstance } from "@onlyoffice/docspace-sdk-js/dist/types/instance";
@@ -16,6 +16,8 @@ import { putDocspaceAccount, deleteDocspaceAccount } from "@services/user";
 
 import Authorized from "@assets/authorized.svg";
 import NotAvailable from "@assets/not-available.svg";
+import Welcome from "@assets/welcome.svg";
+
 import { ErrorResponse } from "src/types/error";
 
 const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
@@ -318,29 +320,6 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
               </div>
             )}
           </div>
-          {user?.docspaceAccount && (
-            <>
-              <div className="inline-flex pl-5 pr-5">
-                <div className="p-1">
-                  <Authorized />
-                </div>
-                <span className="pl-3">
-                  {t(
-                    "settings.authorization.status.authorized",
-                    "You have successfully logged in to your ONLYOFFICE DocSpace account",
-                  )}
-                </span>
-              </div>
-              <div className="flex justify-start items-center mt-4 ml-5">
-                <OnlyofficeButton
-                  text={t("button.logout", "Log out")}
-                  color={ButtonColor.PRIMARY}
-                  loading={deleting}
-                  onClick={handleLogout}
-                />
-              </div>
-            </>
-          )}
           {!user?.docspaceAccount && (
             <div className="max-w-[390px]">
               <form onSubmit={handleLogin}>
@@ -393,6 +372,63 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
                 </div>
               </form>
             </div>
+          )}
+          {user?.docspaceAccount && (
+            <>
+              <div className="inline-flex pl-5 pr-5">
+                <div className="p-1">
+                  <Authorized />
+                </div>
+                <span className="pl-3">
+                  {t(
+                    "settings.authorization.status.authorized",
+                    "You have successfully logged in to your ONLYOFFICE DocSpace account",
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-start items-center mt-4 ml-5">
+                <OnlyofficeButton
+                  text={t("button.logout", "Log out")}
+                  color={ButtonColor.PRIMARY}
+                  loading={deleting}
+                  onClick={handleLogout}
+                />
+              </div>
+              <div className="pt-4">
+                <OnlyofficeBackgroundError
+                  Icon={<Welcome />}
+                  title={t(
+                    "settings.authorization.welcome.title",
+                    "Welcome to DocSpace!",
+                  )}
+                  options={[
+                    t(
+                      "settings.authorization.welcome.option1",
+                      "Create a room in the deal",
+                    ),
+                    t(
+                      "settings.authorization.welcome.option2",
+                      "Upload a document to the room",
+                    ),
+                  ]}
+                  button={{
+                    text: t("button.deals", "Go to Deals"),
+                    onClick: async () => {
+                      await sdk.execute(Command.REDIRECT_TO, {
+                        view: View.DEALS,
+                      });
+                    },
+                  }}
+                  link={{
+                    text: t(
+                      "settings.authorization.welcome.open-guide",
+                      "Open Guide",
+                    ),
+                    onClick: showUserGuide,
+                  }}
+                />
+              </div>
+            </>
           )}
         </>
       )}
