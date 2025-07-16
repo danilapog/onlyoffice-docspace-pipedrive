@@ -224,12 +224,13 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
 
   const handleDisconnect = async () => {
     const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
-      title: t("button.disconnect", "Disconnect"),
+      title: t("label.warning", "Warning"),
       description:
         t(
           "settings.connection.disconnection.description",
           "If you press the Disconnect button, you will not have access to ONLYOFFICE DocSpace. This will remove the connections between Rooms and Deals, and disconnect all users.",
         ) || "",
+      okText: t("button.disconnect", "Disconnect"),
     });
 
     if (confirmed) {
