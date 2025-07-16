@@ -68,7 +68,7 @@
   "settings.connection.saving.ok": "ONLYOFFICE DocSpace settings have been saved",
   "settings.connection.status.connected": "Your DocSpace has been successfully connected",
   "settings.connection.disconnection.description": "If you press the Disconnect button, you will not have access to ONLYOFFICE DocSpace. This will remove the connections between Rooms and Deals, and disconnect all users.",
-  "settings.connection.disconnection.ok": "ONLYOFFICE DocSpace succesfully disconnected",
+  "settings.connection.disconnection.ok": "ONLYOFFICE DocSpace successfully disconnected",
   "settings.connection.disconnection.error": "Could not disconnect ONLYOFFICE DocSpace",
   "settings.connection.title": "Configure connection settings of the ONLYOFFICE DocSpace app",
   "settings.connection.subtitle.connect": "Connect your ONLYOFFICE DocSpace to Pipedrive",
