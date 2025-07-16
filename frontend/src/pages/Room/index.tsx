@@ -404,7 +404,7 @@ const RoomPage: React.FC = () => {
       {loadDocspace && user && settings?.url && user?.docspaceAccount && (
         <div
           key={room?.id}
-          className={`w-full h-full flex flex-row
+          className={`w-full h-full flex flex-col items-end
             ${!showDocspaceWindow ? "hidden" : ""}
           `}
         >
@@ -418,6 +418,20 @@ const RoomPage: React.FC = () => {
               docspaceInstance.current = instance;
             }}
           />
+          <div className="pr-4">
+            <OnlyofficeButton
+              text={t("button.open-in-docspace", "Open in DocSpace")}
+              onClick={() => {
+                const src = document
+                  .getElementById(DOCSPACE_FRAME_ID)
+                  ?.getAttribute("src");
+
+                if (src) {
+                  window.open(src, "_blank");
+                }
+              }}
+            />
+          </div>
         </div>
       )}
     </div>
