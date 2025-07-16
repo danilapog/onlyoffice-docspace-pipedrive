@@ -156,6 +156,8 @@ const RoomPage: React.FC = () => {
       },
     );
     setRoom({ ...room, id: null } as RoomResponse);
+    setShowDocspaceWindow(false);
+    sdk.execute(Command.RESIZE, { height: 350 });
   };
 
   const saveRoom = (roomId: string) => {
