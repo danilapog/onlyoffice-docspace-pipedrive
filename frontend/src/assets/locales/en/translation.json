@@ -65,7 +65,7 @@
   "settings.connection.saving.error.DOCSPACE_API_KEY_IS_INVALID": "Invalid API key. Please check your API key and try to connect again.",
   "settings.connection.saving.error.DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN": "Invalid API key. Please make sure that the author of the API key is DocSpace admin and try to connect again.",
   "settings.connection.saving.error.DOCSPACE_API_KEY_IS_NOT_CONTAINS_REQUIRED_SCOPES": "Invalid API key. Please check the Access Scopes for API key in DocSpace and try to connect again.",
-  "settings.connection.saving.ok": "ONLYOFFICE DocSpace settings have been saved",
+  "settings.connection.saving.ok": "ONLYOFFICE DocSpace connection settings have been successfully saved. You can now proceed to Authorization.",
   "settings.connection.status.connected": "Your DocSpace has been successfully connected",
   "settings.connection.disconnection.description": "If you press the Disconnect button, you will not have access to ONLYOFFICE DocSpace. This will remove the connections between Rooms and Deals, and disconnect all users.",
   "settings.connection.disconnection.ok": "ONLYOFFICE DocSpace successfully disconnected",

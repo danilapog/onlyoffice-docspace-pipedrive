@@ -65,7 +65,7 @@
   "settings.connection.saving.error.DOCSPACE_API_KEY_IS_INVALID": "",
   "settings.connection.saving.error.DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN": "",
   "settings.connection.saving.error.DOCSPACE_API_KEY_IS_NOT_CONTAINS_REQUIRED_SCOPES": "",
-  "settings.connection.saving.ok": "Los ajustes de ONLYOFFICE DocSpace se han guardado",
+  "settings.connection.saving.ok": "ONLYOFFICE DocSpace connection settings have been successfully saved. You can now proceed to Authorization.",
   "settings.connection.status.connected": "",
   "settings.connection.disconnection.description": "",
   "settings.connection.disconnection.ok": "ONLYOFFICE DocSpace se ha desconectado correctamente",

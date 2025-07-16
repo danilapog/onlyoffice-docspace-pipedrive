@@ -151,7 +151,7 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "settings.connection.saving.ok",
-              "ONLYOFFICE DocSpace settings have been saved",
+              "ONLYOFFICE DocSpace connection settings have been successfully saved. You can now proceed to Authorization.",
             ),
           });
 
