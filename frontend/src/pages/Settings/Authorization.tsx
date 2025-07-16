@@ -370,7 +370,7 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
                     disabled={saving}
                     link={{
                       text: t("button.forgot-password", "Forgot password?"),
-                      href: `${settings.url}/login`,
+                      href: `${settings.url}/profile`,
                     }}
                     onChange={(e) => setPassword(e.target.value)}
                   />
