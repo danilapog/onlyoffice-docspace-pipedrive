@@ -378,7 +378,7 @@ const RoomPage: React.FC = () => {
             <div className="w-full pb-4">
               {t(
                 "room.create.description",
-                "Create ONLYOFFICE DocSpace room to work with documents related to this deal. You will not be able to change the room type.",
+                "Create ONLYOFFICE DocSpace room to work with documents related to this deal.",
               )}
               <a
                 className="font-semibold
@@ -388,7 +388,7 @@ const RoomPage: React.FC = () => {
                 href="https://helpcenter.onlyoffice.com/userguides/docspace-creating-rooms.aspx"
                 rel="noreferrer"
               >
-                {` ${t("t", "Learn more")}.`}
+                {` ${t("link.learn-more-room-types", "Learn more about room types.")}`}
               </a>
             </div>
             <OnlyofficeDropdownButton
