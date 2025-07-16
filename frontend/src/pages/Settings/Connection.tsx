@@ -93,17 +93,18 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
     }
 
     setIsInvalidUrl(false);
+    setIsDisabledUrlInput(true);
     setCheckingUrl(true);
 
     getSettings(stripTrailingSlash(docspaceUrl))
       .then(() => {
-        setIsDisabledUrlInput(true);
         setIsDisabledApiKeyInput(false);
         setIsDisabledConnectButton(false);
         setIsDisabledSaveButton(false);
       })
       .catch(async () => {
         setIsInvalidUrl(true);
+        setIsDisabledUrlInput(false);
         setErrorTextInvalidUrl(
           t(
             "error.incorrect-docspace-address",
