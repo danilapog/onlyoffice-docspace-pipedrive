@@ -96,6 +96,7 @@ const SettingsPage: React.FC = () => {
             {selectedSection === "authorization" && (
               <AuthorizationSetting
                 showUserGuide={() => setShowUserGuide(true)}
+                onChangeSection={() => setSelectedSection("conntection")}
               />
             )}
           </div>

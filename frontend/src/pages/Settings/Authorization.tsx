@@ -24,10 +24,12 @@ const DOCSPACE_SYSTEM_FRAME_ID = "authorization-docspace-system-frame";
 
 export type AuthorizationSettingProps = {
   showUserGuide(): void;
+  onChangeSection(): void;
 };
 
 export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
   showUserGuide,
+  onChangeSection,
 }) => {
   const { t } = useTranslation();
   const {
@@ -279,7 +281,10 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
                   text: t("button.reload", "Reload"),
                   onClick: () => reloadAppContext(),
                 }
-              : undefined
+              : {
+                  text: t("button.settings", "Go to Settings"),
+                  onClick: onChangeSection,
+                }
           }
         />
       )}
