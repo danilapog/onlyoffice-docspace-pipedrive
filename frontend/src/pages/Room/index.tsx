@@ -378,19 +378,20 @@ const RoomPage: React.FC = () => {
         <div className="h-full flex flex-row custom-scroll overflow-y-scroll overflow-x-hidden">
           <div className="p-5">
             <div className="w-full pb-4">
-              {t(
+              {`${t(
                 "room.create.description",
                 "Create ONLYOFFICE DocSpace room to work with documents related to this deal.",
-              )}
+              )} `}
               <a
                 className="font-semibold
                   text-pipedrive-color-light-blue-600
-                  dark:text-pipedrive-color-dark-blue-600"
+                  dark:text-pipedrive-color-dark-blue-600
+                  hover:underline"
                 target="_blank"
                 href="https://helpcenter.onlyoffice.com/userguides/docspace-creating-rooms.aspx"
                 rel="noreferrer"
               >
-                {` ${t("link.learn-more-room-types", "Learn more about room types.")}`}
+                {`${t("link.learn-more-room-types", "Learn more about room types.")}`}
               </a>
             </div>
             <OnlyofficeDropdownButton
