@@ -334,7 +334,7 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
       </div>
       <div className="max-w-[390px]">
         <form onSubmit={handleConnect}>
-          <div className="pl-5 pr-5 pb-2">
+          <div className="pl-5 pr-5 pb-5">
             <OnlyofficeInput
               text={t(
                 "settings.connection.inputs.url.title",
@@ -357,7 +357,7 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
               }}
             />
           </div>
-          <div className="pl-5 pr-5 pb-2">
+          <div className="pl-5 pr-5">
             <OnlyofficeInput
               text={t(
                 "settings.connection.inputs.api-key.title",
@@ -377,7 +377,7 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
               onChange={(e) => setApiKey(e.target.value.trim())}
             />
           </div>
-          <div className="flex justify-start items-center mt-4 ml-5 gap-2">
+          <div className="flex justify-start items-center mt-6 ml-5 gap-2">
             {!settings?.url && (
               <OnlyofficeButton
                 disabled={isDisabledConnectButton}

@@ -81,7 +81,7 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
   });
 
   const astyle = cx({
-    "float-right text-sm text-blue-600": true,
+    "text-sm text-blue-600": true,
     "cursor-not-allowed text-opacity-50": disabled,
     "hover:underline": !disabled,
   });
@@ -141,20 +141,22 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
         )}
       </div>
       <p className={`text-red-600 text-xs ${pstyle}`}>{errorText}</p>
-      {valid && (
+      {valid && description && (
         <div className="mt-1 text-xs text-pipedrive-color-light-neutral-700 dark:text-pipedrive-color-dark-neutral-700">
           {description}
         </div>
       )}
       {link && (
-        <a
-          href={disabled ? undefined : link.href}
-          target="_blank"
-          className={astyle}
-          rel="noreferrer noopener"
-        >
-          {link.text}
-        </a>
+        <div className="text-end">
+          <a
+            href={disabled ? undefined : link.href}
+            target="_blank"
+            className={astyle}
+            rel="noreferrer noopener"
+          >
+            {link.text}
+          </a>
+        </div>
       )}
     </div>
   );

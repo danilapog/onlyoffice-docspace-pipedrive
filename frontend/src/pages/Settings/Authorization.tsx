@@ -337,7 +337,7 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
           {!user?.docspaceAccount && (
             <div className="max-w-[390px]">
               <form onSubmit={handleLogin}>
-                <div className="pl-5 pr-5 pb-2">
+                <div className="pl-5 pr-5 pb-[14px]">
                   <OnlyofficeInput
                     text={t("settings.authorization.inputs.email", "Email")}
                     placeholder={t(
@@ -352,7 +352,7 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
                     onChange={(e) => setEmail(e.target.value.trim())}
                   />
                 </div>
-                <div className="pl-5 pr-5 pb-2">
+                <div className="pl-5 pr-5">
                   <OnlyofficeInput
                     text={t(
                       "settings.authorization.inputs.password",
@@ -375,7 +375,7 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <div className="flex justify-start items-center mt-4 ml-5">
+                <div className="flex justify-start items-center mt-6 ml-5">
                   <OnlyofficeButton
                     text={t("button.login", "Log in")}
                     type="submit"
