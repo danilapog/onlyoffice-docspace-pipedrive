@@ -32,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -100,15 +101,17 @@ public class ExceptionHandlerController {
     @ExceptionHandler(SettingsValidationException.class)
     public ResponseEntity<ErrorResponse> settingsValidationException(
             SettingsValidationException e) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("validationError", e.getErrorCode().toString());
+        params.put("validationMessage", e.getErrorCode().getMessage());
+        params.putAll(e.getParams());
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(
                         new ErrorResponse(
                                 SettingsValidationException.class.getSimpleName(),
                                 e.getMessage(),
-                                Map.of(
-                                        "validationError", e.getErrorCode().toString(),
-                                        "validationMessage", e.getErrorCode().getMessage()
-                                )
+                                params
                         )
                 );
     }

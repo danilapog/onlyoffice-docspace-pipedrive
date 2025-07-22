@@ -16,17 +16,17 @@
  *
  */
 
-package com.onlyoffice.docspacepipedrive.web.dto;
+import axios from "axios";
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+export const getSettings = async (url: string) => {
+  const client = axios.create({ baseURL: url });
 
-import java.util.Map;
-
-@AllArgsConstructor
-@Data
-public class ErrorResponse {
-    private String cause;
-    private String message;
-    private Map<String, Object> params;
-}
+  await client({
+    method: "GET",
+    url: "/api/2.0/settings",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    timeout: 10000,
+  });
+};

@@ -24,6 +24,9 @@ import { ButtonColor, OnlyofficeButton } from "@components/button";
 import { OnlyofficeInput } from "@components/input";
 import { OnlyofficeTitle } from "@components/title";
 
+import Connected from "@assets/authorized.svg";
+import OpenLink from "@assets/open-link.svg";
+
 import { deleteSettings, putSettings } from "@services/settings";
 
 import { stripTrailingSlash } from "@utils/url";
@@ -32,6 +35,7 @@ import { AppContext } from "@context/AppContext";
 import { SettingsResponse } from "src/types/settings";
 import { AxiosError } from "axios";
 import { ErrorResponse } from "src/types/error";
+import { getSettings } from "@services/docspace";
 
 export type ConnectionSettingsProps = {
   onChangeSection(): void;
@@ -51,12 +55,23 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
     reloadAppContext,
   } = useContext(AppContext);
 
+  const [url, setUrl] = useState<string>(settings?.url || "");
+  const [isInvalidUrl, setIsInvalidUrl] = useState(false);
+  const [errorTextInvalidUrl, setErrorTextInvalidUrl] = useState("");
+  const [isDisabledUrlInput, setIsDisabledUrlInput] = useState(!!settings?.url);
+  const [checkingUrl, setCheckingUrl] = useState(false);
+
+  const [apiKey, setApiKey] = useState<string>(settings?.apiKey || "");
+  const [isInvalidApiKey, setIsInvalidApiKey] = useState(false);
+  const [errorTextInvalidApiKey, setErrorTextInvalidApiKey] = useState("");
+  const [isDisabledApiKeyInput, setIsDisabledApiKeyInput] = useState(true);
+
+  const [isDisabledConnectButton, setIsDisabledConnectButton] = useState(true);
+  const [isDisabledSaveButton, setIsDisabledSaveButton] = useState(true);
+
+  const [changing, setChanging] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
-  const [changing, setChanging] = useState(false);
-  const [showValidationMessage, setShowValidationMessage] = useState(false);
-  const [address, setAddress] = useState<string>(settings?.url || "");
-  const [apiKey, setApiKey] = useState<string>(settings?.apiKey || "");
 
   const getSettingsValidationsMessage = (code: string): string => {
     const key = `settings.connection.saving.error.${code}`;
@@ -68,19 +83,75 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
     });
   };
 
+  const checkDocspaceUrl = (docspaceUrl: string) => {
+    if (!url) {
+      setIsInvalidUrl(true);
+      setErrorTextInvalidUrl(
+        t("error.emppty-field", "Please fill out this field"),
+      );
+      return;
+    }
+
+    setIsInvalidUrl(false);
+    setIsDisabledUrlInput(true);
+    setCheckingUrl(true);
+
+    getSettings(stripTrailingSlash(docspaceUrl))
+      .then(() => {
+        setIsDisabledApiKeyInput(false);
+        setIsDisabledConnectButton(false);
+        setIsDisabledSaveButton(false);
+      })
+      .catch(async () => {
+        setIsInvalidUrl(true);
+        setIsDisabledUrlInput(false);
+        setErrorTextInvalidUrl(
+          t(
+            "error.incorrect-docspace-address",
+            "Incorrect DocSpace address, please try again",
+          ),
+        );
+
+        await sdk.execute(Command.SHOW_SNACKBAR, {
+          message: t(
+            "error.incorrect-docspace-address",
+            "Incorrect DocSpace address, please try again",
+          ),
+        });
+      })
+      .finally(() => {
+        setCheckingUrl(false);
+      });
+  };
+
   const handleConnect = async (event: React.SyntheticEvent) => {
     event.preventDefault();
-    if (address && apiKey) {
+
+    if (!apiKey) {
+      setIsInvalidApiKey(true);
+      setErrorTextInvalidApiKey(
+        t("error.emppty-field", "Please fill out this field"),
+      );
+      return;
+    }
+
+    setIsInvalidApiKey(false);
+
+    if (url && apiKey) {
+      setIsDisabledApiKeyInput(true);
+      setIsDisabledConnectButton(true);
+      setIsDisabledSaveButton(true);
       setConnecting(true);
-      putSettings(pipedriveToken, stripTrailingSlash(address), apiKey)
+
+      putSettings(pipedriveToken, stripTrailingSlash(url), apiKey)
         .then(async (response: SettingsResponse) => {
           setSettings(response);
-          setAddress(response.url);
+          setUrl(response.url);
           setApiKey(response.apiKey);
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "settings.connection.saving.ok",
-              "ONLYOFFICE DocSpace settings have been saved",
+              "ONLYOFFICE DocSpace connection settings have been successfully saved. You can now proceed to Authorization.",
             ),
           });
 
@@ -96,10 +167,22 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
             e?.response?.status === 400 &&
             data?.cause === "SettingsValidationException"
           ) {
+            setIsInvalidApiKey(true);
+            setErrorTextInvalidApiKey(
+              t(
+                "settings.connection.saving.error.common-invalid-api-key",
+                "Invalid DocSpace API key, please try again",
+              ),
+            );
+
             await sdk.execute(Command.SHOW_SNACKBAR, {
               message: getSettingsValidationsMessage(
                 data.params.validationError,
               ),
+              link: {
+                url: `${stripTrailingSlash(url)}/developer-tools/api-keys`,
+                label: t("button.create-api-key", "Create a key"),
+              },
             });
           } else {
             await sdk.execute(Command.SHOW_SNACKBAR, {
@@ -111,23 +194,43 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
           }
         })
         .finally(() => {
+          setIsDisabledApiKeyInput(false);
+          setIsDisabledConnectButton(false);
           setConnecting(false);
         });
-    } else {
-      setShowValidationMessage(true);
     }
+  };
+
+  const onChange = () => {
+    setChanging(true);
+
+    setIsDisabledUrlInput(false);
+    setApiKey("");
+
+    setIsDisabledSaveButton(true);
+  };
+
+  const onCancelChange = () => {
+    setChanging(false);
+
+    setUrl(settings?.url || "");
+    setIsInvalidUrl(false);
+    setIsDisabledUrlInput(true);
+
+    setApiKey(settings?.apiKey || "");
+    setIsInvalidApiKey(false);
+    setIsDisabledApiKeyInput(true);
   };
 
   const handleDisconnect = async () => {
     const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
-      title: t("button.disconnect", "Disconnect"),
+      title: t("label.warning", "Warning"),
       description:
         t(
           "settings.connection.disconnection.description",
-          `Are you sure you want to disconnect ONLYOFFICE DocSpace? This will 
-        result in all connections between Deals and DocSpace rooms being lost. 
-        And also all user authorization data will be deleted.`,
+          "If you press the Disconnect button, you will not have access to ONLYOFFICE DocSpace. This will remove the connections between Rooms and Deals, and disconnect all users.",
         ) || "",
+      okText: t("button.disconnect", "Disconnect"),
     });
 
     if (confirmed) {
@@ -137,14 +240,17 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
           await sdk.execute(Command.SHOW_SNACKBAR, {
             message: t(
               "settings.connection.disconnection.ok",
-              "ONLYOFFICE DocSpace succesfully disconnected",
+              "ONLYOFFICE DocSpace successfully disconnected",
             ),
           });
           setSettings(undefined);
           if (user) {
             setUser({ ...user, docspaceAccount: null });
           }
-          setAddress("");
+
+          setUrl("");
+          setIsDisabledUrlInput(false);
+
           setApiKey("");
         })
         .catch(async () => {
@@ -160,6 +266,30 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
         });
     }
   };
+
+  const getApiKeyTooltip = () => (
+    <div className="flex flex-col items-start">
+      <p>
+        {t(
+          "settings.connection.inputs.api-key.tooltip",
+          "Before connecting the app, please go to your DocSpace, create a new API key and enter it here. You can choose Permissions (All) or set restricted access with these required scopes for proper app functionality: Profile (Read), Contacts (Write), and Rooms (Write).",
+        )}
+      </p>
+      <button
+        type="button"
+        className="flex items-center justify-center pt-2 text-sm font-semibold text-pipedrive-color-light-blue-600 dark:text-pipedrive-color-dark-blue-600 cursor-pointer"
+        onClick={() => {
+          window.open(
+            `${stripTrailingSlash(url)}/developer-tools/api-keys`,
+            "_blank",
+          );
+        }}
+      >
+        {t("button.create-api-key", "Create a key")}
+        <OpenLink className="inline-block ml-2" />
+      </button>
+    </div>
+  );
 
   return (
     <>
@@ -181,12 +311,25 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
           </div>
         )}
         {!!settings?.url && (
-          <div className="pt-3 pb-2">
-            {t(
-              "settings.connection.subtitle.change",
-              "Change address or disconnect your ONLYOFFICE DocSpace from Pipedrive",
-            )}
-          </div>
+          <>
+            <div className="flex gap-3 pt-4 pb-3">
+              <div>
+                <Connected />
+              </div>
+              <div className="flex justify-center items-center">
+                {t(
+                  "settings.connection.status.connected",
+                  "Your DocSpace has been successfully connected",
+                )}
+              </div>
+            </div>
+            <div className="pt-3 pb-2">
+              {t(
+                "settings.connection.subtitle.change",
+                "Change address or disconnect your ONLYOFFICE DocSpace from Pipedrive",
+              )}
+            </div>
+          </>
         )}
       </div>
       <div className="max-w-[390px]">
@@ -194,14 +337,24 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
           <div className="pl-5 pr-5 pb-2">
             <OnlyofficeInput
               text={t(
-                "settings.connection.inputs.address",
+                "settings.connection.inputs.url.title",
                 "ONLYOFFICE DocSpace address",
               )}
+              description={t(
+                "settings.connection.inputs.url.description",
+                "Enter the URL of your DocSpace in the field above. For example, https://yourcompany.onlyoffice.com",
+              )}
               placeholder="https://"
-              valid={showValidationMessage ? !!address : true}
-              disabled={(connecting || !!settings?.url) && !changing}
-              value={address}
-              onChange={(e) => setAddress(e.target.value.trim())}
+              value={url}
+              valid={!isInvalidUrl}
+              errorText={errorTextInvalidUrl}
+              required
+              disabled={isDisabledUrlInput}
+              onChange={(e) => setUrl(e.target.value.trim())}
+              loadingConsent={checkingUrl}
+              onConsent={() => {
+                checkDocspaceUrl(url);
+              }}
             />
           </div>
           <div className="pl-5 pr-5 pb-2">
@@ -211,19 +364,23 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
                 "ONLYOFFICE DocSpace API key",
               )}
               placeholder="***********"
-              description={t(
-                "settings.connection.inputs.api-key.description",
-                "The API key must be created by a DocSpace admin and should include the following access scopes: Profile (Read), Contacts (Write), and Rooms (Write).",
-              )}
-              valid={showValidationMessage ? !!apiKey : true}
-              disabled={(connecting || !!settings?.url) && !changing}
+              tooltip={getApiKeyTooltip()}
               value={apiKey}
+              valid={!isInvalidApiKey}
+              errorText={errorTextInvalidApiKey}
+              required
+              disabled={isDisabledApiKeyInput}
+              link={{
+                text: t("button.create-api-key", "Create a key"),
+                href: `${stripTrailingSlash(url)}/developer-tools/api-keys`,
+              }}
               onChange={(e) => setApiKey(e.target.value.trim())}
             />
           </div>
           <div className="flex justify-start items-center mt-4 ml-5 gap-2">
             {!settings?.url && (
               <OnlyofficeButton
+                disabled={isDisabledConnectButton}
                 text={t("button.connect", "Connect")}
                 type="submit"
                 color={ButtonColor.PRIMARY}
@@ -235,12 +392,8 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
               <>
                 <OnlyofficeButton
                   text={t("button.change", "Change")}
-                  color={ButtonColor.PRIMARY}
                   disabled={disconnecting}
-                  onClick={() => {
-                    setChanging(true);
-                    setApiKey("");
-                  }}
+                  onClick={onChange}
                 />
                 <OnlyofficeButton
                   text={t("button.disconnect", "Disconnect")}
@@ -253,20 +406,17 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
             {changing && (
               <>
                 <OnlyofficeButton
-                  text={t("button.cancel", "Cancel")}
-                  disabled={connecting}
-                  onClick={() => {
-                    setChanging(false);
-                    setAddress(settings?.url || "");
-                    setApiKey(settings?.apiKey || "");
-                  }}
-                />
-                <OnlyofficeButton
                   text={t("button.save", "Save")}
                   type="submit"
                   color={ButtonColor.PRIMARY}
+                  disabled={connecting || isDisabledSaveButton}
                   loading={connecting}
                   onClick={handleConnect}
+                />
+                <OnlyofficeButton
+                  text={t("button.cancel", "Cancel")}
+                  disabled={connecting}
+                  onClick={onCancelChange}
                 />
               </>
             )}
