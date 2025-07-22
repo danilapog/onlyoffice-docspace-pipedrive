@@ -48,13 +48,15 @@ export const OnlyofficeTooltip: React.FC<TooltipProps> = ({
       onMouseLeave={() => setHovered(false)}
     >
       {hovered && !disabled ? <InfoHover /> : <Info />}
-      <div
-        className={`absolute top-3/4 w-max max-w-[400px] transform invisible
+      {hovered && !disabled && (
+        <div
+          className={`absolute top-3/4 w-max max-w-[400px] transform invisible
               border border-pipedrive-color-light-divider-strong dark:border-pipedrive-color-dark-divider-strong rounded shadow-md bg-white dark:bg-pipedrive-color-dark-neutral-100 transition-all
               duration-200 group-hover:translate-y-1 group-hover:visible`}
-      >
-        <div className="w-full p-4">{body}</div>
-      </div>
+        >
+          <div className="w-full p-4">{body}</div>
+        </div>
+      )}
     </div>
   );
 };
