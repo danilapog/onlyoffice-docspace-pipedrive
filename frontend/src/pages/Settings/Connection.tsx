@@ -277,7 +277,7 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
       </p>
       <button
         type="button"
-        className="flex items-center justify-center pt-2 text-sm font-semibold text-pipedrive-color-light-blue-600 dark:text-pipedrive-color-dark-blue-600 cursor-pointer"
+        className="flex items-center justify-center pt-2 text-sm font-semibold text-pipedrive-color-light-blue-600 dark:text-pipedrive-color-dark-blue-600 cursor-pointer hover:underline"
         onClick={() => {
           window.open(
             `${stripTrailingSlash(url)}/developer-tools/api-keys`,
