@@ -55,7 +55,7 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
     reloadAppContext,
   } = useContext(AppContext);
 
-  const [url, setUrl] = useState<string>(settings?.url || "");
+  const [url, setUrl] = useState<string>(settings?.url || "https://");
   const [isInvalidUrl, setIsInvalidUrl] = useState(false);
   const [errorTextInvalidUrl, setErrorTextInvalidUrl] = useState("");
   const [isDisabledUrlInput, setIsDisabledUrlInput] = useState(!!settings?.url);
@@ -350,7 +350,17 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({
               errorText={errorTextInvalidUrl}
               required
               disabled={isDisabledUrlInput}
-              onChange={(e) => setUrl(e.target.value.trim())}
+              onChange={(e) => {
+                let value = e.target.value.trim();
+
+                if (value.length < 8) {
+                  value = "https://";
+                }
+
+                value = value.replace(/https?:\/\//g, "");
+
+                setUrl(`https://${value}`);
+              }}
               loadingConsent={checkingUrl}
               onConsent={() => {
                 checkDocspaceUrl(url);
