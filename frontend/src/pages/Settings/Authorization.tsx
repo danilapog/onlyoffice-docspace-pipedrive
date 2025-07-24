@@ -150,6 +150,7 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
 
       if (login.status && login.status !== 200) {
         setIsInvalidEmail(true);
+        setIsInvalidPassword(true);
         setErrorTextInvalidEmail(
           t("docspace.error.login", "User authentication failed"),
         );
