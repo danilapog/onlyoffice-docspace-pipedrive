@@ -317,7 +317,7 @@ const RoomPage: React.FC = () => {
             <div className="w-full pb-4">
               {t(
                 "room.login.description",
-                "Log in to ONLYOFFICE DocSpace to easily collaborate on the deal-related documents.",
+                "Login to ONLYOFFICE DocSpace to easily collaborate on documents in this deal",
               )}
             </div>
             <OnlyofficeButton

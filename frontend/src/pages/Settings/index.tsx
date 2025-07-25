@@ -20,6 +20,7 @@ import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { AppContext } from "@context/AppContext";
+import { UserGuide } from "@layouts/UserGuide";
 
 import { AuthorizationSetting } from "./Authorization";
 import { ConnectionSettings } from "./Connection";
@@ -33,6 +34,8 @@ type Section = {
 const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useContext(AppContext);
+
+  const [showUserGuide, setShowUserGuide] = useState(false);
 
   const sections: Array<Section> = [
     {
@@ -59,39 +62,54 @@ const SettingsPage: React.FC = () => {
 
   return (
     <div className="w-screen h-screen">
-      <div className="flex flex-row">
-        <div className="min-w-52 border-r-2 p-1 dark:border-pipedrive-color-dark-divider-medium">
-          {sections
-            .filter((section) => section.available)
-            .map((section) => (
-              <div
-                key={section.id}
-                id={section.id}
-                tabIndex={0}
-                role="button"
-                className={`text-left border-spacing-7 px-10 py-2 m-1 rounded cursor-pointer ${
-                  section.id === selectedSection
-                    ? "font-medium text-pipedrive-color-light-blue-700 bg-pipedrive-color-light-blue-200 dark:text-pipedrive-color-dark-blue-800 dark:bg-pipedrive-color-dark-blue-200"
-                    : "hover:bg-stone-200 dark:hover:bg-pipedrive-color-extra-light-rgba"
-                }`}
-                onClick={() => setSelectedSection(section.id)}
-                onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (event.key === "Enter") setSelectedSection(section.id);
-                }}
-              >
-                {section.title}
-              </div>
-            ))}
+      {!showUserGuide && (
+        <div className="flex flex-row">
+          <div className="min-w-52 border-r-2 p-1 dark:border-pipedrive-color-dark-divider-medium">
+            {sections
+              .filter((section) => section.available)
+              .map((section) => (
+                <div
+                  key={section.id}
+                  id={section.id}
+                  tabIndex={0}
+                  role="button"
+                  className={`text-left border-spacing-7 px-10 py-2 m-1 rounded cursor-pointer ${
+                    section.id === selectedSection
+                      ? "font-medium text-pipedrive-color-light-blue-700 bg-pipedrive-color-light-blue-200 dark:text-pipedrive-color-dark-blue-800 dark:bg-pipedrive-color-dark-blue-200"
+                      : "hover:bg-stone-200 dark:hover:bg-pipedrive-color-extra-light-rgba"
+                  }`}
+                  onClick={() => setSelectedSection(section.id)}
+                  onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (event.key === "Enter") setSelectedSection(section.id);
+                  }}
+                >
+                  {section.title}
+                </div>
+              ))}
+          </div>
+          <div className="custom-scroll w-screen h-screen overflow-y-scroll overflow-x-hidden p-2">
+            {selectedSection === "conntection" && (
+              <ConnectionSettings
+                onChangeSection={() => setSelectedSection("authorization")}
+              />
+            )}
+            {selectedSection === "authorization" && (
+              <AuthorizationSetting
+                showUserGuide={() => setShowUserGuide(true)}
+              />
+            )}
+          </div>
         </div>
-        <div className="custom-scroll w-screen h-screen overflow-y-scroll overflow-x-hidden p-2">
-          {selectedSection === "conntection" && (
-            <ConnectionSettings
-              onChangeSection={() => setSelectedSection("authorization")}
-            />
-          )}
-          {selectedSection === "authorization" && <AuthorizationSetting />}
+      )}
+      {showUserGuide && (
+        <div className="flex w-full h-full justify-center">
+          <UserGuide
+            onClose={() => {
+              setShowUserGuide(false);
+            }}
+          />
         </div>
-      </div>
+      )}
     </div>
   );
 };

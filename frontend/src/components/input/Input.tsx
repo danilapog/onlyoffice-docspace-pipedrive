@@ -22,6 +22,9 @@ import cx from "classnames";
 import { ButtonColor, OnlyofficeButton } from "@components/button";
 
 import RightArrow from "@assets/right-arrow.svg";
+import OpenEye from "@assets/open-eye.svg";
+import ClosedEye from "@assets/closed-eye.svg";
+
 import { OnlyofficeTooltip } from "@components/tooltip";
 
 type InputProps = {
@@ -83,6 +86,9 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
     "hover:underline": !disabled,
   });
 
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [inputType, setInputType] = React.useState(type);
+
   return (
     <div>
       <div className="flex gap-2">
@@ -100,7 +106,7 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
           required
           autoCorrect={autocomplete ? undefined : "off"}
           autoComplete={autocomplete ? undefined : "off"}
-          type={type}
+          type={inputType}
           onChange={onChange}
           disabled={disabled}
         />
@@ -116,6 +122,21 @@ export const OnlyofficeInput: React.FC<InputProps> = ({
               onClick={onConsent}
               color={ButtonColor.PRIMARY}
             />
+          </div>
+        )}
+        {type === "password" && (
+          <div className="absolute top-0 right-0">
+            <button
+              className="flex items-center justify-center p-2"
+              type="button"
+              disabled={disabled}
+              onClick={() => {
+                setShowPassword(!showPassword);
+                setInputType(!showPassword ? "text" : "password");
+              }}
+            >
+              {showPassword ? <ClosedEye /> : <OpenEye />}
+            </button>
           </div>
         )}
       </div>

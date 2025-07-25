@@ -72,6 +72,7 @@ module.exports = {
 
                 "onlyoffice-custom-ligth-subtitle": "#73767C",
                 "pipedrive-color-light-neutral-100": "#f5f5f6",
+                "pipedrive-color-light-neutral-200": "#ececed",
                 "pipedrive-color-light-neutral-500": "#93949a",
                 "pipedrive-color-light-neutral-700": "#65686f",
                 "pipedrive-color-light-neutral-1000": "#21232c",
