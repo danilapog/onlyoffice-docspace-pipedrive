@@ -19,7 +19,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
-import { Command, View } from "@pipedrive/app-extensions-sdk";
+import { Color, Command, View } from "@pipedrive/app-extensions-sdk";
 import { DocSpace } from "@onlyoffice/docspace-react";
 import {
   TFrameConfig,
@@ -58,6 +58,10 @@ const DOCSPACE_ROOM_TYPES = [
   {
     id: 8,
     name: "vdr",
+  },
+  {
+    id: 1,
+    name: "form-filling-room",
   },
   {
     id: 5,
@@ -152,6 +156,8 @@ const RoomPage: React.FC = () => {
       },
     );
     setRoom({ ...room, id: null } as RoomResponse);
+    setShowDocspaceWindow(false);
+    sdk.execute(Command.RESIZE, { height: 350 });
   };
 
   const saveRoom = (roomId: string) => {
@@ -195,8 +201,43 @@ const RoomPage: React.FC = () => {
       });
   };
 
-  const handleCreateRoom = (roomType: string) => {
+  const getCreateRoomDialogTitle = (roomType: string) => {
+    const roomTypeName = DOCSPACE_ROOM_TYPES.find(
+      (docspaceRoomType) => String(docspaceRoomType.id) === roomType,
+    )?.name;
+
+    if (!roomTypeName) {
+      return "";
+    }
+
+    return `${t("button.create", "Create")} ${t(`docspace.room.type.${roomTypeName}`, roomTypeName)}`;
+  };
+
+  const getCreateRoomDialogDescription = (roomType: string) => {
+    const roomTypeName = DOCSPACE_ROOM_TYPES.find(
+      (docspaceRoomType) => String(docspaceRoomType.id) === roomType,
+    )?.name;
+
+    if (!roomTypeName) {
+      return "";
+    }
+
+    return t(`docspace.room.type.${roomTypeName}.description`, roomTypeName);
+  };
+
+  const handleCreateRoom = async (roomType: string) => {
     if (docspaceInstance.current && room) {
+      const { confirmed } = await sdk.execute(Command.SHOW_CONFIRMATION, {
+        title: getCreateRoomDialogTitle(roomType),
+        description: getCreateRoomDialogDescription(roomType),
+        okText: t("button.create.room", "Create room"),
+        okColor: Color.PRIMARY,
+      });
+
+      if (!confirmed) {
+        return;
+      }
+
       setCreating(true);
 
       docspaceInstance.current
@@ -299,7 +340,10 @@ const RoomPage: React.FC = () => {
     DOCSPACE_ROOM_TYPES.reduce((createRoomOptions, roomType) => {
       createRoomOptions.push({
         id: String(roomType.id),
-        label: t(`docspace.room.type.${roomType.name}`, roomType.name),
+        label: t(
+          `docspace.room.type.${roomType.name}.short-description`,
+          roomType.name,
+        ),
       });
       return createRoomOptions;
     }, new Array<DropdownButtonOptions>());
@@ -336,7 +380,7 @@ const RoomPage: React.FC = () => {
             <div className="w-full pb-4">
               {t(
                 "room.create.description",
-                "Create ONLYOFFICE DocSpace room to work with documents related to this deal. You will not be able to change the room type.",
+                "Create ONLYOFFICE DocSpace room to work with documents related to this deal.",
               )}
               <a
                 className="font-semibold
@@ -346,7 +390,7 @@ const RoomPage: React.FC = () => {
                 href="https://helpcenter.onlyoffice.com/userguides/docspace-creating-rooms.aspx"
                 rel="noreferrer"
               >
-                {` ${t("t", "Learn more")}.`}
+                {` ${t("link.learn-more-room-types", "Learn more about room types.")}`}
               </a>
             </div>
             <OnlyofficeDropdownButton
@@ -362,7 +406,7 @@ const RoomPage: React.FC = () => {
       {loadDocspace && user && settings?.url && user?.docspaceAccount && (
         <div
           key={room?.id}
-          className={`w-full h-full flex flex-row
+          className={`w-full h-full flex flex-col items-end
             ${!showDocspaceWindow ? "hidden" : ""}
           `}
         >
@@ -376,6 +420,20 @@ const RoomPage: React.FC = () => {
               docspaceInstance.current = instance;
             }}
           />
+          <div className="pr-4">
+            <OnlyofficeButton
+              text={t("button.open-in-docspace", "Open in DocSpace")}
+              onClick={() => {
+                const src = document
+                  .getElementById(DOCSPACE_FRAME_ID)
+                  ?.getAttribute("src");
+
+                if (src) {
+                  window.open(src, "_blank");
+                }
+              }}
+            />
+          </div>
         </div>
       )}
     </div>
