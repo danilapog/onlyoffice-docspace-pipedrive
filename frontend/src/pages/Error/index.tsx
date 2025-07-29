@@ -189,6 +189,19 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ children }) => {
                     return;
                   }
 
+                  if (
+                    e?.response?.status === 403 &&
+                    data?.cause === "RequestAccessToRoomException"
+                  ) {
+                    await sdk.execute(Command.SHOW_SNACKBAR, {
+                      message: t(
+                        "room.request-access.forbidden",
+                        "Error getting access to the ONLYOFFICE DocSpace room, because current user is not deal follower.",
+                      ),
+                    });
+                    return;
+                  }
+
                   await sdk.execute(Command.SHOW_SNACKBAR, {
                     message: t(
                       "room.request-access.error",

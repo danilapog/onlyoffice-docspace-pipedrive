@@ -68,6 +68,7 @@
   "room.login.description": "",
   "room.request-access.ok": "ONLYOFFICE DocSpaceルームへのアクセスが許可されました。",
   "room.request-access.error": "ONLYOFFICE DocSpaceルームへのアクセスエラー",
+  "room.request-access.forbidden": "",
   "settings.authorization.deleting.ok": "ONLYOFFICE DocSpace認証が正常に削除されました",
   "settings.authorization.deleting.confirm-message": "",
   "settings.authorization.saving.ok": "ONLYOFFICE DocSpace認証が正常に保存されました",

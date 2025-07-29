@@ -68,6 +68,7 @@
   "room.login.description": "",
   "room.request-access.ok": "L'accesso alla stanza ONLYOFFICE DocSpace è stato concesso",
   "room.request-access.error": "Errore nell'accesso alla stanza ONLYOFFICE DocSpace",
+  "room.request-access.forbidden": "",
   "settings.authorization.deleting.ok": "L'autorizzazione di ONLYOFFICE DocSpace è stata eliminata con successo",
   "settings.authorization.saving.ok": "L'autorizzazione di ONLYOFFICE DocSpace è stata salvata con successo",
   "settings.authorization.deleting.confirm-message": "",
