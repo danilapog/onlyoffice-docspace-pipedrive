@@ -101,5 +101,8 @@
     "react-i18next": "^15.0.1",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.26.0"
+  },
+  "overrides": {
+    "pnpm": "10.14.0"
   }
 }
