@@ -83,6 +83,7 @@
   "settings.authorization.welcome.title": "",
   "settings.authorization.welcome.option1": "",
   "settings.authorization.welcome.option2": "",
+  "settings.authorization.welcome.option3": "",
   "settings.authorization.welcome.open-guide": "",
   "settings.connection.saving.error.undefined": "Impossibile salvare le impostazioni di ONLYOFFICE DocSpace",
   "settings.connection.saving.error.common-invalid-api-key": "",

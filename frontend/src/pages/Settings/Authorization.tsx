@@ -429,11 +429,15 @@ export const AuthorizationSetting: React.FC<AuthorizationSettingProps> = ({
                   options={[
                     t(
                       "settings.authorization.welcome.option1",
-                      "Create a room in the deal",
+                      "Create rooms to work on deal documents",
                     ),
                     t(
                       "settings.authorization.welcome.option2",
-                      "Upload a document to the room",
+                      "Edit and collaborate on docs, sheets, slides, forms, PDFs",
+                    ),
+                    t(
+                      "settings.authorization.welcome.option3",
+                      "Store your deal data securely in one single place",
                     ),
                   ]}
                   button={{
