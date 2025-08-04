@@ -51,7 +51,7 @@
   "docspace.room.type.collaboration.short-description": "Pour coéditer des documents avec votre équipe",
   "docspace.room.type.public.short-description": "Pour partager des fichiers avec des utilisateurs externes et des clients",
   "docspace.room.type.vdr.short-description": "Pour assurer une protection avancée des fichiers",
-  "docspace.room.type.custom.short-description": "Pour travailler en fonction de vos objectifs",
+  "docspace.room.type.custom.short-description": "",
   "docspace.room.type.form-filling-room.description": "Pour collecter des données en remplissant des formulaires PDF.",
   "docspace.room.type.collaboration.description": "Pour collaborer en temps réel sur des documents, des feuilles de calcul et des présentations.",
   "docspace.room.type.public.description": "Pour partager des documents avec des utilisateurs externes sans inscription.",

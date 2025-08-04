@@ -51,7 +51,7 @@
   "docspace.room.type.collaboration.short-description": "チームと文書を共同編集するために",
   "docspace.room.type.public.short-description": "外部ユーザーやクライアントとファイルを共有するため",
   "docspace.room.type.vdr.short-description": "高度なファイル保護を提供するために",
-  "docspace.room.type.custom.short-description": "目標に従って作業するために",
+  "docspace.room.type.custom.short-description": "",
   "docspace.room.type.form-filling-room.description": "PDFフォームに記入することでデータを収集するために",
   "docspace.room.type.collaboration.description": "リアルタイムで文書、スプレッドシート、プレゼンテーションに共同作業するために",
   "docspace.room.type.public.description": "外部ユーザーと文書を共有する際に、登録を必要としないために",
