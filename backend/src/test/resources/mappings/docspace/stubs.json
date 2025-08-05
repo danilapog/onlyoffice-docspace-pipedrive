@@ -147,7 +147,7 @@
     },
     {
       "request": {
-        "url": "/api/2.0/keys",
+        "url": "/api/2.0/keys/@self",
         "method": "GET"
       },
       "response": {
@@ -156,15 +156,13 @@
         },
         "jsonBody": {
           "statusCode": 200,
-          "response": [
-            {
-              "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa",
-              "key": "sk-api-key-test",
-              "keyPostfix": "test",
-              "permissions": [],
-              "isActive": true
-            }
-          ]
+          "response": {
+            "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa",
+            "key": "sk-api-key-test",
+            "keyPostfix": "test",
+            "permissions": [],
+            "isActive": true
+          }
         }
       }
     },
