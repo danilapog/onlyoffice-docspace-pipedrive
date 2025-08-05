@@ -63,10 +63,10 @@ public class SettingsEventListener {
     @EventListener
     @Transactional
     public void listen(final SettingsDeleteEvent event) {
-        roomService.deleteAllByClientId(event.getClientId());
-        docspaceAccountService.deleteByClientId(event.getClientId());
-
         List<Webhook> webhooks = webhookService.findAllByClientId(event.getClientId());
         pipedriveActionManager.deleteWebhooks(webhooks);
+
+        roomService.deleteAllByClientId(event.getClientId());
+        docspaceAccountService.deleteAllByClientId(event.getClientId());
     }
 }

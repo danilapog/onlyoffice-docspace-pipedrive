@@ -93,7 +93,8 @@ public abstract class AbstractControllerTest {
                                     new JsonFileMappingsSource(
                                             wireMockConfig().filesRoot()
                                                     .child("mappings")
-                                                    .child("pipedrive")
+                                                    .child("pipedrive"),
+                                            null
                                     )
                             )
             )
@@ -107,7 +108,8 @@ public abstract class AbstractControllerTest {
                                     new JsonFileMappingsSource(
                                             wireMockConfig().filesRoot()
                                                     .child("mappings")
-                                                    .child("docspace")
+                                                    .child("docspace"),
+                                            null
                                     )
                             )
             )

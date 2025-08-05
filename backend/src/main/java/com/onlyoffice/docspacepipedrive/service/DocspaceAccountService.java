@@ -28,7 +28,7 @@ public interface DocspaceAccountService {
     DocspaceAccount findById(Long id);
     DocspaceAccount findByClientIdAndUserId(Long clientId, Long userId);
     DocspaceAccount save(Long clientId, Long userId, DocspaceAccount docspaceAccount);
-    void deleteByClientId(Long clientId);
+    void deleteAllByClientId(Long clientId);
     void deleteByClientIdAndUserId(Long clientId, Long userId);
     void deleteAllByIdInBatch(List<Long> ids);
 }

@@ -20,6 +20,8 @@ package com.onlyoffice.docspacepipedrive.repository;
 
 import com.onlyoffice.docspacepipedrive.entity.DocspaceAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -29,7 +31,17 @@ import java.util.Optional;
 @Repository
 public interface DocspaceAccountRepository extends JpaRepository<DocspaceAccount, Long> {
     Optional<DocspaceAccount> findByUser_Client_IdAndUser_UserId(Long clientId, Long userId);
-    void deleteByUser_Client_Id(Long clientId);
+
+    @Modifying
+    @Query(value = "DELETE FROM docspace_accounts WHERE user_id IN "
+            + "(SELECT id FROM users WHERE client_id = :clientId)",
+            nativeQuery = true)
+    void deleteAllByUser_Client_Id(Long clientId);
+
+    @Modifying
+    @Query(value = "DELETE FROM docspace_accounts WHERE user_id IN "
+            + "(SELECT id FROM users WHERE client_id = :clientId AND user_id = :userId)",
+            nativeQuery = true)
     void deleteByUser_Client_IdAndUser_UserId(Long clientId, Long userId);
     List<DocspaceAccount> findAllByUser_Client_IdAndUser_UserIdIn(Long clientId, List<Long> userIds);
 }
