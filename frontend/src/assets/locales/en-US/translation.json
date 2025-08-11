@@ -21,6 +21,7 @@
   "button.deals": "Go to Deals",
   "button.reauthorize": "Re-authorize",
   "button.settings": "Go to Settings",
+  "button.create": "Create",
   "button.create.room": "Create room",
   "button.login": "Log in",
   "button.logout": "Log out",
