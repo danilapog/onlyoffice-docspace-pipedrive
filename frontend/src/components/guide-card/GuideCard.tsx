@@ -48,7 +48,9 @@ export const GuideCard: React.FC<GuideCard> = ({
     <div className="flex flex-col flex-1 pl-6 gap-4">
       <div className="text-lg font-semibold">{title}</div>
       <ul className="list-disc pl-6 text-sm">
-        {steps?.map((step) => <li key={step}>{step}</li>)}
+        {steps?.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
       </ul>
     </div>
   </div>
