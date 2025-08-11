@@ -17,16 +17,11 @@
  */
 
 import React from "react";
-import cx from "classnames";
 
 type TitleProps = {
   text: string;
 };
 
-export const OnlyofficeTitle: React.FC<TitleProps> = ({ text }) => {
-  const style = cx({
-    "text-xl": !!text,
-  });
-
-  return <p className={style}>{text}</p>;
-};
+export const OnlyofficeTitle: React.FC<TitleProps> = ({ text }) => (
+  <p className="text-l font-semibold">{text}</p>
+);
