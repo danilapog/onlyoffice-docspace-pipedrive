@@ -91,7 +91,7 @@
   "settings.connection.saving.error.DOCSPACE_API_KEY_IS_INVALID": "Clave API inválida. Por favor, verifica tu clave API e intenta conectarte nuevamente.",
   "settings.connection.saving.error.DOCSPACE_API_KEY_OWNER_IS_NOT_ADMIN": "Clave de la API inválida. Por favor, asegúrate de que el autor de la clave de la API sea un administrador de DocSpace e intenta conectarte nuevamente.",
   "settings.connection.saving.error.DOCSPACE_API_KEY_IS_NOT_CONTAINS_REQUIRED_SCOPES": "Clave API inválida. Por favor, verifica los Access Scopes de la clave de la API en DocSpace e intenta conectarte nuevamente.",
-  "settings.connection.saving.ok": "ONLYOFFICE DocSpace connection settings have been successfully saved. You can now proceed to Authorization.",
+  "settings.connection.saving.ok": "Los ajustes de conexión de ONLYOFFICE DocSpace se han guardado correctamente. Ahora puede proceder a la Autorización.",
   "settings.connection.status.connected": "Tu DocSpace se ha conectado correctamente",
   "settings.connection.disconnection.description": "Si presionas el botón Desconectar, no tendrás acceso a ONLYOFFICE DocSpace. Esto eliminará las conexiones entre Salas y Acuerdos, y desconectará a todos los usuarios.",
   "settings.connection.disconnection.ok": "ONLYOFFICE DocSpace se ha desconectado correctamente",
