@@ -5,7 +5,7 @@ services:
     build:
       context: .
       target: backend
-    image: docker.onlyoffice.com/pipedrive-docspace-backend:${PRODUCT_VERSION}
+    image: ${REGISTRY}/pipedrive-docspace-backend:${PRODUCT_VERSION}
     depends_on:
       - postgres
       - redis
@@ -32,7 +32,7 @@ services:
       target: frontend
       args:
         - BACKEND_URL=${BACKEND_URL}
-    image: docker.onlyoffice.com/pipedrive-docspace-frontend:${PRODUCT_VERSION}
+    image: ${REGISTRY}/pipedrive-docspace-frontend:${PRODUCT_VERSION}
     stdin_open: true
     ports:
       - "3000:80"
